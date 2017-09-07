@@ -1,5 +1,27 @@
 #!/usr/bin/env python3
 
+"""
+BSA (Behavioral Strings Analysis)
+Copyright 2012-2017 Olivier Friard
+
+This file is part of BORIS.
+
+  BSA is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  any later version.
+
+  BSA is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not see <http://www.gnu.org/licenses/>.
+
+"""
+
+
 __version__ = '0.0.1'
 
 
@@ -92,14 +114,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                                          countBehaviour=countBehaviour,
                                                                                          tot_nodes=tot_nodes
                                                                                          )
-                '''
-                output += "<tr><td>{behaviour}</td><td>{freq:.3f}</td><td>{countBehaviour} / {tot_nodes}</td></tr>".format(behaviour=behaviour,
-                                                                                         freq=countBehaviour / tot_nodes,
-                                                                                         countBehaviour=countBehaviour,
-                                                                                         tot_nodes=tot_nodes
-                                                                                         )
-                '''
-                
             self.pte_statistics.setPlainText(output)
 
         else:
