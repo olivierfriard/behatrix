@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''
+"""
 Behavioural Strings Analysis (BSA) command line utility.
 Randomization test
 
