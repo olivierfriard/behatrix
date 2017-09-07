@@ -12,8 +12,9 @@ Requirements
 Usage
 ======
 
+.. code-block:: text
 
-.. usage: bsa_multi_cl.py [-h] [-v] [--strings STRINGS] [--output OUTPUT]
+    usage: bsa_multi_cl.py [-h] [-v] [--strings STRINGS] [--output OUTPUT]
                        [--exclusions EXCLUSIONS] [--n_random NRANDOM]
                        [--n_cpu N_CPU] [--block_first] [--block_last]
                        [--verbose]
