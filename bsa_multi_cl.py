@@ -16,21 +16,23 @@ import numpy
 import concurrent.futures
 import random
 
-__version__ = "0.0.1"
+__version__ = "0.1"
 
-DEBUG = False
 
 def behav_strings_stats(string, chunk=0):
     """
     calculate some stats on behavioral strings
     """
 
+    # replace space by undescore (_)
+    string = string.replace(" ", "_")
+
     # check if behaviors are unique char
     if "|" in string:
         rows = string.split("\n")   # split rows in list
         flagOne = False
     else:
-        rows = string.replace(' ','').split()
+        rows = string.replace(" ", "").split()
         flagOne = True
 
     sequences = []

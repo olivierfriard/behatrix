@@ -70,7 +70,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
     def about(self):
-        QMessageBox.about(self, "Behavioral Strings Analysis", "v. {}<br>Olivier Friard<br>Università di Torino".format(__version__))
+        QMessageBox.about(self, "Behavioral Strings Analysis", ("v. {}<br>"
+                                                                "Olivier Friard<br>"
+                                                                "Università di Torino<br>"
+                                                                "https://github.com/olivierfriard/behavioral_strings_analysis").format(__version__))
 
 
     def pbSelectStringsFilename(self):
