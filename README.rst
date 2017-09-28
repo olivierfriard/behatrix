@@ -35,6 +35,14 @@ Usage of command line utility
       --verbose             Print results on terminal
     
 
+Example of use
+===============
+
+.. code-block:: text
+
+  python3 bsa_multi_cl.py --strings behav_strings.txt --output behav_strings_results --n_random 10000
+
+
 
 Example of behavioral strings file
 ==================================
