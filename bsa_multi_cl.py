@@ -1,32 +1,13 @@
 #!/usr/bin/env python3
 
-"""
+'''
 Behavioural Strings Analysis (BSA) command line utility.
 Randomization test
 
 Multi core use
 
-
-BSA (Behavioral Strings Analysis)
-Copyright 2012-2017 Olivier Friard
-
-This file is part of BORIS.
-
-  BSA is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 3 of the License, or
-  any later version.
-
-  BSA is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not see <http://www.gnu.org/licenses/>.
-
-"""
-
+Copyright Olivier Friard - 2017
+'''
 
 import os
 import sys
@@ -105,6 +86,38 @@ def behav_strings_stats(string, chunk=0):
             else:
                 d[r[i] + '|' +r[i + 1]] = 1
 
+    # exclusion
+    '''
+    exclusion_list = {}
+
+    if exclusion_str:
+        rows = exclusion_str.split("\n")
+
+        for row in rows:
+            if row.strip() and ':' in row:
+                s1, s2 = row.strip().split(':')
+                if s1:
+                    if s1 in exclusion_list:
+                        if '|' in string:
+                            exclusion_list[s1] += s2.split('|')
+                        else:
+                            exclusion_list[s1] += list(s2)
+                    else:
+                        if '|' in string:
+                            exclusion_list[s1] = s2.split('|')
+                        else:
+                            exclusion_list[s1] = list(s2)
+
+        # test if exclusion list OK
+        for seq in sequences:
+
+            for i in range(0, len(seq) - 1):
+
+                if seq[i] in exclusion_list and seq[i + 1] in exclusion_list[ seq[i] ]:
+
+                    return (1, '<b>Check your strings and exclusion list</b><br><b>%s</b> is not allowed after <b>%s</b>\n' % (seq[i + 1], seq[i])),'', '', '', '' , '' , '', '', '', ''
+    '''
+ 
     # total number of transitions
     tot_trans = 0
     for i in d:
@@ -271,7 +284,21 @@ def draw_diagram(cutoff_all,
                         node2 = '%s' % (i1)
 
                     out += f_edge_label(edge_label, node1, node2, d[i], tot_trans_after_node[i0], tot_trans)
- 
+                    '''
+                    if edge_label == 'fraction_node':
+
+                        out += '"%s" -> "%s" [ label = "%s" ];\n' %  (node1, node2, str(d[i]) + '/' + str(tot_trans_after_node[i0]) )
+
+                    elif edge_label == 'percent_node':
+
+                        #out += '"%s" -> "%s" [label = "%.1f%%"];\n' %  (node1, node2,  d[i]/tot_trans_after_node[i0] *100)
+                        out += '"{node1}" -> "{node2}" [label = "{percent:.2f}"];\n'.format(node1=node1, node2=node2, percent=d[i] / tot_trans_after_node[i0] * 100)
+
+                    elif edge_label == 'percent_total':
+
+                        out += '"%s" -> "%s" [label = "%.1f%%"];\n' % (node1, node2, 1.0 * d[i] / tot_trans * 100.0)
+                    '''
+
         else:
 
             for i in d:
@@ -538,6 +565,17 @@ def main():
             f_out.write((behaviours)[c] + '\t' + row)
             c += 1
 
+    
+    '''
+    f = open(file_name, mode = 'w', encoding = 'utf-8')
+    f.write('\t' + '\t'.join( list( behaviours) ) + '\n' )
+    c = 0
+    for row in rows:
+        f.write( (behaviours)[c] + '\t' + row)
+        c += 1
+    
+    f.close()
+    '''
    
     if nrandom:
         

@@ -9,8 +9,8 @@ Requirements
 * PyQt5 for the GUI version
 
 
-Usage
-======
+Usage of command line utility
+=============================
 
 .. code-block:: text
 
