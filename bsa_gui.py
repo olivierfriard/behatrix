@@ -30,7 +30,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         
-        self.setWindowTitle("BSA")
+        self.setWindowTitle("Behavioral Strins Analysis (BSA)")
         
         self.pte_statistics.setLineWrapMode(False)
         self.pte_gv.setLineWrapMode(False)
@@ -334,6 +334,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 out_str = out_str.replace(" ", "\t")
             
                 self.pte_random.setPlainText(header + out_str)
+                
+                self.statusbar.showMessage("", 0)
                 
                 QMessageBox.information(self, "BSA", ("Randomization text finished<br>"
                                                    "{} randomizations done<br><br>").format(nb_randomization_done))

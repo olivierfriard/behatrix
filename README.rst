@@ -5,7 +5,8 @@ BSA (Behavioral Strings Analysis)
 Requirements
 ============
 
-* numpy
+* Python3
+* Numpy
 * PyQt5 for the GUI version
 
 
