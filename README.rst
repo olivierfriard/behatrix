@@ -9,6 +9,19 @@ Requirements
 * PyQt5 for the GUI version
 
 
+Usage of the GUI interface
+==========================
+
+Launch the bsa_gui.py script with Python3
+
+.. code-block:: text
+
+  python3 bsa_gui.py
+
+
+
+
+
 Usage of command line utility
 =============================
 
@@ -36,7 +49,7 @@ Usage of command line utility
     
 
 Example of use
-===============
+---------------
 
 .. code-block:: text
 
@@ -45,7 +58,7 @@ Example of use
 
 
 Example of behavioral strings file
-==================================
+-----------------------------------
 
 Behaviors are separated by the pipe character (|) otherwise each character will be interpreted as a behavior
 
