@@ -9,7 +9,7 @@ Multi core use
 Copyright Olivier Friard - 2017
 '''
 
-__version__ = '0.1'
+__version__ = '0.1.1'
 
 
 import os
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.pte_behav_strings.setLineWrapMode(0)
         
-        num_available_proc = int(os.sysconf("SC_NPROCESSORS_ONLN"))
+        num_available_proc = os.cpu_count()
 
         self.sb_nb_cores.setMinimum(1)
         self.sb_nb_cores.setMaximum(num_available_proc)

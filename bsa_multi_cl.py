@@ -16,7 +16,7 @@ import numpy
 import concurrent.futures
 import random
 
-__version__ = "0.1"
+__version__ = "0.1.1"
 
 
 def behav_strings_stats(string, chunk=0):
@@ -584,7 +584,7 @@ def main():
         if args.n_cpu:
             num_proc = args.n_cpu
         else:
-            num_available_proc = int(os.sysconf("SC_NPROCESSORS_ONLN"))
+            num_available_proc = os.cpu_count()
             if num_available_proc <= 2:
                 num_proc = 1
             else:
