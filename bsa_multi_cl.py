@@ -352,6 +352,9 @@ def create_observed_transition_matrix(sequences, behaviours):
 def strings2matrix_cl(nrandom, sequences, behaviours, exclusion_list, block_first, block_last, conta_obs):
     """
     randomization test
+    returns:
+    count_tot
+    risu (numpy array)
     """
 
     def strings_permutation(spazio, sequences, exclusion_list, block_first, block_last):
@@ -428,8 +431,7 @@ def strings2matrix_cl(nrandom, sequences, behaviours, exclusion_list, block_firs
     for seq in sequences:
         spazio +=  seq[int(block_first):len(seq) - int(block_last) ]
 
-    count = 0
-    count_tot = 0
+    count, count_tot = 0, 0
 
     risu = numpy.zeros((len(behaviours), len(behaviours)))
 
@@ -567,17 +569,6 @@ def main():
             f_out.write((behaviours)[c] + '\t' + row)
             c += 1
 
-    
-    '''
-    f = open(file_name, mode = 'w', encoding = 'utf-8')
-    f.write('\t' + '\t'.join( list( behaviours) ) + '\n' )
-    c = 0
-    for row in rows:
-        f.write( (behaviours)[c] + '\t' + row)
-        c += 1
-    
-    f.close()
-    '''
    
     if nrandom:
         

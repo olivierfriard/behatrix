@@ -295,32 +295,44 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 observed_matrix = bsa_multi_cl.create_observed_transition_matrix(sequences, behaviours)
             
                 results = numpy.zeros((len(behaviours), len(behaviours)))
-                with concurrent.futures.ProcessPoolExecutor() as executor:
-                    lst = []
-                    n_required_randomizations = 0
-                    for i in range(num_proc):
-                        if i < num_proc - 1:
-                            n_random_by_proc = nrandom // num_proc
-                        else:
-                            n_random_by_proc = nrandom - n_required_randomizations
-                            
-                        print("n_random_by_proc", n_random_by_proc)
-
-                        lst.append(executor.submit(bsa_multi_cl.strings2matrix_cl,
-                                                        n_random_by_proc,
-                                                        sequences, behaviours,
-                                                        exclusion_list,
-                                                        self.cb_block_first_behavior.isChecked(),
-                                                        self.cb_block_last_behavior.isChecked(),
-                                                        observed_matrix))
-    
-                        n_required_randomizations += n_random_by_proc
-                        
-                    nb_randomization_done = 0
                 
-                    for l in lst:
-                        nb_randomization_done += l.result()[0]
-                        results += l.result()[1]
+                if sys.platform.startswith("win") and getattr(sys, "frozen", False):
+                #if sys.platform.startswith("linux"):
+                    n_random_by_proc = nrandom
+                    nb_randomization_done, results = bsa_multi_cl.strings2matrix_cl(n_random_by_proc,
+                                                                                    sequences, behaviours,
+                                                                                    exclusion_list,
+                                                                                    self.cb_block_first_behavior.isChecked(),
+                                                                                    self.cb_block_last_behavior.isChecked(),
+                                                                                    observed_matrix)
+                else:
+                
+                    with concurrent.futures.ProcessPoolExecutor() as executor:
+                        lst = []
+                        n_required_randomizations = 0
+                        for i in range(num_proc):
+                            if i < num_proc - 1:
+                                n_random_by_proc = nrandom // num_proc
+                            else:
+                                n_random_by_proc = nrandom - n_required_randomizations
+                                
+                            print("n_random_by_proc", n_random_by_proc)
+    
+                            lst.append(executor.submit(bsa_multi_cl.strings2matrix_cl,
+                                                            n_random_by_proc,
+                                                            sequences, behaviours,
+                                                            exclusion_list,
+                                                            self.cb_block_first_behavior.isChecked(),
+                                                            self.cb_block_last_behavior.isChecked(),
+                                                            observed_matrix))
+        
+                            n_required_randomizations += n_random_by_proc
+                            
+                        nb_randomization_done = 0
+                    
+                        for l in lst:
+                            nb_randomization_done += l.result()[0]
+                            results += l.result()[1]
 
                 print("nb_randomization_done", nb_randomization_done)
     
