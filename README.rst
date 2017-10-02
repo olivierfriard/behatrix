@@ -5,10 +5,28 @@ BSA (Behavioral Strings Analysis)
 :Author: `Olivier Friard <http://www.di.unito.it/~friard>`_
 
 
+Use of BSA on Microsoft Windows
+================================
+
+
+Executable binaries are available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
+
+Launch the **bsa_gui.exe** program
+
+Use of BSA on Mac OS
+====================
+
+Executable binaries are available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
+
+Mount the bsa.dmg image and launch **bsa_gui** program.
+
+
+Linux
+=====
 
 
 Requirements
-============
+------------
 
 * Python3
 * Numpy
@@ -16,7 +34,7 @@ Requirements
 
 
 Usage of the GUI interface
-==========================
+---------------------------
 
 Launch the bsa_gui.py script with Python3
 
@@ -33,7 +51,7 @@ Launch the bsa_gui.py script with Python3
 
 
 Usage of command line utility
-=============================
+------------------------------
 
 .. code-block:: text
 
@@ -59,7 +77,7 @@ Usage of command line utility
     
 
 Example of use
----------------
+................
 
 .. code-block:: text
 
@@ -68,7 +86,7 @@ Example of use
 
 
 Example of behavioral strings file
------------------------------------
+...................................
 
 Behaviors are separated by the pipe character (|) otherwise each character will be interpreted as a behavior
 
