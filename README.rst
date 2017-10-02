@@ -9,7 +9,7 @@ Launch of the BSA GUI interface on Microsoft Windows
 ====================================================
 
 
-Executable binaries are available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
+An executable binary program is available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
 
 Launch the **bsa_gui.exe** program
 
@@ -24,11 +24,12 @@ If you want to use more than one core you must launch the bsa_gui.py Python scri
 Launch of BSA GUI interface on Mac OS
 ======================================
 
-Executable binaries are available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
+An DMG image containing executable binary is available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
 
-Mount the bsa.dmg image and launch **bsa_gui** program.
+Mount the **bsa.dmg** image and launch **bsa_gui** program.
 
 The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
+See `Graphviz on Mac OS <http://www.graphviz.org/Download_macos.php>`_ for details.
 
 
 Launch of BSA on Linux
@@ -56,7 +57,6 @@ Launch the bsa_gui.py script with Python3
 .. image:: bsa.png
    :alt: BSA screenshotalternate text
    :align: left
-
 
 
 
@@ -92,7 +92,7 @@ Example of use
 
 .. code-block:: text
 
-  python3 bsa_multi_cl.py --strings behav_strings.txt --output behav_strings_results --n_random 10000
+  python3 bsa_multi_cl.py --strings behav_strings.txt --output behav_strings_results --n_cpu 6 --n_random 10000
 
 
 
