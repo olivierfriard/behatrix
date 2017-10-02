@@ -5,16 +5,16 @@ BSA (Behavioral Strings Analysis)
 :Author: `Olivier Friard <http://www.di.unito.it/~friard>`_
 
 
-Use of BSA on Microsoft Windows
-================================
+Usage of the BSA GUI interface on Microsoft Windows
+====================================================
 
 
 Executable binaries are available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
 
 Launch the **bsa_gui.exe** program
 
-Use of BSA on Mac OS
-====================
+Usage of BSA GUI interface on Mac OS
+======================================
 
 Executable binaries are available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
 
