@@ -5,7 +5,7 @@ BSA (Behavioral Strings Analysis)
 :Author: `Olivier Friard <http://www.di.unito.it/~friard>`_
 
 
-Usage of the BSA GUI interface on Microsoft Windows
+Launch of the BSA GUI interface on Microsoft Windows
 ====================================================
 
 
@@ -13,7 +13,10 @@ Executable binaries are available on the `v0.1.1 release <https://github.com/oli
 
 Launch the **bsa_gui.exe** program
 
-Usage of BSA GUI interface on Mac OS
+**Please note: the binary version for Windows do NOT allow to run the randomization test using more than one core**
+
+
+Launch of BSA GUI interface on Mac OS
 ======================================
 
 Executable binaries are available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
@@ -21,8 +24,8 @@ Executable binaries are available on the `v0.1.1 release <https://github.com/oli
 Mount the bsa.dmg image and launch **bsa_gui** program.
 
 
-Linux
-=====
+Launch of BSA on Linux
+=======================
 
 
 Requirements
