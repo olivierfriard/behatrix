@@ -13,7 +13,12 @@ Executable binaries are available on the `v0.1.1 release <https://github.com/oli
 
 Launch the **bsa_gui.exe** program
 
-**Please note: the binary version for Windows do NOT allow to run the randomization test using more than one core**
+The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
+Once installed you must add the directory containing the **dot** program to the PATH environment variable.
+See `Adding directory to PATH Environment Variable in Windows <https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10>`_ for details.
+
+**Please note**: the binary version for Windows do NOT allow to run the randomization test using more than one core.
+If you want to use more than one core you must launch the bsa_gui.py Python script. See "Launch of BSA on Linux" for details)
 
 
 Launch of BSA GUI interface on Mac OS
@@ -22,6 +27,8 @@ Launch of BSA GUI interface on Mac OS
 Executable binaries are available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
 
 Mount the bsa.dmg image and launch **bsa_gui** program.
+
+The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
 
 
 Launch of BSA on Linux
@@ -34,6 +41,7 @@ Requirements
 * Python3
 * Numpy
 * PyQt5 for the GUI version
+* graphviz package (optional)
 
 
 Usage of the GUI interface
