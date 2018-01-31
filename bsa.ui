@@ -18,9 +18,9 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
-      <widget class="QWidget" name="tab_bsa">
+      <widget class="QWidget" name="tab_strings">
        <attribute name="title">
         <string>Behavioral strings</string>
        </attribute>
@@ -145,156 +145,64 @@
          </layout>
         </item>
        </layout>
-       <zorder>pb_save_observed_matrix</zorder>
-       <zorder>pte_behav_strings</zorder>
-       <zorder>label_2</zorder>
        <zorder></zorder>
-       <zorder>label_4</zorder>
-       <zorder></zorder>
-       <zorder>pte_statistics</zorder>
-       <zorder>pb_save_stats_results</zorder>
-       <zorder>horizontalSpacer_8</zorder>
       </widget>
       <widget class="QWidget" name="tab_flow_diagram">
        <attribute name="title">
         <string>Flow diagram</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>&lt;b&gt;Flow diagram&lt;/b&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Edge labels</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
           <item>
-           <widget class="QLabel" name="label_6">
+           <widget class="QRadioButton" name="rb_percent_after_behav">
             <property name="text">
-             <string>&lt;b&gt;Flow diagram&lt;/b&gt;</string>
+             <string>% of transitions after behavior</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Edge labels</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QRadioButton" name="rb_percent_after_behav">
+             <widget class="QLabel" name="label_9">
               <property name="text">
-               <string>% of transitions after behavior</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
+               <string>Cut-off</string>
               </property>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
-               <widget class="QLabel" name="label_9">
-                <property name="text">
-                 <string>Cut-off</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="le_cutoff_transition_after_behav">
-                <property name="text">
-                 <string>0</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_11">
-                <property name="text">
-                 <string>%</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QRadioButton" name="rb_percent_total_transitions">
+             <widget class="QLineEdit" name="le_cutoff_transition_after_behav">
               <property name="text">
-               <string>% of total transitions</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_8">
-              <item>
-               <widget class="QLabel" name="label_10">
-                <property name="text">
-                 <string>Cut-off</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="le_cutoff_total_transition">
-                <property name="text">
-                 <string>0</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_12">
-                <property name="text">
-                 <string>%</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="rb_fraction_after_behav">
-            <property name="text">
-             <string>fraction of transitions after behavior</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QPushButton" name="pb_graphviz_script">
+             <widget class="QLabel" name="label_11">
               <property name="text">
-               <string>Generate GraphViz script</string>
+               <string>%</string>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer_2">
+             <spacer name="horizontalSpacer_5">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -308,40 +216,42 @@
             </item>
            </layout>
           </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
           <item>
-           <widget class="QLabel" name="label_14">
+           <widget class="QRadioButton" name="rb_percent_total_transitions">
             <property name="text">
-             <string>Results</string>
+             <string>% of total transitions</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPlainTextEdit" name="pte_gv">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_13">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <widget class="QPushButton" name="pb_flow_diagram">
+             <widget class="QLabel" name="label_10">
               <property name="text">
-               <string>Generate flow diagram</string>
+               <string>Cut-off</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pb_save_gv">
+             <widget class="QLineEdit" name="le_cutoff_total_transition">
               <property name="text">
-               <string>Save results</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer_9">
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>%</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_7">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -355,24 +265,123 @@
             </item>
            </layout>
           </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_fraction_after_behav">
+          <property name="text">
+           <string>fraction of transitions after behavior</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
-           <spacer name="verticalSpacer">
+           <widget class="QPushButton" name="pb_graphviz_script">
+            <property name="text">
+             <string>Generate GraphViz script</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
             <property name="orientation">
-             <enum>Qt::Vertical</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>20</width>
-              <height>40</height>
+              <width>40</width>
+              <height>20</height>
              </size>
             </property>
            </spacer>
           </item>
          </layout>
         </item>
+        <item>
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>Results</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="pte_gv">
+          <property name="font">
+           <font>
+            <family>Monospace</family>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_16">
+          <property name="text">
+           <string>Path to dot program (leave empty if dot is on the path)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_14">
+          <item>
+           <widget class="QLineEdit" name="le_dot_path"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_browse_dot_path">
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <item>
+           <widget class="QPushButton" name="pb_flow_diagram">
+            <property name="text">
+             <string>Generate flow diagram</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_save_gv">
+            <property name="text">
+             <string>Save results</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>177</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="tab_randomization">
        <attribute name="title">
         <string>Randomization test</string>
        </attribute>

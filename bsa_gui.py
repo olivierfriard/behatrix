@@ -6,10 +6,10 @@ Randomization test
 
 Multi core use
 
-Copyright Olivier Friard - 2017
+Copyright Olivier Friard - 2017-2018
 '''
 
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 
 
 import os
@@ -17,6 +17,8 @@ import sys
 import numpy
 import subprocess
 import concurrent.futures
+import tempfile
+import pathlib
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -30,11 +32,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         
-        self.setWindowTitle("Behavioral Strins Analysis (BSA)")
+        self.setWindowTitle("Behavioral Strings Analysis (BSA)")
         
         self.pte_statistics.setLineWrapMode(False)
         self.pte_gv.setLineWrapMode(False)
         self.pte_random.setLineWrapMode(False)
+
+        # set to tab strings
+        self.tabWidget.setCurrentIndex(0)
         
         # connections
 
@@ -48,11 +53,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.pb_save_observed_matrix.clicked.connect(self.observed_matrix)
         
+        
+        # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
         self.pb_save_gv.clicked.connect(self.save_gv)
-        
         self.pb_flow_diagram.clicked.connect(self.flow_diagram)
+        self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
         
+        # tab randomization
         self.pb_run_randomization_test.clicked.connect(self.randomization_test)
         self.pb_save_random.clicked.connect(self.save_random)
         
@@ -62,6 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.sb_nb_cores.setMinimum(1)
         self.sb_nb_cores.setMaximum(num_available_proc)
+
         if num_available_proc <= 2:
             self.sb_nb_cores.setValue(1)
             
@@ -74,6 +83,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                 "Olivier Friard<br>"
                                                                 "Università di Torino<br>"
                                                                 "https://github.com/olivierfriard/behavioral_strings_analysis").format(__version__))
+
+
+    def browse_dot_path(self):
+        """
+        browse for dot path
+        """
+        filename = QFileDialog(self).getOpenFileName(self, "Select the dot program from GraphViz package", "", "All files (*)")[0]
+        if filename:
+            
+            p = subprocess.Popen(""" "{}" -V""".format(filename),
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out, error = p.communicate()
+            
+            if b'graphviz version' in error:
+                self.le_dot_path.setText(filename)
+            else:
+                QMessageBox.critical(self, "BSA", "The selected <b>dot</b> program is not working.<br>")
+
+
 
 
     def pbSelectStringsFilename(self):
@@ -235,10 +263,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         image_format = "png"
     
                 gv_script = self.pte_gv.toPlainText().replace("(", "\\(").replace(")", "\\)").replace("\n", " ")
-                cmd = """echo '{gv_script}' | dot -T{image_format} -o "{file_name}" """.format(file_name=file_name,
-                                                                                               gv_script=gv_script,
-                                                                                               image_format=image_format)
                 
+                with tempfile.NamedTemporaryFile() as temp:
+                    tmp_path = pathlib.Path(temp.name)
+
+                with open(tmp_path, "w") as tmp_file:
+                    tmp_file.write(gv_script)
+
+                # check dot path
+                if self.le_dot_path.text():
+                    if not os.path.isfile(self.le_dot_path.text()):
+                        QMessageBox.critical(self, "BSA", ("The path for <b>dot</b> program is wrong.<br>"
+                        "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
+                        return
+
+                cmd = """{prog} -T{image_format} {gv_file} -o "{file_name}" """.format(prog=pathlib.PurePosixPath(self.le_dot_path.text()) / "dot",
+                                                                                      file_name=file_name,
+                                                                                      gv_file=tmp_path,
+                                                                                      image_format=image_format)
+
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()
                 
