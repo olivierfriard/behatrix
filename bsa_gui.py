@@ -9,7 +9,7 @@ Multi core use
 Copyright Olivier Friard - 2017-2018
 '''
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __version_date__ = "2018-01-31"
 
 
@@ -20,9 +20,12 @@ import subprocess
 import concurrent.futures
 import tempfile
 import pathlib
+import io
+from contextlib import redirect_stdout
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+
 from bsa_ui import Ui_MainWindow
 import bsa_multi_cl
 
@@ -93,7 +96,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         filename = QFileDialog(self).getOpenFileName(self, "Select the dot program from GraphViz package", "", "All files (*)")[0]
         if filename:
             
-            p = subprocess.Popen(""" "{}" -V""".format(filename),
+            p = subprocess.Popen('"{}" -V'.format(filename),
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
             
@@ -278,7 +281,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
                         return
 
-                cmd = """{prog} -T{image_format} {gv_file} -o "{file_name}" """.format(prog=pathlib.PurePosixPath(self.le_dot_path.text()) / "dot",
+                cmd = '"{prog}" -T{image_format} {gv_file} -o "{file_name}"'.format(prog=pathlib.PurePosixPath(self.le_dot_path.text()) / "dot",
                                                                                       file_name=file_name,
                                                                                       gv_file=tmp_path,
                                                                                       image_format=image_format)
@@ -380,6 +383,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 print("nb_randomization_done", nb_randomization_done)
     
+                '''
                 header = "\t{}\n".format("\t".join(list(behaviours)))
                 row_names = numpy.array(behaviours, dtype="|S1000")[:, numpy.newaxis]
                 data = numpy.char.mod("%8.6f", results / nrandom)
@@ -390,6 +394,45 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 out_str = out_str.replace(" ", "\t")
             
                 self.pte_random.setPlainText(header + out_str)
+                '''
+                
+                '''
+                numpy.set_printoptions(precision=6, suppress=True, threshold=numpy.nan, formatter={'float': '{: 0.6f}'.format})
+                f = io.StringIO()
+                with redirect_stdout(f):
+                    print(results / nrandom)
+
+                self.pte_random.setPlainText(f.getvalue())
+                '''
+                
+                with tempfile.NamedTemporaryFile() as temp:
+                    tmp_path = pathlib.Path(temp.name)
+
+                with open(tmp_path, "wb") as tmp_file:
+                    header = "\t{}\n".format("\t".join(list(behaviours)))
+                    row_names = numpy.array(behaviours, dtype="|S1000")[:, numpy.newaxis]
+                    #data = numpy.char.mod("%8.6f", results / nrandom)
+
+                    out = header
+
+                    data = results/nrandom
+                    print(data.shape)
+                    print(len(behaviours))
+                    
+                    for r in range(data.shape[0]):
+                        out += "{}\t".format(behaviours[r])
+                        out += "\t".join(["%8.6f" % x for x in data[r,:]]) + "\n"
+                    
+                    #print(out)
+                    self.pte_random.setPlainText(out)
+                    
+                    #numpy.savetxt(tmp_file, numpy.hstack((row_names, results / nrandom)),  fmt=["%s"] + ["%.6f"]*len(behaviours), delimiter="\t")
+                    
+                    #numpy.savetxt(tmp_file, results / nrandom, fmt="%.6f", delimiter="\t")
+                
+                #with open(tmp_path) as f_in:
+                #    self.pte_random.setPlainText(header + f_in.read())
+                
                 
                 self.statusbar.showMessage("", 0)
                 
