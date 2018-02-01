@@ -16,12 +16,22 @@ import numpy
 import concurrent.futures
 import random
 
-__version__ = "0.1.1"
+__version__ = "0.2.1"
 
 
 def behav_strings_stats(string, chunk=0):
     """
-    calculate some stats on behavioral strings
+    extract some information from behavioral strings
+    
+    Args:
+        string (str): behavioral strings
+
+    Returns:
+        bool: 0 -> OK
+        list: sequences
+    
+    
+    return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
     """
 
     # replace space by undescore (_)
@@ -48,6 +58,9 @@ def behav_strings_stats(string, chunk=0):
     line_count = 0
 
     for row in rows:
+        # skip empty line
+        if not row:
+            continue
 
         if flagOne:
             r = list(row.strip())
@@ -150,7 +163,7 @@ def behav_strings_stats(string, chunk=0):
     for seq in sequences:
         for c in seq:
             if not c in behaviours:
-                behaviours.append( c )
+                behaviours.append(c)
 
     behaviours.sort()
 
@@ -473,7 +486,7 @@ def main():
     parser.add_argument("--block_first", action="store_true", dest='block_first', help='block first behavior during randomization test')
     parser.add_argument("--block_last", action="store_true", dest='block_last', help='block last behavior during randomization test')
     
-    parser.add_argument("--verbose", action="store_true", dest='verbose', default=False, help='Print results on terminal')
+    parser.add_argument("--quiet", action="store_true", dest='quiet', default=False, help='Do not print results on terminal')
     
     args = parser.parse_args()
 
@@ -482,7 +495,7 @@ def main():
         sys.exit()
 
     if not args.strings:
-        print("The 'strings' argument is required")
+        print("The 'strings' argument is required\n")
         parser.print_usage()
         print()
         sys.exit()
@@ -527,7 +540,9 @@ def main():
         block_last = 1 if args.block_last else 0
     
     
-    if args.verbose:
+    if not args.quiet:
+        
+        print(behaviours)
 
         print("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
 
@@ -548,7 +563,7 @@ def main():
 
     observed_matrix = create_observed_transition_matrix(sequences, behaviours)
     
-    if args.verbose:
+    if not args.quiet:
         print("\nObserved transition matrix:\n===========================\n{}".format(observed_matrix))
     
     if args.output:

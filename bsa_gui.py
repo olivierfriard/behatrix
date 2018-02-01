@@ -20,14 +20,12 @@ import subprocess
 import concurrent.futures
 import tempfile
 import pathlib
-import io
-from contextlib import redirect_stdout
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 from bsa_ui import Ui_MainWindow
-import bsa_multi_cl
+import bsa_cli
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -127,7 +125,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             (return_code, sequences, 
              d, nodes , starting_nodes , tot_nodes,
-             tot_trans, tot_trans_after_node, behaviours) = bsa_multi_cl.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+             tot_trans, tot_trans_after_node, behaviours) = bsa_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
             
             output = ""
             output += ("Behaviours list:\n================\n{}\n".format("\n".join(behaviours)))
@@ -168,12 +166,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         (return_code, sequences, 
              d, nodes , starting_nodes , tot_nodes,
-             tot_trans, tot_trans_after_node, behaviours) = bsa_multi_cl.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
-             
+             tot_trans, tot_trans_after_node, behaviours) = bsa_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+
         if sequences:
 
-            observed_matrix = bsa_multi_cl.create_observed_transition_matrix(sequences, behaviours)
+            observed_matrix = bsa_cli.create_observed_transition_matrix(sequences, behaviours)
 
+            '''
             header = "\t{}\n".format("\t".join(list(behaviours)))
             row_names = numpy.array(behaviours, dtype="|S1000")[:, numpy.newaxis]
             data = numpy.char.mod("%8.6f", observed_matrix)
@@ -184,6 +183,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             out_str = out_str.replace(" ", "\t")
 
             self.pte_statistics.setPlainText(header + out_str)
+            '''
+            
+            # display results 
+            # header
+            out = "\t{}\n".format("\t".join(list(behaviours)))
+
+            for r in range(observed_matrix.shape[0]):
+                out += "{}\t".format(behaviours[r])
+                out += "\t".join(["%8.6f" % x for x in observed_matrix[r,:]]) + "\n"
+
+            self.pte_statistics.setPlainText(out)
+
         else:
             QMessageBox.warning(self, "BSA", "No behavioral strings found!")
 
@@ -194,7 +205,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         (return_code, sequences, 
          d, nodes , starting_nodes , tot_nodes,
-         tot_trans, tot_trans_after_node, behaviours) = bsa_multi_cl.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+         tot_trans, tot_trans_after_node, behaviours) = bsa_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
 
         if self.rb_percent_after_behav.isChecked():
             edge_label = "percent_node"
@@ -216,7 +227,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "BSA", "{} value is not allowed")
             return
         
-        gv_script = bsa_multi_cl.draw_diagram(cutoff_all=cutoff_all,
+        gv_script = bsa_cli.draw_diagram(cutoff_all=cutoff_all,
                                               cutoff_behavior=cutoff_behavior,
                                               d=d,
                                               nodes=nodes,
@@ -305,11 +316,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
             (return_code, sequences, 
                  d, nodes , starting_nodes , tot_nodes,
-                 tot_trans, tot_trans_after_node, behaviours) = bsa_multi_cl.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+                 tot_trans, tot_trans_after_node, behaviours) = bsa_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
                  
             # check exclusion list
             if self.pte_excluded_transitions.toPlainText():
-                result = bsa_multi_cl.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), sequences)
+                result = bsa_cli.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), sequences)
 
                 if not result["error_code"]:
                     exclusion_list = result["exclusion_list"]
@@ -339,14 +350,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     num_proc = self.sb_nb_cores.value()
 
-                observed_matrix = bsa_multi_cl.create_observed_transition_matrix(sequences, behaviours)
+                observed_matrix = bsa_cli.create_observed_transition_matrix(sequences, behaviours)
             
                 results = numpy.zeros((len(behaviours), len(behaviours)))
                 
                 if sys.platform.startswith("win") and getattr(sys, "frozen", False):
                 #if sys.platform.startswith("linux"):
                     n_random_by_proc = nrandom
-                    nb_randomization_done, results = bsa_multi_cl.strings2matrix_cl(n_random_by_proc,
+                    nb_randomization_done, results = bsa_cli.strings2matrix_cl(n_random_by_proc,
                                                                                     sequences, behaviours,
                                                                                     exclusion_list,
                                                                                     self.cb_block_first_behavior.isChecked(),
@@ -365,7 +376,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 
                             print("n_random_by_proc", n_random_by_proc)
     
-                            lst.append(executor.submit(bsa_multi_cl.strings2matrix_cl,
+                            lst.append(executor.submit(bsa_cli.strings2matrix_cl,
                                                             n_random_by_proc,
                                                             sequences, behaviours,
                                                             exclusion_list,
@@ -383,62 +394,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 print("nb_randomization_done", nb_randomization_done)
     
-                '''
-                header = "\t{}\n".format("\t".join(list(behaviours)))
-                row_names = numpy.array(behaviours, dtype="|S1000")[:, numpy.newaxis]
-                data = numpy.char.mod("%8.6f", results / nrandom)
-                out_str = numpy.array_str(numpy.hstack((row_names, data)), max_line_width=int(1e9))
+                # display results 
+                # header
+                out = "\t{}\n".format("\t".join(list(behaviours)))
 
-                for char in [" [", "[", "]", "'"]:
-                    out_str = out_str.replace(char, "")
-                out_str = out_str.replace(" ", "\t")
-            
-                self.pte_random.setPlainText(header + out_str)
-                '''
-                
-                '''
-                numpy.set_printoptions(precision=6, suppress=True, threshold=numpy.nan, formatter={'float': '{: 0.6f}'.format})
-                f = io.StringIO()
-                with redirect_stdout(f):
-                    print(results / nrandom)
+                data = results / nrandom
 
-                self.pte_random.setPlainText(f.getvalue())
-                '''
-                
-                with tempfile.NamedTemporaryFile() as temp:
-                    tmp_path = pathlib.Path(temp.name)
+                for r in range(data.shape[0]):
+                    out += "{}\t".format(behaviours[r])
+                    out += "\t".join(["%8.6f" % x for x in data[r,:]]) + "\n"
 
-                with open(tmp_path, "wb") as tmp_file:
-                    header = "\t{}\n".format("\t".join(list(behaviours)))
-                    row_names = numpy.array(behaviours, dtype="|S1000")[:, numpy.newaxis]
-                    #data = numpy.char.mod("%8.6f", results / nrandom)
+                self.pte_random.setPlainText(out)
 
-                    out = header
-
-                    data = results/nrandom
-                    print(data.shape)
-                    print(len(behaviours))
-                    
-                    for r in range(data.shape[0]):
-                        out += "{}\t".format(behaviours[r])
-                        out += "\t".join(["%8.6f" % x for x in data[r,:]]) + "\n"
-                    
-                    #print(out)
-                    self.pte_random.setPlainText(out)
-                    
-                    #numpy.savetxt(tmp_file, numpy.hstack((row_names, results / nrandom)),  fmt=["%s"] + ["%.6f"]*len(behaviours), delimiter="\t")
-                    
-                    #numpy.savetxt(tmp_file, results / nrandom, fmt="%.6f", delimiter="\t")
-                
-                #with open(tmp_path) as f_in:
-                #    self.pte_random.setPlainText(header + f_in.read())
-                
-                
                 self.statusbar.showMessage("", 0)
                 
-                QMessageBox.information(self, "BSA", ("Randomization text finished<br>"
+                QMessageBox.information(self, "BSA", ("Randomization finished<br>"
                                                    "{} randomizations done<br><br>").format(nb_randomization_done))
-        
+
             else:
                 QMessageBox.warning(self, "BSA", "Select the number of randomizations to execute")
 
