@@ -1,16 +1,21 @@
 =================================
-BSA (Behavioral Strings Analysis)
+Behatrix
 =================================
 
 :Author: `Olivier Friard <http://www.di.unito.it/~friard>`_
 :Author: Marco Gamba
 
 
-Launch of the BSA GUI interface on Microsoft Windows
+
+Behatrix was formerly named BSA (Behavioral Strings Analysis)
+
+
+
+Launch of Behatrix on Microsoft Windows
 =============================================================
 
 
-An executable binary program is available on the `releases <https://github.com/olivierfriard/behavioral_strings_analysis/releases>`_
+An executable binary program is available on the `releases <https://github.com/olivierfriard/behatrix/releases>`_
 
 Launch the **bsa_gui.exe** program
 
@@ -25,10 +30,10 @@ If you do not add the dot program to the path you must specify the path to the d
 If you want to use more than one core you must launch the bsa_gui.py Python script. See "Launch of BSA on Linux" for details)
 
 
-Launch of BSA GUI interface on Mac OS
+Launch of Behatrix on Mac OS
 ===========================================
 
-An DMG image containing executable binary is available on `releases <https://github.com/olivierfriard/behavioral_strings_analysis/releases>`_
+An DMG image containing executable binary is available on `releases <https://github.com/olivierfriard/behatrix/releases>`_
 
 Mount the **bsa.dmg** image and launch **bsa_gui** program.
 
@@ -36,8 +41,8 @@ The `GraphViz package <http://www.graphviz.org>`_ is required for generating gra
 See `Graphviz on Mac OS <http://www.graphviz.org/Download_macos.php>`_ for details.
 
 
-Launch of BSA on Linux
-=======================
+Launch of Behatrix on Linux
+======================================
 
 
 Requirements
@@ -92,7 +97,7 @@ Usage of command line utility
     
 
 Example of use
-................
+....................
 
 .. code-block:: text
 
@@ -101,7 +106,7 @@ Example of use
 
 
 Example of behavioral strings file
-...................................
+........................................
 
 Behaviors are separated by the pipe character (|) otherwise each character will be interpreted as a behavior
 
@@ -146,11 +151,11 @@ Legal
 
 Copyright 2017-2018 Olivier Friard
 
-**BSA** is free software; you can redistribute it and/or modify
+**Behatrix** is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or any later version.
 
-**BSA** is distributed in the hope that it will be useful,
+**Behatrix** is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 `GNU General Public License <http://www.gnu.org/copyleft/gpl.html>`_ for more details.
