@@ -16,8 +16,8 @@ import numpy
 import concurrent.futures
 import random
 
-__version__ = "0.2.1"
-
+__version__ = "0.2.2"
+__version_date__ = "2018-02-01"
 
 def behav_strings_stats(string, chunk=0):
     """

@@ -9,7 +9,7 @@ Multi core use
 Copyright Olivier Friard - 2017-2018
 '''
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 __version_date__ = "2018-02-01"
 
 
