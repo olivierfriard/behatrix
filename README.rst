@@ -7,25 +7,28 @@ BSA (Behavioral Strings Analysis)
 
 
 Launch of the BSA GUI interface on Microsoft Windows
-====================================================
+=============================================================
 
 
-An executable binary program is available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
+An executable binary program is available on the `releases <https://github.com/olivierfriard/behavioral_strings_analysis/releases>`_
 
 Launch the **bsa_gui.exe** program
 
 The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
-Once installed you must add the directory containing the **dot** program to the PATH environment variable.
+Once installed you can add the directory containing the **dot** program to the PATH environment variable.
 See `Adding directory to PATH Environment Variable in Windows <https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10>`_ for details.
+If you do not add the dot program to the path you must specify the path to the dot program in BSA.
+
+
 
 **Please note**: the binary version for Windows do NOT allow to run the randomization test using more than one core.
 If you want to use more than one core you must launch the bsa_gui.py Python script. See "Launch of BSA on Linux" for details)
 
 
 Launch of BSA GUI interface on Mac OS
-======================================
+===========================================
 
-An DMG image containing executable binary is available on the `v0.1.1 release <https://github.com/olivierfriard/behavioral_strings_analysis/releases/tag/v0.1.1>`_
+An DMG image containing executable binary is available on `releases <https://github.com/olivierfriard/behavioral_strings_analysis/releases>`_
 
 Mount the **bsa.dmg** image and launch **bsa_gui** program.
 
@@ -56,7 +59,7 @@ Launch the bsa_gui.py script with Python3
   python3 bsa_gui.py
 
 .. image:: bsa.png
-   :alt: BSA screenshotalternate text
+   :alt: BSA screenshot
    :align: left
 
 
@@ -67,10 +70,10 @@ Usage of command line utility
 
 .. code-block:: text
 
-    usage: bsa_multi_cl.py [-h] [-v] [--strings STRINGS] [--output OUTPUT]
+    usage: bsa_cli.py [-h] [-v] [--strings STRINGS] [--output OUTPUT]
                        [--exclusions EXCLUSIONS] [--n_random NRANDOM]
                        [--n_cpu N_CPU] [--block_first] [--block_last]
-                       [--verbose]
+                       [--quiet]
 
     Behavioural Strings Analysis (BSA) command line utility
     
@@ -85,7 +88,7 @@ Usage of command line utility
       --n_cpu N_CPU         Number of CPU to use for randomizations test
       --block_first         block first behavior during randomization test
       --block_last          block last behavior during randomization test
-      --verbose             Print results on terminal
+      --quiet               Do not print results on terminal
     
 
 Example of use
@@ -93,7 +96,7 @@ Example of use
 
 .. code-block:: text
 
-  python3 bsa_multi_cl.py --strings behav_strings.txt --output behav_strings_results --n_cpu 6 --n_random 10000
+  python3 bsa_cli.py --strings behav_strings.txt --output behav_strings_results --n_cpu 6 --n_random 10000
 
 
 
@@ -141,7 +144,7 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
 Legal
 =====
 
-Copyright 2017 Olivier Friard
+Copyright 2017-2018 Olivier Friard
 
 **BSA** is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
