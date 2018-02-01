@@ -1,13 +1,33 @@
 #!/usr/bin/env python3
 
-'''
-Behavioural Strings Analysis (BSA).
+
+"""
+Behatrix
+Behavioural Strings Analysis (BSA)).
+
 Randomization test
 
-Multi core use
 
-Copyright Olivier Friard - 2017-2018
-'''
+Copyright 2017-2018 Olivier Friard
+
+This file is part of Behatrix.
+
+  BORIS is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  any later version.
+
+  BORIS is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not see <http://www.gnu.org/licenses/>.
+
+"""
+
+
 
 __version__ = "0.2.2"
 __version_date__ = "2018-02-01"
@@ -34,7 +54,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         
-        self.setWindowTitle("Behavioral Strings Analysis (BSA)")
+        self.setWindowTitle("Behatrix - Behavioral Strings Analysis")
         
         self.pte_statistics.setLineWrapMode(False)
         self.pte_gv.setLineWrapMode(False)
@@ -80,7 +100,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def about(self):
-        QMessageBox.about(self, "Behavioral Strings Analysis", ("v. {version} {version_date}<br>"
+        QMessageBox.about(self, "Behatrix - Behavioral Strings Analysis", ("v. {version} {version_date}<br>"
                                                                 "Olivier Friard - Marco Gamba<br>"
                                                                 "Università di Torino<br>"
                                                                 "https://github.com/olivierfriard/behavioral_strings_analysis").format(version=__version__,
@@ -101,7 +121,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if b'graphviz version' in error:
                 self.le_dot_path.setText(filename)
             else:
-                QMessageBox.critical(self, "BSA", "The selected <b>dot</b> program is not working.<br>")
+                QMessageBox.critical(self, "Behatrix", "The selected <b>dot</b> program is not working.<br>")
 
 
 
@@ -150,7 +170,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pte_statistics.setPlainText(output)
 
         else:
-            QMessageBox.warning(self, "BSA", "No behavioral strings found!")
+            QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
 
     def save_stats_results(self):
         if self.pte_statistics.toPlainText():
@@ -159,7 +179,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 with open(file_name, "w") as f_out:
                     f_out.write(self.pte_statistics.toPlainText())
         else:
-            QMessageBox.warning(self, "BSA", "No results to save!")
+            QMessageBox.warning(self, "Behatrix", "No results to save!")
 
 
     def observed_matrix(self):
@@ -208,13 +228,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             cutoff_all = 0
             cutoff_all = float(self.le_cutoff_total_transition.text())
         except:
-            QMessageBox.critical(self, "BSA", "{} value is not allowed")
+            QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
             return
         try:
             cutoff_behavior = 0
             cutoff_behavior = float(self.le_cutoff_transition_after_behav.text())
         except:
-            QMessageBox.critical(self, "BSA", "{} value is not allowed")
+            QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
             return
         
         gv_script = bsa_cli.draw_diagram(cutoff_all=cutoff_all,
@@ -291,13 +311,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 out, error = p.communicate()
                 
                 if error:
-                    QMessageBox.warning(self, "BSA", error.decode("utf-8"))
-                '''
-                else:
-                    QMessageBox.information(self, "BSA", "The flow diagram was generated in {}".format(file_name))
-                '''
+                    QMessageBox.warning(self, "Behatrix", error.decode("utf-8"))
         else:
-            QMessageBox.warning(self, "BSA", "No GV script found. Generate the GraphViz script first.")
+            QMessageBox.warning(self, "Behatrix", "No GV script found. Generate the GraphViz script first.")
 
 
     def randomization_test(self):
@@ -315,7 +331,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if not result["error_code"]:
                     exclusion_list = result["exclusion_list"]
                 else:
-                    QMessageBox.warning(self, "BSA", result["message"])
+                    QMessageBox.warning(self, "Behatrix", result["message"])
                     return
             else:
                 exclusion_list = {}
@@ -325,7 +341,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     nrandom = int(self.leNumberRandomizations.text())
                 except:
                     nramdom = 0
-                    QMessageBox.warning(self, "BSA", "The number of randomizations is not valid")
+                    QMessageBox.warning(self, "Behatrix", "The number of randomizations is not valid")
                     return
         
             if nrandom:
@@ -398,14 +414,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 self.statusbar.showMessage("", 0)
                 
-                QMessageBox.information(self, "BSA", ("Randomization finished<br>"
+                QMessageBox.information(self, "Behatrix", ("Randomization finished<br>"
                                                    "{} randomizations done<br><br>").format(nb_randomization_done))
 
             else:
-                QMessageBox.warning(self, "BSA", "Select the number of randomizations to execute")
+                QMessageBox.warning(self, "Behatrix", "Select the number of randomizations to execute")
 
         else:
-            QMessageBox.warning(self, "BSA", "No behavioral strings found!")
+            QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
 
     def save_random(self):
         """

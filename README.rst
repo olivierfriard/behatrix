@@ -15,7 +15,7 @@ Launch of Behatrix on Microsoft Windows
 =============================================================
 
 
-An executable binary program is available on the `releases <https://github.com/olivierfriard/behatrix/releases>`_
+An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
 Launch the **bsa_gui.exe** program
 
@@ -33,7 +33,7 @@ If you want to use more than one core you must launch the bsa_gui.py Python scri
 Launch of Behatrix on Mac OS
 ===========================================
 
-An DMG image containing executable binary is available on `releases <https://github.com/olivierfriard/behatrix/releases>`_
+An DMG image containing executable binary is available on `latest release <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
 Mount the **bsa.dmg** image and launch **bsa_gui** program.
 
@@ -55,7 +55,7 @@ Requirements
 
 
 Usage of the GUI interface
----------------------------
+------------------------------------------
 
 Launch the bsa_gui.py script with Python3
 
@@ -71,7 +71,7 @@ Launch the bsa_gui.py script with Python3
 
 
 Usage of command line utility
-------------------------------
+---------------------------------------------
 
 .. code-block:: text
 
