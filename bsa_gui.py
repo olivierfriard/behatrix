@@ -10,7 +10,7 @@ Copyright Olivier Friard - 2017-2018
 '''
 
 __version__ = "0.2.1"
-__version_date__ = "2018-01-31"
+__version_date__ = "2018-02-01"
 
 
 import os
@@ -54,8 +54,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_save_stats_results.clicked.connect(self.save_stats_results)
         
         self.pb_save_observed_matrix.clicked.connect(self.observed_matrix)
-        
-        
+
         # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
         self.pb_save_gv.clicked.connect(self.save_gv)
@@ -75,16 +74,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if num_available_proc <= 2:
             self.sb_nb_cores.setValue(1)
-            
+
         else:
             self.sb_nb_cores.setValue(num_available_proc - 1)
-        
+
 
     def about(self):
-        QMessageBox.about(self, "Behavioral Strings Analysis", ("v. {}<br>"
-                                                                "Olivier Friard<br>"
+        QMessageBox.about(self, "Behavioral Strings Analysis", ("v. {version} {version_date}<br>"
+                                                                "Olivier Friard - Marco Gamba<br>"
                                                                 "Università di Torino<br>"
-                                                                "https://github.com/olivierfriard/behavioral_strings_analysis").format(__version__))
+                                                                "https://github.com/olivierfriard/behavioral_strings_analysis").format(version=__version__,
+                                                                                                                                       version_date=__version_date__))
 
 
     def browse_dot_path(self):
@@ -163,6 +163,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def observed_matrix(self):
+        """
+        matrix of observed transitions
+        """
 
         (return_code, sequences, 
              d, nodes , starting_nodes , tot_nodes,
@@ -172,19 +175,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             observed_matrix = bsa_cli.create_observed_transition_matrix(sequences, behaviours)
 
-            '''
-            header = "\t{}\n".format("\t".join(list(behaviours)))
-            row_names = numpy.array(behaviours, dtype="|S1000")[:, numpy.newaxis]
-            data = numpy.char.mod("%8.6f", observed_matrix)
-            out_str = numpy.array_str(numpy.hstack((row_names, data)), max_line_width=int(1e9))
-
-            for char in [" [", "[", "]", "'"]:
-                out_str = out_str.replace(char, "")
-            out_str = out_str.replace(" ", "\t")
-
-            self.pte_statistics.setPlainText(header + out_str)
-            '''
-            
             # display results 
             # header
             out = "\t{}\n".format("\t".join(list(behaviours)))
