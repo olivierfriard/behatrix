@@ -3,6 +3,7 @@ BSA (Behavioral Strings Analysis)
 =================================
 
 :Author: `Olivier Friard <http://www.di.unito.it/~friard>`_
+:Author: Marco Gamba
 
 
 Launch of the BSA GUI interface on Microsoft Windows
