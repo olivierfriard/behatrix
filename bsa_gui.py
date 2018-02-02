@@ -309,7 +309,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                                       file_name=file_name,
                                                                                       gv_file=tmp_path,
                                                                                       image_format=image_format)
-                QMessageBox.info(self, "Behatrix", cmd)
+                QMessageBox.warning(self, "Behatrix", cmd)
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()
