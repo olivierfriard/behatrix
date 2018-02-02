@@ -29,8 +29,8 @@ This file is part of Behatrix.
 
 
 
-__version__ = "0.2.2"
-__version_date__ = "2018-02-01"
+__version__ = "0.2.3"
+__version_date__ = "2018-02-02"
 
 
 import os
@@ -100,11 +100,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def about(self):
-        QMessageBox.about(self, "Behatrix - Behavioral Strings Analysis", ("v. {version} {version_date}<br>"
-                                                                "Olivier Friard - Marco Gamba<br>"
-                                                                "Università di Torino<br>"
-                                                                "https://github.com/olivierfriard/behavioral_strings_analysis").format(version=__version__,
-                                                                                                                                       version_date=__version_date__))
+        QMessageBox.about(self, "Behatrix - Behavioral Strings Analysis",
+                                ("v. {version} {version_date}<br>"
+                                 "Olivier Friard - Marco Gamba<br>"
+                                 "Department of Life Sciences - Università di Torino<br>"
+                                 "https://github.com/olivierfriard/behavioral_strings_analysis").format(version=__version__,
+                                                                                                        version_date=__version_date__))
 
 
     def browse_dot_path(self):
@@ -118,12 +119,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
             
-            if b'graphviz version' in error:
+            if b"graphviz version" in error:
                 self.le_dot_path.setText(filename)
             else:
                 QMessageBox.critical(self, "Behatrix", "The selected <b>dot</b> program is not working.<br>")
-
-
 
 
     def pbSelectStringsFilename(self):
@@ -172,6 +171,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
 
+
     def save_stats_results(self):
         if self.pte_statistics.toPlainText():
             file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the matrix", "", "All files (*)")[0]
@@ -211,7 +211,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def graphviz_script(self):
         """
-        generate flow diagram in PNG or SVG format with dot from graphviz package
+        generate flow diagram in PNG or SVG format with dot from GraphViz package
         """
         (return_code, sequences, 
          d, nodes , starting_nodes , tot_nodes,
@@ -238,14 +238,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
         
         gv_script = bsa_cli.draw_diagram(cutoff_all=cutoff_all,
-                                              cutoff_behavior=cutoff_behavior,
-                                              d=d,
-                                              nodes=nodes,
-                                              starting_nodes=[],
-                                              tot_nodes=tot_nodes,
-                                              tot_trans=tot_trans,
-                                              tot_trans_after_node=tot_trans_after_node,
-                                              edge_label=edge_label)
+                                         cutoff_behavior=cutoff_behavior,
+                                         d=d,
+                                         nodes=nodes,
+                                         starting_nodes=[],
+                                         tot_nodes=tot_nodes,
+                                         tot_trans=tot_trans,
+                                         tot_trans_after_node=tot_trans_after_node,
+                                         edge_label=edge_label)
 
         self.pte_gv.setPlainText(gv_script)
 
@@ -257,7 +257,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.pte_gv.toPlainText():
             
             file_name, filter_ = QFileDialog(self).getSaveFileName(self, "Select the file to save the GraphViz script", "",
-                                                                   "GV files (*.gv);;TXT files (*.txt);;All files (*)")
+                                                                         "GV files (*.gv);;TXT files (*.txt);;All files (*)")
     
             if file_name:
                 with open(file_name, "w") as f_out:
@@ -274,7 +274,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.pte_gv.toPlainText() :
         
             file_name, filter_ = QFileDialog(self).getSaveFileName(self, "Select the file to save the flow diagram", "",
-                                                                   "PNG files (*.png);;SVG files (*.svg);;All files (*)")
+                                                                         "PNG files (*.png);;SVG files (*.svg);;All files (*)")
             
             if file_name:
     
@@ -287,7 +287,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         file_name += ".png"
                         image_format = "png"
     
-                gv_script = self.pte_gv.toPlainText().replace("(", "\\(").replace(")", "\\)").replace("\n", " ")
+                # gv_script = self.pte_gv.toPlainText().replace("(", "\\(").replace(")", "\\)").replace("\n", " ")
                 
                 with tempfile.NamedTemporaryFile() as temp:
                     tmp_path = pathlib.Path(temp.name)
@@ -302,7 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
                         return
 
-                cmd = '"{prog}" -T{image_format} {gv_file} -o "{file_name}"'.format(prog=pathlib.PurePosixPath(self.le_dot_path.text()) / "dot",
+                cmd = '"{prog}" -T{image_format} "{gv_file}" -o "{file_name}"'.format(prog=pathlib.PurePosixPath(self.le_dot_path.text()) / "dot",
                                                                                       file_name=file_name,
                                                                                       gv_file=tmp_path,
                                                                                       image_format=image_format)
@@ -380,7 +380,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             else:
                                 n_random_by_proc = nrandom - n_required_randomizations
                                 
-                            print("n_random_by_proc", n_random_by_proc)
+                            # print("n_random_by_proc", n_random_by_proc)
     
                             lst.append(executor.submit(bsa_cli.strings2matrix_cl,
                                                             n_random_by_proc,
@@ -398,7 +398,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             nb_randomization_done += l.result()[0]
                             results += l.result()[1]
 
-                print("nb_randomization_done", nb_randomization_done)
+                # print("nb_randomization_done", nb_randomization_done)
     
                 # display results 
                 # header
@@ -430,7 +430,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.pte_random.toPlainText():
             
             file_name, filter_ = QFileDialog(self).getSaveFileName(self, "Select the file to save the matrix", "",
-                                                                   "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
+                                                                         "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
     
             if file_name:
                 with open(file_name, "w") as f_out:
