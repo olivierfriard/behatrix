@@ -301,11 +301,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         QMessageBox.critical(self, "BSA", ("The path for <b>dot</b> program is wrong.<br>"
                         "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
                         return
+                    dot_path = self.le_dot_path.text()
+                else:
+                    dot_path = "dot"
 
-                cmd = '"{prog}" -T{image_format} "{gv_file}" -o "{file_name}"'.format(prog=pathlib.PurePosixPath(self.le_dot_path.text()) / "dot",
+                cmd = '"{prog}" -T{image_format} "{gv_file}" -o "{file_name}"'.format(prog=dot_path,
                                                                                       file_name=file_name,
                                                                                       gv_file=tmp_path,
                                                                                       image_format=image_format)
+                QMessageBox.info(self, "Behatrix", cmd)
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()
