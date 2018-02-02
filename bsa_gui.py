@@ -287,7 +287,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         file_name += ".png"
                         image_format = "png"
     
-                # gv_script = self.pte_gv.toPlainText().replace("(", "\\(").replace(")", "\\)").replace("\n", " ")
+                gv_script = self.pte_gv.toPlainText()
                 
                 with tempfile.NamedTemporaryFile() as temp:
                     tmp_path = pathlib.Path(temp.name)
