@@ -4,7 +4,7 @@
 Behatrix
 Behavioural Strings Analysis (BSA)).
 
-Randomization test
+Behavioral strings analysis with randomization test 
 
 
 Copyright 2017-2018 Olivier Friard
@@ -33,8 +33,9 @@ import numpy
 import concurrent.futures
 import random
 
-__version__ = "0.2.2"
-__version_date__ = "2018-02-01"
+__version__ = "0.2.4"
+__version_date__ = "2018-02-27"
+
 
 def behav_strings_stats(string, chunk=0):
     """
@@ -492,8 +493,8 @@ def strings2matrix_cl(nrandom, sequences, behaviours, exclusion_list, block_firs
 
 def main():
     
-    parser = argparse.ArgumentParser(description="Behavioural Strings Analysis (BSA) command line utility")
-    parser.add_argument("-v", action="store_true", dest='version', help='BSA version')
+    parser = argparse.ArgumentParser(description="Behatrix command line utility")
+    parser.add_argument("-v", action="store_true", dest='version', help='Behatrix version')
     parser.add_argument("--strings", action="store", dest='strings', help='Path of file containing behavioral strings')
     
     parser.add_argument("--output", action="store", dest='output', help='Path of output files')

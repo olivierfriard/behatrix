@@ -6,6 +6,8 @@ Behatrix
 :Author: Marco Gamba
 
 
+**Behavioral strings analysis with randomization test**
+
 
 Behatrix was formerly named BSA (Behavioral Strings Analysis)
 
@@ -17,7 +19,7 @@ Launch of Behatrix on Microsoft Windows
 
 An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
-Launch the **bsa_gui.exe** program
+Launch the **behatrix_gui.exe** program
 
 The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
 Once installed you can add the directory containing the **dot** program to the PATH environment variable.
@@ -35,7 +37,7 @@ Launch of Behatrix on Mac OS
 
 An DMG image containing executable binary is available on `latest release <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
-Mount the **bsa.dmg** image and launch **bsa_gui** program.
+Mount the **behatrix.dmg** image and launch **behatrix_gui** program.
 
 The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
 See `Graphviz on Mac OS <http://www.graphviz.org/Download_macos.php>`_ for details.
@@ -57,11 +59,11 @@ Requirements
 Usage of the GUI interface
 ------------------------------------------
 
-Launch the bsa_gui.py script with Python3
+Launch the behatrix_gui.py script with Python3
 
 .. code-block:: text
 
-  python3 bsa_gui.py
+  python3 behatrix_gui.py
 
 .. image:: bsa.png
    :alt: BSA screenshot
@@ -75,16 +77,17 @@ Usage of command line utility
 
 .. code-block:: text
 
-    usage: bsa_cli.py [-h] [-v] [--strings STRINGS] [--output OUTPUT]
-                       [--exclusions EXCLUSIONS] [--n_random NRANDOM]
-                       [--n_cpu N_CPU] [--block_first] [--block_last]
-                       [--quiet]
 
-    Behavioural Strings Analysis (BSA) command line utility
+    usage: behatrix_cli.py [-h] [-v] [--strings STRINGS] [--output OUTPUT]
+                           [--exclusions EXCLUSIONS] [--n_random NRANDOM]
+                           [--n_cpu N_CPU] [--block_first] [--block_last]
+                           [--quiet]
+    
+    Behatrix command line utility
     
     optional arguments:
       -h, --help            show this help message and exit
-      -v                    BSA version
+      -v                    Behatrix version
       --strings STRINGS     Path of file containing behavioral strings
       --output OUTPUT       Path of output files
       --exclusions EXCLUSIONS
@@ -94,14 +97,16 @@ Usage of command line utility
       --block_first         block first behavior during randomization test
       --block_last          block last behavior during randomization test
       --quiet               Do not print results on terminal
-    
+  
+
+
 
 Example of use
 ....................
 
 .. code-block:: text
 
-  python3 bsa_cli.py --strings behav_strings.txt --output behav_strings_results --n_cpu 6 --n_random 10000
+  python3 behatrix_cli.py --strings behav_strings.txt --output behav_strings_results --n_cpu 6 --n_random 10000
 
 
 

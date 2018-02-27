@@ -29,8 +29,8 @@ This file is part of Behatrix.
 
 
 
-__version__ = "0.2.3"
-__version_date__ = "2018-02-02"
+__version__ = "0.2.4"
+__version_date__ = "2018-02-27"
 
 
 import os
