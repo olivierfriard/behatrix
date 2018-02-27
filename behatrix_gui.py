@@ -12,12 +12,12 @@ Copyright 2017-2018 Olivier Friard
 
 This file is part of Behatrix.
 
-  BORIS is free software; you can redistribute it and/or modify
+  Behatrix is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 3 of the License, or
   any later version.
 
-  BORIS is distributed in the hope that it will be useful,
+  Behatrix is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -171,7 +171,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             (return_code, sequences, 
              d, nodes , starting_nodes , tot_nodes,
-             tot_trans, tot_trans_after_node, behaviours) = bsa_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+             tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
             
             output = ""
             output += ("Behaviours list:\n================\n{}\n".format("\n".join(behaviours)))
@@ -216,11 +216,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         (return_code, sequences, 
              d, nodes , starting_nodes , tot_nodes,
-             tot_trans, tot_trans_after_node, behaviours) = bsa_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+             tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
 
         if sequences:
 
-            observed_matrix = bsa_cli.create_observed_transition_matrix(sequences, behaviours)
+            observed_matrix = behatrix_cli.create_observed_transition_matrix(sequences, behaviours)
 
             # display results 
             # header
@@ -233,7 +233,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pte_statistics.setPlainText(out)
 
         else:
-            QMessageBox.warning(self, "BSA", "No behavioral strings found!")
+            QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
 
 
     def graphviz_script(self):
@@ -242,7 +242,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         (return_code, sequences, 
          d, nodes , starting_nodes , tot_nodes,
-         tot_trans, tot_trans_after_node, behaviours) = bsa_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+         tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
 
         if self.rb_percent_after_behav.isChecked():
             edge_label = "percent_node"
@@ -264,7 +264,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
             return
         
-        gv_script = bsa_cli.draw_diagram(cutoff_all=cutoff_all,
+        gv_script = behatrix_cli.draw_diagram(cutoff_all=cutoff_all,
                                          cutoff_behavior=cutoff_behavior,
                                          d=d,
                                          nodes=nodes,
@@ -325,7 +325,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # check dot path
                 if self.le_dot_path.text():
                     if not os.path.isfile(self.le_dot_path.text()):
-                        QMessageBox.critical(self, "BSA", ("The path for <b>dot</b> program is wrong.<br>"
+                        QMessageBox.critical(self, "Behatrix", ("The path for <b>dot</b> program is wrong.<br>"
                         "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
                         return
                     dot_path = self.le_dot_path.text()
@@ -353,11 +353,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
             (return_code, sequences, 
                  d, nodes , starting_nodes , tot_nodes,
-                 tot_trans, tot_trans_after_node, behaviours) = bsa_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+                 tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
                  
             # check exclusion list
             if self.pte_excluded_transitions.toPlainText():
-                result = bsa_cli.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), sequences)
+                result = behatrix_cli.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), sequences)
 
                 if not result["error_code"]:
                     exclusion_list = result["exclusion_list"]
@@ -387,14 +387,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     num_proc = self.sb_nb_cores.value()
 
-                observed_matrix = bsa_cli.create_observed_transition_matrix(sequences, behaviours)
+                observed_matrix = behatrix_cli.create_observed_transition_matrix(sequences, behaviours)
             
                 results = numpy.zeros((len(behaviours), len(behaviours)))
                 
                 if sys.platform.startswith("win") and getattr(sys, "frozen", False):
                 #if sys.platform.startswith("linux"):
                     n_random_by_proc = nrandom
-                    nb_randomization_done, results = bsa_cli.strings2matrix_cl(n_random_by_proc,
+                    nb_randomization_done, results = behatrix_cli.strings2matrix_cl(n_random_by_proc,
                                                                                     sequences, behaviours,
                                                                                     exclusion_list,
                                                                                     self.cb_block_first_behavior.isChecked(),
@@ -413,7 +413,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 
                             # print("n_random_by_proc", n_random_by_proc)
     
-                            lst.append(executor.submit(bsa_cli.strings2matrix_cl,
+                            lst.append(executor.submit(behatrix_cli.strings2matrix_cl,
                                                             n_random_by_proc,
                                                             sequences, behaviours,
                                                             exclusion_list,
