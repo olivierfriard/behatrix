@@ -3,9 +3,9 @@
 
 """
 Behatrix
-Behavioural Strings Analysis (BSA)).
+Behavioural Strings Analysis (BSA).
 
-Randomization test
+Behavioral strings analysis with randomization test 
 
 
 Copyright 2017-2018 Olivier Friard
@@ -40,12 +40,13 @@ import subprocess
 import concurrent.futures
 import tempfile
 import pathlib
+import platform
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from bsa_ui import Ui_MainWindow
-import bsa_cli
+from behatrix_ui import Ui_MainWindow
+import behatrix_cli
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -100,12 +101,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def about(self):
+        
+
+
+        about_dialog = msg = QMessageBox()
+        #about_dialog.setIconPixmap(QPixmap(os.path.dirname(os.path.realpath(__file__)) + "/logo_eye.128px.png"))
+        about_dialog.setWindowTitle("About Behatrix")
+        about_dialog.setStandardButtons(QMessageBox.Ok)
+        about_dialog.setDefaultButton(QMessageBox.Ok)
+        about_dialog.setEscapeButton(QMessageBox.Ok)
+
+        about_dialog.setInformativeText(("<b>{prog_name}</b> {ver} - {date}"
+        "<p>Copyright &copy; 2017-2018 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
+        "Department of Life Sciences and Systems Biology<br>"
+        "University of Torino - Italy<br>"
+        "<br>"
+        """BORIS is released under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a><br>"""
+        """See <a href="http://www.boris.unito.it/behatrix">www.boris.unito.it/behatrix</a> for more details.<br>"""
+        "<hr>").format(prog_name="Behatrix",
+                                  ver=__version__,
+                                  date=__version_date__,
+                                  python_ver=platform.python_version()))
+        _ = about_dialog.exec_()
+
+
+        '''
         QMessageBox.about(self, "Behatrix - Behavioral Strings Analysis",
                                 ("v. {version} {version_date}<br>"
                                  "Olivier Friard - Marco Gamba<br>"
                                  "Department of Life Sciences - Università di Torino<br>"
                                  "https://github.com/olivierfriard/behavioral_strings_analysis").format(version=__version__,
                                                                                                         version_date=__version_date__))
+        '''
 
 
     def browse_dot_path(self):
