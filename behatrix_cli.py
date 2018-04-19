@@ -43,6 +43,7 @@ def behav_strings_stats(string, chunk=0):
     
     Args:
         string (str): behavioral strings
+        chunk (int): limit analysis to the chunk first characters
 
     Returns:
         bool: 0 -> OK
@@ -52,7 +53,7 @@ def behav_strings_stats(string, chunk=0):
     return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
     """
 
-    # replace space by undescore (_)
+    # replace space by underscore (_)
     string = string.replace(" ", "_")
 
     # check if behaviors are unique char

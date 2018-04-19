@@ -27,10 +27,8 @@ This file is part of Behatrix.
 
 """
 
-
-
-__version__ = "0.2.4"
-__version_date__ = "2018-02-27"
+__version__ = "0.3.0"
+__version_date__ = "2018-04-19"
 
 
 import os
@@ -48,7 +46,9 @@ from PyQt5.QtWidgets import *
 from behatrix_ui import Ui_MainWindow
 import behatrix_cli
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
+
 
     def __init__(self, parent=None):
 
@@ -99,13 +99,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.sb_nb_cores.setValue(num_available_proc - 1)
 
-
     def about(self):
-        
 
-
-        about_dialog = msg = QMessageBox()
-        #about_dialog.setIconPixmap(QPixmap(os.path.dirname(os.path.realpath(__file__)) + "/logo_eye.128px.png"))
+        about_dialog = QMessageBox()
+        # about_dialog.setIconPixmap(QPixmap(os.path.dirname(os.path.realpath(__file__)) + "/logo_eye.128px.png"))
         about_dialog.setWindowTitle("About Behatrix")
         about_dialog.setStandardButtons(QMessageBox.Ok)
         about_dialog.setDefaultButton(QMessageBox.Ok)
@@ -123,16 +120,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                   date=__version_date__,
                                   python_ver=platform.python_version()))
         _ = about_dialog.exec_()
-
-
-        '''
-        QMessageBox.about(self, "Behatrix - Behavioral Strings Analysis",
-                                ("v. {version} {version_date}<br>"
-                                 "Olivier Friard - Marco Gamba<br>"
-                                 "Department of Life Sciences - Università di Torino<br>"
-                                 "https://github.com/olivierfriard/behavioral_strings_analysis").format(version=__version__,
-                                                                                                        version_date=__version_date__))
-        '''
 
 
     def browse_dot_path(self):
@@ -168,10 +155,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def behav_strings_statistics(self):
 
         if self.pte_behav_strings.toPlainText():
-            
+
+            # remove comments
+            strings_list = []
+            for x in self.pte_behav_strings.toPlainText().split("\n"):
+                if not x.startswith("#"):
+                    strings_list.append(x)
+
+
             (return_code, sequences, 
-             d, nodes , starting_nodes , tot_nodes,
-             tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+             d, nodes, starting_nodes, tot_nodes,
+             tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats("\n".join(strings_list), chunk=0)
             
             output = ""
             output += ("Behaviours list:\n================\n{}\n".format("\n".join(behaviours)))
@@ -201,7 +195,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def save_stats_results(self):
         if self.pte_statistics.toPlainText():
-            file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the matrix", "", "All files (*)")[0]
+            file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the matrix",
+                                                          "",
+                                                          "All files (*)")[0]
             if file_name:
                 with open(file_name, "w") as f_out:
                     f_out.write(self.pte_statistics.toPlainText())
@@ -215,8 +211,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         (return_code, sequences, 
-             d, nodes , starting_nodes , tot_nodes,
-             tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+         d, nodes, starting_nodes, tot_nodes,
+         tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
 
         if sequences:
 
@@ -244,6 +240,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
          d, nodes , starting_nodes , tot_nodes,
          tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
 
+        edge_label = "percent_node"
         if self.rb_percent_after_behav.isChecked():
             edge_label = "percent_node"
         if self.rb_percent_total_transitions.isChecked():
@@ -252,13 +249,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             edge_label = "fraction_node"
 
         try:
-            cutoff_all = 0
             cutoff_all = float(self.le_cutoff_total_transition.text())
         except:
             QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
             return
         try:
-            cutoff_behavior = 0
             cutoff_behavior = float(self.le_cutoff_transition_after_behav.text())
         except:
             QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
@@ -298,7 +293,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         with dot from graphviz package
         """
 
-        if self.pte_gv.toPlainText() :
+        if self.pte_gv.toPlainText():
         
             file_name, filter_ = QFileDialog(self).getSaveFileName(self, "Select the file to save the flow diagram", "",
                                                                          "PNG files (*.png);;SVG files (*.svg);;All files (*)")
@@ -336,7 +331,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                                       file_name=file_name,
                                                                                       gv_file=tmp_path,
                                                                                       image_format=image_format)
-                #QMessageBox.warning(self, "Behatrix", cmd)
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()
@@ -353,7 +347,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
             (return_code, sequences, 
                  d, nodes , starting_nodes , tot_nodes,
-                 tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+                 tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+                                                                                                 chunk=0)
                  
             # check exclusion list
             if self.pte_excluded_transitions.toPlainText():
@@ -371,7 +366,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 try:
                     nrandom = int(self.leNumberRandomizations.text())
                 except:
-                    nramdom = 0
+                    nrandom = 0
                     QMessageBox.warning(self, "Behatrix", "The number of randomizations is not valid")
                     return
         
@@ -382,17 +377,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
                 num_proc = self.sb_nb_cores.value()
                 
-                if nrandom < self.sb_nb_cores.value():
+                if num_proc > nrandom:
                     num_proc = nrandom
-                else:
-                    num_proc = self.sb_nb_cores.value()
 
                 observed_matrix = behatrix_cli.create_observed_transition_matrix(sequences, behaviours)
             
                 results = numpy.zeros((len(behaviours), len(behaviours)))
                 
                 if sys.platform.startswith("win") and getattr(sys, "frozen", False):
-                #if sys.platform.startswith("linux"):
                     n_random_by_proc = nrandom
                     nb_randomization_done, results = behatrix_cli.strings2matrix_cl(n_random_by_proc,
                                                                                     sequences, behaviours,
@@ -411,15 +403,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             else:
                                 n_random_by_proc = nrandom - n_required_randomizations
                                 
-                            # print("n_random_by_proc", n_random_by_proc)
-    
                             lst.append(executor.submit(behatrix_cli.strings2matrix_cl,
-                                                            n_random_by_proc,
-                                                            sequences, behaviours,
-                                                            exclusion_list,
-                                                            self.cb_block_first_behavior.isChecked(),
-                                                            self.cb_block_last_behavior.isChecked(),
-                                                            observed_matrix))
+                                                       n_random_by_proc,
+                                                       sequences, behaviours,
+                                                       exclusion_list,
+                                                       self.cb_block_first_behavior.isChecked(),
+                                                       self.cb_block_last_behavior.isChecked(),
+                                                       observed_matrix))
         
                             n_required_randomizations += n_random_by_proc
                             
@@ -445,14 +435,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 self.statusbar.showMessage("", 0)
                 
-                QMessageBox.information(self, "Behatrix", ("Randomization finished<br>"
-                                                   "{} randomizations done<br><br>").format(nb_randomization_done))
+                QMessageBox.information(self, "Behatrix",
+                                        ("Randomization finished<br>"
+                                         "{} randomizations done<br><br>").format(nb_randomization_done))
 
             else:
                 QMessageBox.warning(self, "Behatrix", "Select the number of randomizations to execute")
 
         else:
-            QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
+            QMessageBox.warning("Behatrix", "No behavioral strings found!")
 
     def save_random(self):
         """
@@ -466,6 +457,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if file_name:
                 with open(file_name, "w") as f_out:
                     f_out.write(self.pte_random.toPlainText())
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
