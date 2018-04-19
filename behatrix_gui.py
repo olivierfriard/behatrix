@@ -156,16 +156,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.pte_behav_strings.toPlainText():
 
-            # remove comments
-            strings_list = []
-            for x in self.pte_behav_strings.toPlainText().split("\n"):
-                if not x.startswith("#"):
-                    strings_list.append(x)
-
-
-            (return_code, sequences, 
+            (return_code, sequences,
              d, nodes, starting_nodes, tot_nodes,
-             tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats("\n".join(strings_list), chunk=0)
+             tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+                                                                                             chunk=0)
             
             output = ""
             output += ("Behaviours list:\n================\n{}\n".format("\n".join(behaviours)))
@@ -212,7 +206,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         (return_code, sequences, 
          d, nodes, starting_nodes, tot_nodes,
-         tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+         tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+                                                                                         chunk=0)
 
         if sequences:
 
@@ -238,7 +233,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         (return_code, sequences, 
          d, nodes , starting_nodes , tot_nodes,
-         tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(), chunk=0)
+         tot_trans, tot_trans_after_node, behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+                                                                                         chunk=0)
 
         edge_label = "percent_node"
         if self.rb_percent_after_behav.isChecked():

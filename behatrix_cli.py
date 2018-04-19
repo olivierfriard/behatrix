@@ -33,8 +33,26 @@ import numpy
 import concurrent.futures
 import random
 
-__version__ = "0.2.4"
-__version_date__ = "2018-02-27"
+__version__ = "0.3.0"
+__version_date__ = "2018-04-19"
+
+
+def remove_comments(s):
+    """
+    remove comments (#) from text
+
+    Args:
+        s (string): text
+
+    Returns:
+        str: text without commented lines separted by \n
+    """
+
+    strings_list = []
+    for x in s.split("\n"):
+        if not x.startswith("#"):
+            strings_list.append(x)
+    return "\n".join(strings_list)
 
 
 def behav_strings_stats(string, chunk=0):
@@ -55,6 +73,9 @@ def behav_strings_stats(string, chunk=0):
 
     # replace space by underscore (_)
     string = string.replace(" ", "_")
+
+    # remove lines starting with #
+    string = remove_comments(string)
 
     # check if behaviors are unique char
     if "|" in string:
@@ -240,8 +261,7 @@ def draw_diagram(cutoff_all,
                  starting_nodes=[],
                  edge_label="percent_node",   # fraction_node/percent_node/percent_total
                  transparent_background=False,
-                 include_first = True
-                 ):
+                 include_first=True):
 
         """
         create code for GraphViz
