@@ -4,7 +4,7 @@
 Behatrix
 Behavioural Strings Analysis (BSA)).
 
-Behavioral strings analysis with randomization test 
+Behavioral strings analysis with randomization test
 
 
 Copyright 2017-2018 Olivier Friard
@@ -29,12 +29,13 @@ This file is part of Behatrix.
 import os
 import sys
 import argparse
-import numpy
+import numpy as np
 import concurrent.futures
 import random
+import version
 
-__version__ = "0.3.0"
-__version_date__ = "2018-04-19"
+__version__ = version.__version__
+__version_date__ = version.__version_date__
 
 
 def remove_comments(s):
@@ -58,7 +59,7 @@ def remove_comments(s):
 def behav_strings_stats(string, chunk=0):
     """
     extract some information from behavioral strings
-    
+
     Args:
         string (str): behavioral strings
         chunk (int): limit analysis to the chunk first characters
@@ -66,8 +67,8 @@ def behav_strings_stats(string, chunk=0):
     Returns:
         bool: 0 -> OK
         list: sequences
-    
-    
+
+
     return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
     """
 
@@ -134,12 +135,12 @@ def behav_strings_stats(string, chunk=0):
                 else:
                     starting_nodes[r[i]] = 1
 
-            if r[i] + '|' + r[ i + 1 ] in d:
+            if r[i] + '|' + r[i + 1] in d:
 
-               d[r[i] + '|' +r[i + 1]] += 1
+                d[r[i] + '|' + r[i + 1]] += 1
 
             else:
-                d[r[i] + '|' +r[i + 1]] = 1
+                d[r[i] + '|' + r[i + 1]] = 1
 
     # exclusion
     '''
@@ -172,7 +173,7 @@ def behav_strings_stats(string, chunk=0):
 
                     return (1, '<b>Check your strings and exclusion list</b><br><b>%s</b> is not allowed after <b>%s</b>\n' % (seq[i + 1], seq[i])),'', '', '', '' , '' , '', '', '', ''
     '''
- 
+
     # total number of transitions
     tot_trans = 0
     for i in d:
@@ -218,6 +219,14 @@ def check_exclusion_list(exclusion_str, sequences):
     a:bc
     or
     a:b|c
+
+    Args:
+        exclusion_str (str): exclusion strings (format must be a:bc or a:b|c
+        sequences (list): list of sequences
+
+    Returns:
+        dict: keys: "error_code": 0 or 1
+                    "exclusion_list": {"a": ["b", "c"]}
     """
 
     exclusion_list = {}
@@ -231,18 +240,18 @@ def check_exclusion_list(exclusion_str, sequences):
                 if s1 and s2:
                     if s1 in exclusion_list:
                         if "|" in s2:
-                            exclusion_list[s1] += s2.split('|')
+                            exclusion_list[s1] += s2.split("|")
                         else:
                             exclusion_list[s1] += list(s2)
                     else:
                         if "|" in s2:
-                            exclusion_list[s1] = s2.split('|')
+                            exclusion_list[s1] = s2.split("|")
                         else:
                             exclusion_list[s1] = list(s2)
 
         # test if behavioral strings do not contain an excluded transition
         for seq in sequences:
-            for i in range(0, len(seq) - 1):
+            for i in range(len(seq) - 1):
                 if seq[i] in exclusion_list and seq[i + 1] in exclusion_list[seq[i]]:
                     return {"error_code": 1,
                             "message": "The behavioral strings contain an excluded transition: {} -> {}".format(seq[i], seq[i + 1]),
@@ -267,8 +276,8 @@ def draw_diagram(cutoff_all,
         create code for GraphViz
         return string containing graphviz code
         """
-        
-        
+
+
         def f_edge_label(edge_label, node1, node2, di, tot_trans_after_node_i0, tot_trans):
             if edge_label == 'fraction_node':
 
@@ -313,9 +322,9 @@ def draw_diagram(cutoff_all,
                     else:
                         node2 = '%s' % (i1)
 
-                    
+
                     out += f_edge_label(edge_label, node1, node2, d[i], tot_trans_after_node[i0], tot_trans)
-                    
+
         elif cutoff_behavior:
 
             for i in d:
@@ -372,15 +381,15 @@ def draw_diagram(cutoff_all,
 
                     if edge_label == 'fraction_node':
 
-                        out +=  '"%s" -> "%s" [ label = "%s" ];\n' %  (node1, node2, str(d[i]) + '/' + str(tot_trans_after_node[i0]) )
+                        out += '"%s" -> "%s" [ label = "%s" ];\n' %  (node1, node2, str(d[i]) + "/" + str(tot_trans_after_node[i0]))
 
                     elif edge_label == 'percent_node':
 
-                        out +=  '"%s" -> "%s" [ label = "%.1f%%" ];\n' %  (node1, node2,  d[i]/tot_trans_after_node[i0] *100)
+                        out += '"%s" -> "%s" [ label = "%.1f%%" ];\n' %  (node1, node2, d[i] / tot_trans_after_node[i0] * 100)
 
                     elif edge_label == 'percent_total':
 
-                        out +=  '"%s" -> "%s" [ label = "%.1f%%" ];\n' % (node1, node2, 1.0 * d[i] / tot_trans * 100.0)
+                        out += '"%s" -> "%s" [ label = "%.1f%%" ];\n' % (node1, node2, 1.0 * d[i] / tot_trans * 100.0)
 
         out += '}\n'
 
@@ -391,7 +400,7 @@ def create_observed_transition_matrix(sequences, behaviours):
     """
     create the matrix of observed transitions
     """
-    observed_matrix = numpy.zeros((len(behaviours), len(behaviours)))
+    observed_matrix = np.zeros((len(behaviours), len(behaviours)))
 
     for seq in sequences:
         for i in range(len(seq) - 1):
@@ -401,19 +410,49 @@ def create_observed_transition_matrix(sequences, behaviours):
     return observed_matrix
 
 
-def strings2matrix_cl(nrandom, sequences, behaviours, exclusion_list, block_first, block_last, conta_obs):
+def permutations_test(nrandom: int,
+                      sequences,
+                      behaviours,
+                      exclusion_list,
+                      block_first,
+                      block_last,
+                      observed_matrix: np.array,
+                      no_repetition: bool=False):
     """
-    randomization test
-    returns:
-    count_tot
-    risu (numpy array)
+    permutations test
+
+    Args:
+        nrandom (int): number of random permutations
+        sequences (list): list of sequences
+        behaviours (list): list of unique observed behaviours
+        block_first (bool): avoid that 1st behavior be permuted
+        block_last (bool): avoid that last behavior be permuted
+        observed_matrix (np.array): matrix of observed transitions number
+
+    Returns:
+        count_tot
+        risu (numpy array)
     """
 
-    def strings_permutation(spazio, sequences, exclusion_list, block_first, block_last):
+    def strings_permutation(space: list,
+                            sequences: list,
+                            exclusion_list: list,
+                            block_first: bool,
+                            block_last: bool,
+                            no_repetition: bool=False):
+        """
+        create permutations of sequences following exclusions list, block first/last behavior
 
-        spazio = list(spazio)
+        Args:
+            space (list): list of all behaviors ocuurences
+            sequences (list): list of behavioral sequences
+            exclusion_list (dict): dict of excluded behaviors
+            block_first (bool):
+
+        """
+
+        space = list(space)
         perm_sequences = []
-        flagEmpty = False
 
         for seq in sequences:
 
@@ -422,33 +461,29 @@ def strings2matrix_cl(nrandom, sequences, behaviours, exclusion_list, block_firs
                 element = seq[0]
             else:
                 newseq = []
-                element = ''
+                element = ""
 
-            for c in seq[int(block_first):len(seq) - int(block_last) ]:
+            for c in seq[int(block_first):len(seq) - int(block_last)]:
 
                 if element in exclusion_list:
-
-                    lspazio3 = list(spazio)
-
+                    lspazio3 = list(space)
                     # remove element that are not permitted
-
                     for i in exclusion_list[element]:
                         # remove all excluded behaviors
                         lspazio3 = list([x for x in lspazio3 if x != i])
 
                     lspazio2 = list(lspazio3)
                 else:
-
-                    lspazio2 = list(spazio)
+                    lspazio2 = list(space)
 
                 if lspazio2:
                     new_element = random.choice(lspazio2)
 
                     # remove extracted behavior
-                    spazio.remove( new_element )
+                    space.remove(new_element)
 
                 else:
-                    return True, []
+                    return []
 
                 # check penultimate element
                 if block_last and len(newseq) == len(seq) - 2:   # DO NOT REPEAT LAST BEHAVIOUR
@@ -457,18 +492,18 @@ def strings2matrix_cl(nrandom, sequences, behaviours, exclusion_list, block_firs
                         if lspazio2:
                             new_element = random.choice(lspazio2)
                         else:
-                            return True, []
+                            return []
 
                         # remove last behaviour choosen and last behaviour from original string
-                        lspazio2 = list(spazio)
+                        lspazio2 = list(space)
 
                         if element in lspazio2:
-                            lspazio2 = list(  [x for x in lspazio2 if x != element] )
+                            lspazio2 = list([x for x in lspazio2 if x != element])
 
                         if seq[-1] in lspazio2:
-                            lspazio2 = list(  [x for x in lspazio2 if x != seq[-1]] )
+                            lspazio2 = list([x for x in lspazio2 if x != seq[-1]])
 
-                newseq.append( new_element )
+                newseq.append(new_element)
                 element = new_element
 
             if block_last:
@@ -476,61 +511,70 @@ def strings2matrix_cl(nrandom, sequences, behaviours, exclusion_list, block_firs
 
             perm_sequences.append(newseq)
 
-        return flagEmpty, perm_sequences
+        return perm_sequences
 
 
-    spazio = []
-    for seq in sequences:
-        spazio +=  seq[int(block_first):len(seq) - int(block_last) ]
+    space = []
+    for sequence in sequences:
+        space += sequence[int(block_first):len(sequence) - int(block_last)]
+
+    # modifiy exclusions list to avoid repetitions
+    if no_repetition:
+        for behavior in behaviours:
+            if behavior not in exclusion_list:
+                exclusion_list[behavior] = []
+            if behavior not in exclusion_list[behavior]:
+                exclusion_list[behavior].append(behavior)
 
     count, count_tot = 0, 0
 
-    risu = numpy.zeros((len(behaviours), len(behaviours)))
+    results = np.zeros((len(behaviours), len(behaviours)))
 
     while True:
 
-        flagEmpty, permuted_sequences = strings_permutation(spazio, sequences, exclusion_list, block_first, block_last)
+        permuted_sequences = strings_permutation(space, sequences, exclusion_list, block_first, block_last)
 
         count_tot += 1
 
-        if flagEmpty == False:
+        if permuted_sequences:
             count += 1
 
             # analysis
-            conta = numpy.zeros((len(behaviours), len(behaviours)))
+            permuted_transitions_matrix = np.zeros((len(behaviours), len(behaviours)))
 
             for seq in permuted_sequences:
                 for i in range(len(seq) - 1):
-                    if seq[i] in behaviours and seq[i + 1] in behaviours:
-                        conta[ behaviours.index(seq[i]), behaviours.index(seq[i + 1]) ] += 1
+                    #if seq[i] in behaviours and seq[i + 1] in behaviours:
+                    permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
 
-            risu = risu + (conta >= conta_obs)
+            results = results + (permuted_transitions_matrix >= observed_matrix)
 
         if count == nrandom:
             break
 
-    return count_tot, risu
+    return count_tot, results
 
 
 def main():
-    
+
     parser = argparse.ArgumentParser(description="Behatrix command line utility")
     parser.add_argument("-v", action="store_true", dest='version', help='Behatrix version')
     parser.add_argument("--strings", action="store", dest='strings', help='Path of file containing behavioral strings')
-    
+
     parser.add_argument("--output", action="store", dest='output', help='Path of output files')
     parser.add_argument("--exclusions", action="store", dest='exclusions', help='Path of file containing exclusions')
     parser.add_argument("--n_random", action="store", dest='nrandom', help='Number of randomizations', type=int, default=0)
-    parser.add_argument("--n_cpu", action="store", dest='n_cpu', help='Number of CPU to use for randomizations test', type=int, default=0)    
+    parser.add_argument("--n_cpu", action="store", dest='n_cpu', help='Number of CPU to use for randomizations test', type=int, default=0)
     parser.add_argument("--block_first", action="store_true", dest='block_first', help='block first behavior during randomization test')
     parser.add_argument("--block_last", action="store_true", dest='block_last', help='block last behavior during randomization test')
-    
+    parser.add_argument("--no_repetition", action="store_true", dest='no_repetition', help='exclude repetitions during permutations test')
+
     parser.add_argument("--quiet", action="store_true", dest='quiet', default=False, help='Do not print results on terminal')
-    
+
     args = parser.parse_args()
 
     if args.version:
-        print("version {}".format(__version__))
+        print("version {} - {}".format(version.__version__, version.__version_date__))
         sys.exit()
 
     if not args.strings:
@@ -546,16 +590,16 @@ def main():
     with open(args.strings) as f_in:
         behav_str = f_in.read()
 
-    (return_code, sequences, 
-     d, nodes , starting_nodes , tot_nodes,
+    (return_code, sequences,
+     d, nodes, starting_nodes, tot_nodes,
      tot_trans, tot_trans_after_node, behaviours) = behav_strings_stats(behav_str, chunk=0)
-    
-        
+
+
     if args.nrandom:
         nrandom = args.nrandom
     else:
         nrandom = 0
-    
+
     if nrandom:
 
         if args.exclusions:
@@ -577,11 +621,9 @@ def main():
 
         block_first = 1 if args.block_first else 0
         block_last = 1 if args.block_last else 0
-    
-    
+
+
     if not args.quiet:
-        
-        print(behaviours)
 
         print("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
 
@@ -598,24 +640,27 @@ def main():
             for seq in sequences:
                 countBehaviour += seq.count(behaviour)
 
-            print('%(behaviour)s\t%(freq).3f\t%(countBehaviour)d / %(tot_nodes)d' % {'behaviour': behaviour, 'freq': countBehaviour / tot_nodes, 'countBehaviour': countBehaviour, 'tot_nodes':tot_nodes})
+            print("{behaviour}\t{freq:.3f}\t{countBehaviour} / {tot_nodes}".format(behaviour=behaviour,
+                                                                                   freq=countBehaviour / tot_nodes,
+                                                                                   countBehaviour=countBehaviour,
+                                                                                   tot_nodes=tot_nodes))
 
     observed_matrix = create_observed_transition_matrix(sequences, behaviours)
-    
+
     if not args.quiet:
         print("\nObserved transition matrix:\n===========================\n{}".format(observed_matrix))
-    
+
     if args.output:
         file_name = '{fileName}.observed_transitions.tsv'.format(fileName=args.output)
     else:
         file_name = '{fileName}.observed_transitions.tsv'.format(fileName=args.strings)
-    
-    numpy.savetxt(file_name, observed_matrix, fmt='%d', delimiter='\t')
-    
-    
+
+    np.savetxt(file_name, observed_matrix, fmt='%d', delimiter='\t')
+
+
     with open(file_name, mode="r", encoding="utf-8") as f_in:
         rows = f_in.readlines()
-    
+
     with open(file_name, mode="w", encoding="utf-8") as f_out:
         f_out.write('\t' + '\t'.join(behaviours) + '\n')
         c = 0
@@ -623,9 +668,9 @@ def main():
             f_out.write((behaviours)[c] + '\t' + row)
             c += 1
 
-   
+
     if nrandom:
-        
+
         if args.n_cpu:
             num_proc = args.n_cpu
         else:
@@ -634,53 +679,61 @@ def main():
                 num_proc = 1
             else:
                 num_proc = num_available_proc - 1
-    
-        results = numpy.zeros((len(behaviours), len(behaviours)))
+
+        results = np.zeros((len(behaviours), len(behaviours)))
         with concurrent.futures.ProcessPoolExecutor() as executor:
             lst = []
             n_required_randomizations = 0
             for i in range(num_proc):
-                
+
                 if i < num_proc - 1:
                     n_random_by_proc = nrandom // num_proc
                 else:
                     n_random_by_proc = nrandom - n_required_randomizations
-                
-                lst.append(executor.submit(strings2matrix_cl, n_random_by_proc, sequences, behaviours, exclusion_list, block_first, block_last, observed_matrix))
+
+                lst.append(executor.submit(permutations_test,
+                                           n_random_by_proc,
+                                           sequences, behaviours,
+                                           exclusion_list,
+                                           block_first,
+                                           block_last,
+                                           observed_matrix,
+                                           args.no_repetition))
+
                 n_required_randomizations += n_random_by_proc
-                
+
             print("\nnumber of required randomizations: ", n_required_randomizations)
-        
+
             nb_randomization_done = 0
-        
+
             for l in lst:
                 nb_randomization_done += l.result()[0]
                 results += l.result()[1]
-        
-        
+
+
         print("Number of done randomizations: {}".format(nb_randomization_done))
-        
+
+        if not args.quiet:
+            print("\nRandomized transition matrix:\n===========================\n{}".format(results / nrandom))
+
         if args.output:
             file_name = '{fileName}.randomized_transitions.{nrandom}.tsv'.format(fileName=args.output, nrandom=nrandom)
         else:
             file_name = '{fileName}.randomized_transitions.{nrandom}.tsv'.format(fileName=args.strings, nrandom=nrandom)
 
-        
-        numpy.savetxt(file_name, results / nrandom, fmt='%f', delimiter='\t')
-        
+        np.savetxt(file_name, results / nrandom, fmt='%f', delimiter='\t')
+
         with open(file_name, mode='r', encoding='utf-8') as f:
             rows = f.readlines()
-        
+
         with open(file_name, mode='w', encoding='utf-8') as f:
-            f.write( '\t' + '\t'.join( list( behaviours) ) + '\n' )
+            f.write('\t' + '\t'.join(list(behaviours)) + '\n')
             c = 0
             for row in rows:
-                f.write( (behaviours)[c] + '\t' + row)
+                f.write((behaviours)[c] + "\t" + row)
                 c += 1
-    
+
 
 
 if __name__ == '__main__':
     main()
-
-
