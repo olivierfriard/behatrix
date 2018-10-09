@@ -6,7 +6,6 @@ Behavioural Strings Analysis (BSA)).
 
 Behavioral strings analysis with randomization test
 
-
 Copyright 2017-2018 Olivier Friard
 
 This file is part of Behatrix.
@@ -34,8 +33,8 @@ import concurrent.futures
 import random
 import version
 
-__version__ = version.__version__
-__version_date__ = version.__version_date__
+
+SEPARATOR = "@%&£$"
 
 
 def remove_comments(s):
@@ -46,7 +45,7 @@ def remove_comments(s):
         s (string): text
 
     Returns:
-        str: text without commented lines separted by \n
+        str: text without commented lines separated by \n
     """
 
     strings_list = []
@@ -56,31 +55,31 @@ def remove_comments(s):
     return "\n".join(strings_list)
 
 
-def behav_strings_stats(string, chunk=0):
+def behav_strings_stats(string, chunk=0, behaviors_separator=""):
     """
     extract some information from behavioral strings
 
     Args:
         string (str): behavioral strings
         chunk (int): limit analysis to the chunk first characters
+        separator (str): string to use to split sequences in behaviors
 
     Returns:
         bool: 0 -> OK
         list: sequences
 
-
     return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
     """
 
     # replace space by underscore (_)
-    string = string.replace(" ", "_")
+    # string = string.replace(" ", "_")
 
     # remove lines starting with #
     string = remove_comments(string)
 
     # check if behaviors are unique char
-    if "|" in string:
-        rows = string.split("\n")   # split rows in list
+    if behaviors_separator:
+        rows = string.split("\n")   # split text in list
         flagOne = False
     else:
         rows = string.replace(" ", "").split()
@@ -106,7 +105,7 @@ def behav_strings_stats(string, chunk=0):
         if flagOne:
             r = list(row.strip())
         else:
-            r = row.strip().split("|")
+            r = row.strip().split(behaviors_separator)
 
         if chunk:
             r = r[0:chunk]
@@ -135,44 +134,12 @@ def behav_strings_stats(string, chunk=0):
                 else:
                     starting_nodes[r[i]] = 1
 
-            if r[i] + '|' + r[i + 1] in d:
+            if r[i] + SEPARATOR + r[i + 1] in d:
 
-                d[r[i] + '|' + r[i + 1]] += 1
+                d[r[i] + SEPARATOR + r[i + 1]] += 1
 
             else:
-                d[r[i] + '|' + r[i + 1]] = 1
-
-    # exclusion
-    '''
-    exclusion_list = {}
-
-    if exclusion_str:
-        rows = exclusion_str.split("\n")
-
-        for row in rows:
-            if row.strip() and ':' in row:
-                s1, s2 = row.strip().split(':')
-                if s1:
-                    if s1 in exclusion_list:
-                        if '|' in string:
-                            exclusion_list[s1] += s2.split('|')
-                        else:
-                            exclusion_list[s1] += list(s2)
-                    else:
-                        if '|' in string:
-                            exclusion_list[s1] = s2.split('|')
-                        else:
-                            exclusion_list[s1] = list(s2)
-
-        # test if exclusion list OK
-        for seq in sequences:
-
-            for i in range(0, len(seq) - 1):
-
-                if seq[i] in exclusion_list and seq[i + 1] in exclusion_list[ seq[i] ]:
-
-                    return (1, '<b>Check your strings and exclusion list</b><br><b>%s</b> is not allowed after <b>%s</b>\n' % (seq[i + 1], seq[i])),'', '', '', '' , '' , '', '', '', ''
-    '''
+                d[r[i] + SEPARATOR + r[i + 1]] = 1
 
     # total number of transitions
     tot_trans = 0
@@ -184,15 +151,12 @@ def behav_strings_stats(string, chunk=0):
 
     for i in d:
 
-        b1,b2 = i.split('|')
+        b1, b2 = i.split(SEPARATOR)
 
         if b1 in tot_trans_after_node:
-
-            tot_trans_after_node[ b1 ] += d[i]
-
+            tot_trans_after_node[b1] += d[i]
         else:
-
-            tot_trans_after_node[ b1 ] = d[i]
+            tot_trans_after_node[b1] = d[i]
 
     tot_nodes = 0
     for node in nodes:
@@ -203,16 +167,15 @@ def behav_strings_stats(string, chunk=0):
     # extract unique behaviors
     for seq in sequences:
         for c in seq:
-            if not c in behaviours:
+            if c not in behaviours:
                 behaviours.append(c)
 
     behaviours.sort()
 
-    #return 0, sequences, exclusion_list, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
     return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
 
 
-def check_exclusion_list(exclusion_str, sequences):
+def check_exclusion_list(exclusion_str, sequences, behaviors_separator=""):
     """
     check the transition exclusion strings
     format must be like:
@@ -223,6 +186,7 @@ def check_exclusion_list(exclusion_str, sequences):
     Args:
         exclusion_str (str): exclusion strings (format must be a:bc or a:b|c
         sequences (list): list of sequences
+        behaviors_separator (str): string to be used to split sequences in behaviors
 
     Returns:
         dict: keys: "error_code": 0 or 1
@@ -238,16 +202,12 @@ def check_exclusion_list(exclusion_str, sequences):
             if row.strip() and ":" in row:
                 s1, s2 = row.strip().split(":")
                 if s1 and s2:
-                    if s1 in exclusion_list:
-                        if "|" in s2:
-                            exclusion_list[s1] += s2.split("|")
-                        else:
-                            exclusion_list[s1] += list(s2)
+                    if s1 not in exclusion_list:
+                        exclusion_list[s1] = []
+                    if behaviors_separator and behaviors_separator in s2:
+                        exclusion_list[s1] += s2.split(behaviors_separator)
                     else:
-                        if "|" in s2:
-                            exclusion_list[s1] = s2.split("|")
-                        else:
-                            exclusion_list[s1] = list(s2)
+                        exclusion_list[s1] += list(s2)
 
         # test if behavioral strings do not contain an excluded transition
         for seq in sequences:
@@ -262,7 +222,7 @@ def check_exclusion_list(exclusion_str, sequences):
 
 def draw_diagram(cutoff_all,
                  cutoff_behavior,
-                 d,
+                 unique_transitions,
                  nodes,
                  tot_nodes,
                  tot_trans,
@@ -270,7 +230,10 @@ def draw_diagram(cutoff_all,
                  starting_nodes=[],
                  edge_label="percent_node",   # fraction_node/percent_node/percent_total
                  transparent_background=False,
-                 include_first=True):
+                 include_first=True,
+                 decimals_number=3,
+                 significativity=None,
+                 behaviors=[]):
 
         """
         create code for GraphViz
@@ -278,24 +241,45 @@ def draw_diagram(cutoff_all,
         """
 
 
-        def f_edge_label(edge_label, node1, node2, di, tot_trans_after_node_i0, tot_trans):
+        def f_edge_label(edge_label, node1, node2, di, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1):
+
             if edge_label == 'fraction_node':
 
-                return '"{node1}" -> "{node2}" [label = "{di}/{tot_transition_after_node}"];\n'.format(node1=node1,
-                                                                                                       node2=node2,
-                                                                                                       di=di,
-                                                                                                       tot_transition_after_node_i0=tot_transition_after_node_i0)
+                return '"{node1}" -> "{node2}" [label = "{di}/{tot_transition_after_node}" pen_width={pen_width}];\n'.format(
+                    node1=node1,
+                    node2=node2,
+                    di=di,
+                    tot_transition_after_node_i0=tot_transition_after_node_i0,
+                    pen_width=pen_width)
 
             elif edge_label == 'percent_node':
-                return '"{node1}" -> "{node2}" [label = "{percent:.2f} %"];\n'.format(node1=node1,
-                                                                                      node2=node2,
-                                                                                      percent=d[i] / tot_trans_after_node[i0] *100)
+                return '"{node1}" -> "{node2}" [label = "{percent} %" pen_width={pen_width}];\n'.format(
+                    node1=node1,
+                    node2=node2,
+                    percent=round(di / tot_trans_after_node[i0] * 100, decimals_number)
+                            if decimals_number else round(di / tot_trans_after_node[i0] * 100),
+                    pen_width=pen_width
+                    )
 
             elif edge_label == 'percent_total':
-                return '"{node1}" -> "{node2}" [label = "{percent:.2f} %"];\n'.format(node1=node1,
-                                                                                      node2=node2,
-                                                                                      percent=di / tot_trans * 100.0)
+                return '"{node1}" -> "{node2}" [label = "{percent} %" pen_width={pen_width}];\n'.format(
+                    node1=node1,
+                    node2=node2,
+                    percent=round(di / tot_trans * 100.0, decimals_number)
+                            if decimals_number else round(di / tot_trans * 100.0),
+                    pen_width=pen_width
+                )
 
+        def width(p):
+            if p <= 0.001:
+                return 6
+            elif p <= 0.005:
+                return 3
+            else:
+                return 1
+
+        if significativity is not None:
+            print(significativity)
 
         out = 'digraph G {\n'
 
@@ -305,94 +289,77 @@ def draw_diagram(cutoff_all,
 
         if cutoff_all:
 
-            for i in d:
+            for i in unique_transitions:
 
-                if d[i] / tot_trans * 100.0 >= cutoff_all:
+                if unique_transitions[i] / tot_trans * 100.0 >= cutoff_all:
 
-                    i0, i1 = i.split('|')
+                    i0, i1 = i.split(SEPARATOR)
 
                     if i0 in starting_nodes:
-                        node1 = '%s (%d)' % (i0, starting_nodes[i0])
+                        node1 = "{} ({})".format(i0, starting_nodes[i0])
                     else:
-                        node1 = '%s' % (i0)
+                        node1 = "{}".format(i0)
 
                     if i1 in starting_nodes:
-                        node2 = '%s (%d)' % (i1, starting_nodes[i1])
+                        node2 = "{} ({})".format(i1, starting_nodes[i1])
 
                     else:
-                        node2 = '%s' % (i1)
+                        node2 = "{}".format(i1)
 
-
-                    out += f_edge_label(edge_label, node1, node2, d[i], tot_trans_after_node[i0], tot_trans)
+                    out += f_edge_label(edge_label, node1, node2, unique_transitions[i],
+                                        tot_trans_after_node[i0], tot_trans, decimals_number,
+                                        pen_width(significativity[behaviors.index(i0), behaviors.index(i1)]))
 
         elif cutoff_behavior:
 
-            for i in d:
+            for i in unique_transitions:
 
-                #if d[i] / tot_trans * 100.0 >= cutoff_all:
+                i0, i1 = i.split(SEPARATOR)
 
-                i0, i1 = i.split("|")
-
-                if d[i] / tot_trans_after_node[i0] * 100 >= cutoff_behavior:
+                if unique_transitions[i] / tot_trans_after_node[i0] * 100 >= cutoff_behavior:
 
                     if i0 in starting_nodes and include_first:
-                        node1 = '%s (%d)' % (i0, starting_nodes[i0])
+                        node1 = "{} ({})".format(i0, starting_nodes[i0])
                     else:
-                        node1 = '%s' % (i0)
+                        node1 = "{}".format(i0)
 
                     if i1 in starting_nodes and include_first:
-                        node2 = '%s (%d)' % (i1, starting_nodes[i1])
+                        node2 = "{} ({})".format(i1, starting_nodes[i1])
 
                     else:
-                        node2 = '%s' % (i1)
+                        node2 = "{}".format(i1)
 
-                    out += f_edge_label(edge_label, node1, node2, d[i], tot_trans_after_node[i0], tot_trans)
-                    '''
-                    if edge_label == 'fraction_node':
-
-                        out += '"%s" -> "%s" [ label = "%s" ];\n' %  (node1, node2, str(d[i]) + '/' + str(tot_trans_after_node[i0]) )
-
-                    elif edge_label == 'percent_node':
-
-                        #out += '"%s" -> "%s" [label = "%.1f%%"];\n' %  (node1, node2,  d[i]/tot_trans_after_node[i0] *100)
-                        out += '"{node1}" -> "{node2}" [label = "{percent:.2f}"];\n'.format(node1=node1, node2=node2, percent=d[i] / tot_trans_after_node[i0] * 100)
-
-                    elif edge_label == 'percent_total':
-
-                        out += '"%s" -> "%s" [label = "%.1f%%"];\n' % (node1, node2, 1.0 * d[i] / tot_trans * 100.0)
-                    '''
+                    out += f_edge_label(edge_label, node1, node2, unique_transitions[i], tot_trans_after_node[i0], tot_trans, decimals_number)
 
         else:
 
-            for i in d:
+            for i in unique_transitions:
 
-                    i0, i1 = i.split('|')
+                i0, i1 = i.split(SEPARATOR)
 
-                    if i0 in starting_nodes:
-                        node1 = '%s (%d)' % (i0, starting_nodes[i0])
-                    else:
-                        node1 = '%s' % (i0)
+                if i0 in starting_nodes:
+                    node1 = "{} ({})".format(i0, starting_nodes[i0])
+                else:
+                    node1 = "{}".format(i0)
 
-                    if i1 in starting_nodes:
-                        node2 = '%s (%d)' % (i1, starting_nodes[i1])
+                if i1 in starting_nodes:
+                    node2 = "{} ({})".format(i1, starting_nodes[i1])
 
-                    else:
-                        node2 = '%s' % (i1)
+                else:
+                    node2 = "{}".format(i1)
 
-                    if edge_label == 'fraction_node':
+                print(i0, i1,significativity[behaviors.index(i0), behaviors.index(i1)])
 
-                        out += '"%s" -> "%s" [ label = "%s" ];\n' %  (node1, node2, str(d[i]) + "/" + str(tot_trans_after_node[i0]))
+                pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
 
-                    elif edge_label == 'percent_node':
+                out += f_edge_label(edge_label, node1, node2, unique_transitions[i],
+                                    tot_trans_after_node[i0], tot_trans, decimals_number,
+                                    pen_width)
 
-                        out += '"%s" -> "%s" [ label = "%.1f%%" ];\n' %  (node1, node2, d[i] / tot_trans_after_node[i0] * 100)
-
-                    elif edge_label == 'percent_total':
-
-                        out += '"%s" -> "%s" [ label = "%.1f%%" ];\n' % (node1, node2, 1.0 * d[i] / tot_trans * 100.0)
 
         out += '}\n'
 
+        print(out)
         return out
 
 
@@ -544,7 +511,7 @@ def permutations_test(nrandom: int,
 
             for seq in permuted_sequences:
                 for i in range(len(seq) - 1):
-                    #if seq[i] in behaviours and seq[i + 1] in behaviours:
+                    '''if seq[i] in behaviours and seq[i + 1] in behaviours:'''
                     permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
 
             results = results + (permuted_transitions_matrix >= observed_matrix)
@@ -563,10 +530,10 @@ def main():
 
     parser.add_argument("--output", action="store", dest='output', help='Path of output files')
     parser.add_argument("--exclusions", action="store", dest='exclusions', help='Path of file containing exclusions')
-    parser.add_argument("--n_random", action="store", dest='nrandom', help='Number of randomizations', type=int, default=0)
-    parser.add_argument("--n_cpu", action="store", dest='n_cpu', help='Number of CPU to use for randomizations test', type=int, default=0)
-    parser.add_argument("--block_first", action="store_true", dest='block_first', help='block first behavior during randomization test')
-    parser.add_argument("--block_last", action="store_true", dest='block_last', help='block last behavior during randomization test')
+    parser.add_argument("--n_random", action="store", dest='nrandom', help='Number of permutations', type=int, default=0)
+    parser.add_argument("--n_cpu", action="store", dest='n_cpu', help='Number of CPU to use for permutations test', type=int, default=0)
+    parser.add_argument("--block_first", action="store_true", dest='block_first', help='block first behavior during permutations test')
+    parser.add_argument("--block_last", action="store_true", dest='block_last', help='block last behavior during permutations test')
     parser.add_argument("--no_repetition", action="store_true", dest='no_repetition', help='exclude repetitions during permutations test')
 
     parser.add_argument("--quiet", action="store_true", dest='quiet', default=False, help='Do not print results on terminal')
@@ -591,7 +558,7 @@ def main():
         behav_str = f_in.read()
 
     (return_code, sequences,
-     d, nodes, starting_nodes, tot_nodes,
+     unique_transitions, nodes, starting_nodes, tot_nodes,
      tot_trans, tot_trans_after_node, behaviours) = behav_strings_stats(behav_str, chunk=0)
 
 
@@ -630,7 +597,7 @@ def main():
         print("Statistics\n==========")
         print('Number of different behaviours: {}'.format(len(behaviours)))
         print('Total number of behaviours: {}'.format(tot_nodes))
-        print('Number of different transitions: {}'.format(len(d)))
+        print('Number of different transitions: {}'.format(len(unique_transitions)))
         print('Total number of transitions: {}'.format(tot_trans))
 
         print('\nBehaviours frequencies:\n=======================')
