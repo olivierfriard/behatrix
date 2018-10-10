@@ -59,19 +59,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pte_gv.setLineWrapMode(False)
         self.pte_random.setLineWrapMode(False)
 
+        self.pb_clear_behavioral_strings.clicked.connect(self.pte_behav_strings.clear)
+
         # set to tab strings
         self.tabWidget.setCurrentIndex(0)
 
         # connections
         self.actionAbout.triggered.connect(self.about)
-
         self.pb_select_behav_strings_file.clicked.connect(self.pbSelectStringsFilename)
-
         self.pb_statistics.clicked.connect(self.behav_strings_statistics)
-
         self.pb_save_stats_results.clicked.connect(self.save_stats_results)
-
         self.pb_save_observed_matrix.clicked.connect(self.observed_matrix)
+        self.pte_behav_strings.textChanged.connect(self.behavioral_strings_changed)
 
         # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
@@ -84,8 +83,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_clear_excluded_transitions.clicked.connect(self.pte_excluded_transitions.clear)
         self.pb_run_randomization_test.clicked.connect(self.permutation_test)
         self.pb_save_random.clicked.connect(self.save_random)
-
-        self.pb_flow_chart_significant.clicked.connect(self.flow_chart_significant)
 
         self.pte_behav_strings.setLineWrapMode(0)
 
@@ -100,6 +97,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.sb_nb_cores.setValue(num_available_proc - 1)
 
         self.permutations_test_matrix = None
+
+        self.cb_plot_significativity.setEnabled(False)
 
 
     def about(self):
@@ -125,6 +124,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             python_ver=platform.python_version()))
         _ = about_dialog.exec_()
 
+
+    def behavioral_strings_changed(self):
+        """
+        behavioral string changed by user
+        """
+        self.permutations_test_matrix = None
+        self.cb_plot_significativity.setEnabled(False)
+        for w in [self.pte_statistics, self.pte_gv, self.pte_random]:
+            w.clear()
 
     def browse_dot_path(self):
         """
@@ -245,10 +253,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         (return_code, sequences,
          unique_transitions, nodes, starting_nodes, tot_nodes,
          tot_trans, tot_trans_after_node,
-         behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
-                                                        behaviors_separator=self.le_behaviors_separator.text(),
-                                                        chunk=0)
+         behaviors) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+                                                       behaviors_separator=self.le_behaviors_separator.text(),
+                                                       chunk=0)
 
+        # type of labels
         edge_label = "percent_node"
         if self.rb_percent_after_behav.isChecked():
             edge_label = "percent_node"
@@ -257,19 +266,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.rb_fraction_after_behav.isChecked():
             edge_label = "fraction_node"
 
+        # cutoff
+        '''
         try:
-            cutoff_all = float(self.le_cutoff_total_transition.text())
+            cutoff_all = self.sb_cutoff_total_transition.value()
         except Exception:
-            QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
+            QMessageBox.critical(self, "Behatrix", "{} value is not allowed".format(cutoff_all))
             return
         try:
-            cutoff_behavior = float(self.le_cutoff_transition_after_behav.text())
+            cutoff_behavior = self.sb_cutoff_transition_after_behav.value()
         except Exception:
-            QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
+            QMessageBox.critical(self, "Behatrix", "{} value is not allowed".format(cutoff_behavior))
+            return
+        '''
+
+        # check significativity
+        if self.cb_plot_significativity.isChecked() and self.permutations_test_matrix is None:
+            QMessageBox.critical(self, "Behatrix", "Adding significativity to graph requires p values from permutations test")
             return
 
-        gv_script = behatrix_cli.draw_diagram(cutoff_all=cutoff_all,
-                                              cutoff_behavior=cutoff_behavior,
+
+        gv_script = behatrix_cli.draw_diagram(cutoff_all=self.sb_cutoff_total_transition.value(),
+                                              cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
                                               unique_transitions=unique_transitions,
                                               nodes=nodes,
                                               starting_nodes=[],
@@ -277,7 +295,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                               tot_trans=tot_trans,
                                               tot_trans_after_node=tot_trans_after_node,
                                               edge_label=edge_label,
-                                              decimals_number=self.sb_decimals.value())
+                                              decimals_number=self.sb_decimals.value(),
+                                              significativity=self.permutations_test_matrix
+                                                                  if (self.permutations_test_matrix is not None)
+                                                                      and (self.cb_plot_significativity.isChecked())
+                                                                  else None,
+                                              behaviors=behaviors)
+
 
         self.pte_gv.setPlainText(gv_script)
 
@@ -288,7 +312,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if self.pte_gv.toPlainText():
 
-            file_name, filter_ = QFileDialog(self).getSaveFileName(self, "Select the file to save the GraphViz script", "",
+            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the GraphViz script", "",
                                                                          "GV files (*.gv);;TXT files (*.txt);;All files (*)")
 
             if file_name:
@@ -305,7 +329,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.pte_gv.toPlainText():
 
-            file_name, filter_ = QFileDialog(self).getSaveFileName(self, "Select the file and format to save the flow diagram", "",
+            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file and format to save the flow diagram", "",
                                                                          "PNG files (*.png);;SVG files (*.svg);;All files (*)")
 
             if file_name:
@@ -461,6 +485,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 self.statusbar.showMessage("", 0)
 
+                self.cb_plot_significativity.setEnabled(True)
+
                 QMessageBox.information(self, "Behatrix",
                                         ("Randomization finished<br>"
                                          "{} permutations done<br><br>").format(nb_randomization_done))
@@ -470,52 +496,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         else:
             QMessageBox.warning("Behatrix", "No behavioral strings found!")
-
-
-    def flow_chart_significant(self):
-        """
-        draw flow chart with transitions significativity
-        """
-        (return_code, sequences,
-         unique_transitions, nodes, starting_nodes, tot_nodes,
-         tot_trans, tot_trans_after_node,
-         behaviors) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
-                                                        behaviors_separator=self.le_behaviors_separator.text(),
-                                                        chunk=0)
-
-        edge_label = "percent_node"
-        if self.rb_percent_after_behav.isChecked():
-            edge_label = "percent_node"
-        if self.rb_percent_total_transitions.isChecked():
-            edge_label = "percent_total"
-        if self.rb_fraction_after_behav.isChecked():
-            edge_label = "fraction_node"
-
-        try:
-            cutoff_all = float(self.le_cutoff_total_transition.text())
-        except Exception:
-            QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
-            return
-        try:
-            cutoff_behavior = float(self.le_cutoff_transition_after_behav.text())
-        except Exception:
-            QMessageBox.critical(self, "Behatrix", "{} value is not allowed")
-            return
-
-        gv_script = behatrix_cli.draw_diagram(cutoff_all=cutoff_all,
-                                              cutoff_behavior=cutoff_behavior,
-                                              unique_transitions=unique_transitions,
-                                              nodes=nodes,
-                                              starting_nodes=[],
-                                              tot_nodes=tot_nodes,
-                                              tot_trans=tot_trans,
-                                              tot_trans_after_node=tot_trans_after_node,
-                                              edge_label=edge_label,
-                                              decimals_number=self.sb_decimals.value(),
-                                              significativity=self.permutations_test_matrix,
-                                              behaviors=behaviors)
-
-
 
 
     def save_random(self):

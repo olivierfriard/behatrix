@@ -18,13 +18,13 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
         <string>Behavioral strings</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
@@ -33,13 +33,41 @@
          </widget>
         </item>
         <item>
-         <widget class="QPlainTextEdit" name="pte_behav_strings">
-          <property name="font">
-           <font>
-            <family>Monospace</family>
-           </font>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_19">
+          <item>
+           <widget class="QPlainTextEdit" name="pte_behav_strings">
+            <property name="font">
+             <font>
+              <family>Monospace</family>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QPushButton" name="pb_clear_behavioral_strings">
+              <property name="text">
+               <string>Clear strings</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_16">
@@ -164,12 +192,14 @@
        <zorder></zorder>
        <zorder>label_17</zorder>
        <zorder>le_behaviors_separator</zorder>
+       <zorder>pb_clear_behavioral_strings</zorder>
+       <zorder>verticalSpacer_4</zorder>
       </widget>
       <widget class="QWidget" name="tab_flow_diagram">
        <attribute name="title">
         <string>Flow diagram</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QLabel" name="label_6">
           <property name="text">
@@ -206,11 +236,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="le_cutoff_transition_after_behav">
-              <property name="text">
-               <string>0</string>
-              </property>
-             </widget>
+             <widget class="QDoubleSpinBox" name="sb_cutoff_transition_after_behav"/>
             </item>
             <item>
              <widget class="QLabel" name="label_11">
@@ -255,11 +281,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="le_cutoff_total_transition">
-              <property name="text">
-               <string>0</string>
-              </property>
-             </widget>
+             <widget class="QDoubleSpinBox" name="sb_cutoff_total_transition"/>
             </item>
             <item>
              <widget class="QLabel" name="label_12">
@@ -290,7 +312,7 @@
           <item>
            <widget class="QLabel" name="label_18">
             <property name="text">
-             <string>Number of decimals</string>
+             <string>Number of decimals in edges labels</string>
             </property>
            </widget>
           </item>
@@ -327,6 +349,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="cb_plot_significativity">
+          <property name="text">
+           <string>Add significativity to edges (require that permutations test has already ran)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
            <widget class="QPushButton" name="pb_graphviz_script">
@@ -353,18 +382,46 @@
         <item>
          <widget class="QLabel" name="label_14">
           <property name="text">
-           <string>Results</string>
+           <string>GraphViz script</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPlainTextEdit" name="pte_gv">
-          <property name="font">
-           <font>
-            <family>Monospace</family>
-           </font>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <item>
+           <widget class="QPlainTextEdit" name="pte_gv">
+            <property name="font">
+             <font>
+              <family>Monospace</family>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QPushButton" name="pb_save_gv">
+              <property name="text">
+               <string>Save results</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QLabel" name="label_16">
@@ -388,18 +445,11 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <layout class="QHBoxLayout" name="horizontalLayout_18">
           <item>
            <widget class="QPushButton" name="pb_flow_diagram">
             <property name="text">
              <string>Generate flow diagram</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pb_save_gv">
-            <property name="text">
-             <string>Save results</string>
             </property>
            </widget>
           </item>
@@ -599,7 +649,7 @@
         <item>
          <widget class="QLabel" name="label_15">
           <property name="text">
-           <string>Results</string>
+           <string>Transitions p values</string>
           </property>
          </widget>
         </item>
@@ -618,13 +668,6 @@
            <widget class="QPushButton" name="pb_save_random">
             <property name="text">
              <string>Save results</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pb_flow_chart_significant">
-            <property name="text">
-             <string>Draw transitions significativity flow chart</string>
             </property>
            </widget>
           </item>

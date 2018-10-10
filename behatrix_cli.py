@@ -37,20 +37,21 @@ import version
 SEPARATOR = "@%&£$"
 
 
-def remove_comments(s):
+def remove_comments(s: str) -> str:
     """
-    remove comments (#) from text
+    remove comments:
+    split text in lines with \n and remove lines beginning with #
 
     Args:
         s (string): text
 
     Returns:
-        str: text without commented lines separated by \n
+        str: text without commented lines (starting with #) separated by \n
     """
 
     strings_list = []
     for x in s.split("\n"):
-        if not x.startswith("#"):
+        if not x.strip().startswith("#"):
             strings_list.append(x)
     return "\n".join(strings_list)
 
@@ -347,8 +348,6 @@ def draw_diagram(cutoff_all,
 
                 else:
                     node2 = "{}".format(i1)
-
-                print(i0, i1,significativity[behaviors.index(i0), behaviors.index(i1)])
 
                 pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
 
