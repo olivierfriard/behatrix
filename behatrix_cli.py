@@ -244,17 +244,17 @@ def draw_diagram(cutoff_all,
 
         def f_edge_label(edge_label, node1, node2, di, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1):
 
-            if edge_label == 'fraction_node':
+            if edge_label == "fraction_node":
 
-                return '"{node1}" -> "{node2}" [label = "{di}/{tot_transition_after_node}" pen_width={pen_width}];\n'.format(
+                return '"{node1}" -> "{node2}" [label = "{di}/{tot_transition_after_node}" penwidth={pen_width}];\n'.format(
                     node1=node1,
                     node2=node2,
                     di=di,
                     tot_transition_after_node_i0=tot_transition_after_node_i0,
                     pen_width=pen_width)
 
-            elif edge_label == 'percent_node':
-                return '"{node1}" -> "{node2}" [label = "{percent} %" pen_width={pen_width}];\n'.format(
+            elif edge_label == "percent_node":
+                return '"{node1}" -> "{node2}" [label = "{percent} %" penwidth={pen_width}];\n'.format(
                     node1=node1,
                     node2=node2,
                     percent=round(di / tot_trans_after_node[i0] * 100, decimals_number)
@@ -262,8 +262,8 @@ def draw_diagram(cutoff_all,
                     pen_width=pen_width
                     )
 
-            elif edge_label == 'percent_total':
-                return '"{node1}" -> "{node2}" [label = "{percent} %" pen_width={pen_width}];\n'.format(
+            elif edge_label == "percent_total":
+                return '"{node1}" -> "{node2}" [label = "{percent} %" penwidth={pen_width}];\n'.format(
                     node1=node1,
                     node2=node2,
                     percent=round(di / tot_trans * 100.0, decimals_number)
@@ -272,6 +272,16 @@ def draw_diagram(cutoff_all,
                 )
 
         def width(p):
+            """
+            return pen width for graphviz script according the significativity
+
+            Args:
+               p (float): significativity
+
+            Returns:
+                int: pen width to be used in graphviz script
+            """
+
             if p <= 0.001:
                 return 6
             elif p <= 0.005:
@@ -330,7 +340,8 @@ def draw_diagram(cutoff_all,
                     else:
                         node2 = "{}".format(i1)
 
-                    out += f_edge_label(edge_label, node1, node2, unique_transitions[i], tot_trans_after_node[i0], tot_trans, decimals_number)
+                    out += f_edge_label(edge_label, node1, node2, unique_transitions[i],
+                                        tot_trans_after_node[i0], tot_trans, decimals_number)
 
         else:
 

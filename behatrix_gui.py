@@ -36,10 +36,14 @@ import tempfile
 import pathlib
 import platform
 import version
+from shutil import copyfile
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+#from PyQt5 import QtSvg
 from PyQt5.QtWidgets import *
+
+
 
 from behatrix_ui import Ui_MainWindow
 import behatrix_cli
@@ -53,7 +57,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
+        self.setWindowIcon(QIcon(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
         self.setWindowTitle("Behatrix - Behavioral Strings Analysis")
+
+        self.vertical_splitter.setStretchFactor(1, 10)
+        self.horizontal_splitter.setStretchFactor(1, 1)
 
         self.pte_statistics.setLineWrapMode(False)
         self.pte_gv.setLineWrapMode(False)
@@ -76,7 +84,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
         self.pb_save_gv.clicked.connect(self.save_gv)
         self.pb_flow_diagram.clicked.connect(self.flow_diagram)
+        self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
+        self.pte_gv.textChanged.connect(self.flow_diagram)
+        self.pb_save_png.clicked.connect(lambda: self.save_diagram("png"))
+        self.pb_save_svg.clicked.connect(lambda: self.save_diagram("svg"))
 
         # tab permutations test
         self.pb_exclude_repetition.clicked.connect(self.exclude_behavior_repetitions)
@@ -104,7 +116,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def about(self):
 
         about_dialog = QMessageBox()
-        # about_dialog.setIconPixmap(QPixmap(os.path.dirname(os.path.realpath(__file__)) + "/logo_eye.128px.png"))
+        about_dialog.setIconPixmap(QPixmap(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
         about_dialog.setWindowTitle("About Behatrix")
         about_dialog.setStandardButtons(QMessageBox.Ok)
         about_dialog.setDefaultButton(QMessageBox.Ok)
@@ -133,6 +145,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cb_plot_significativity.setEnabled(False)
         for w in [self.pte_statistics, self.pte_gv, self.pte_random]:
             w.clear()
+
 
     def browse_dot_path(self):
         """
@@ -297,9 +310,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                               edge_label=edge_label,
                                               decimals_number=self.sb_decimals.value(),
                                               significativity=self.permutations_test_matrix
-                                                                  if (self.permutations_test_matrix is not None)
-                                                                      and (self.cb_plot_significativity.isChecked())
-                                                                  else None,
+                                                              if (self.permutations_test_matrix is not None)
+                                                                 and (self.cb_plot_significativity.isChecked())
+                                                              else None,
                                               behaviors=behaviors)
 
 
@@ -320,61 +333,114 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     f_out.write(self.pte_gv.toPlainText())
 
 
-    def flow_diagram(self):
+    def flow_diagram(self, image_format="png"):
         """
         generate flow diagram from pte_gv content
         in PNG or SVG format
-        with dot from graphviz package
+        with dot program from graphviz package
+
+        Args:
+            image_format (str): format of image: png or svg
+
+        Returns:
+            str: path of diagram temp file path or "" in case of error
         """
 
         if self.pte_gv.toPlainText():
 
+            '''
             file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file and format to save the flow diagram", "",
                                                                          "PNG files (*.png);;SVG files (*.svg);;All files (*)")
+            '''
 
-            if file_name:
 
-                image_format = "png"
-                if not os.path.splitext(file_name)[1]:
-                    if "svg" in filter_:
-                        file_name += ".svg"
-                        image_format = "svg"
-                    if "png" in filter_:
-                        file_name += ".png"
-                        image_format = "png"
+            # image_format = diagram_format
+            '''
+            if not os.path.splitext(file_name)[1]:
+                if "svg" in filter_:
+                    file_name += ".svg"
+                    image_format = "svg"
+                if "png" in filter_:
+                    file_name += ".png"
+                    image_format = "png"
+            '''
 
-                gv_script = self.pte_gv.toPlainText()
+            gv_script = self.pte_gv.toPlainText()
 
-                with tempfile.NamedTemporaryFile() as temp:
-                    tmp_path = pathlib.Path(temp.name)
+            tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
+            with open(tmp_gv_path, "w") as tmp_gv_file:
+                tmp_gv_file.write(gv_script)
 
-                with open(tmp_path, "w") as tmp_file:
-                    tmp_file.write(gv_script)
+            tmp_image_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("temp_flow_diagram." + image_format))
 
-                # check dot path
-                if self.le_dot_path.text():
-                    if not os.path.isfile(self.le_dot_path.text()):
-                        QMessageBox.critical(self, "Behatrix",
-                                             ("The path for <b>dot</b> program is wrong.<br>"
-                                              "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
-                        return
-                    dot_path = self.le_dot_path.text()
-                else:
-                    dot_path = "dot"
+            print("tmp_gv_path", tmp_gv_path)
+            print("tmp_image_path", tmp_image_path)
 
-                cmd = '"{prog}" -T{image_format} "{gv_file}" -o "{file_name}"'.format(prog=dot_path,
-                                                                                      file_name=file_name,
-                                                                                      gv_file=tmp_path,
-                                                                                      image_format=image_format)
+            # check dot path
+            if self.le_dot_path.text():
+                if not os.path.isfile(self.le_dot_path.text()):
+                    QMessageBox.critical(self, "Behatrix",
+                                         ("The path for <b>dot</b> program is wrong.<br>"
+                                          "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
+                    return ""
+                dot_path = self.le_dot_path.text()
+            else:
+                dot_path = "dot"
 
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                out, error = p.communicate()
+            cmd = '"{prog}" -T{image_format} "{gv_file}" -o "{image_file_name}"'.format(prog=dot_path,
+                                                                                  image_file_name=tmp_image_path,
+                                                                                  gv_file=tmp_gv_path,
+                                                                                  image_format=image_format)
 
-                if error:
-                    QMessageBox.warning(self, "Behatrix", error.decode("utf-8"))
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out, error = p.communicate()
+            if error:
+                QMessageBox.warning(self, "Behatrix", error.decode("utf-8"))
+                return ""
+
+            if image_format == "png":
+                myPixmap = QPixmap(tmp_image_path)
+                myScaledPixmap = myPixmap.scaled(self.lb_flow_chart.size(), Qt.KeepAspectRatio)
+                self.lb_flow_chart.setPixmap(myScaledPixmap)
+
+            return tmp_image_path
+
+            '''
+            renderer =  QtSvg.QSvgRenderer(tmp_image_path)
+            self.lb_flow_chart.resize(renderer.defaultSize())
+            painter = QPainter(self.lb_flow_chart)
+            painter.restore()
+            renderer.render(painter)
+            '''
+
+            '''
+            else:
+                QMessageBox.warning(self, "Behatrix", "No GV script found. Generate the GraphViz script first.")
+            '''
+
+
+    def clear_diagram(self):
+        """
+        clear diagram
+        """
+        self.lb_flow_chart.clear()
+
+
+    def save_diagram(self, image_format):
+        """
+        save diagram
+        """
+        if self.pte_gv.toPlainText():
+            file_name, filter_ = QFileDialog().getSaveFileName(self,
+                                                               "Select the file and format to save the flow diagram", "",
+                                                               "PNG files (*.png);;All files (*)" if image_format == "png" else
+                                                               "SVG files (*.svg);;All files (*)"
+                                                               )
+            diagram_tmp_file_path = self.flow_diagram(image_format=image_format)
+            if diagram_tmp_file_path:
+                copyfile(diagram_tmp_file_path, file_name)
         else:
             QMessageBox.warning(self, "Behatrix", "No GV script found. Generate the GraphViz script first.")
-
 
     def exclude_behavior_repetitions(self):
         """
