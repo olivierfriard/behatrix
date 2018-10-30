@@ -83,7 +83,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
         self.pb_save_gv.clicked.connect(self.save_gv)
-        self.pb_flow_diagram.clicked.connect(self.flow_diagram)
+        self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram("png"))
         self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
         self.pte_gv.textChanged.connect(self.flow_diagram)
