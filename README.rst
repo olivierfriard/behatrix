@@ -112,6 +112,13 @@ Flow diagram
    :alt: flow diagram
 
 
+Permutations test
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+.. image:: screenshots/permutations_test.png
+   :alt: Permutations test
+
+
 
 
 
