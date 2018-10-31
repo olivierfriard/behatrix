@@ -87,8 +87,23 @@ The behavioral strings can be paste or loaded from file (see the BORIS user guid
 .. image:: screenshots/behavioral_strings.png
    :alt: behavioral_strings
 
+
+
+Behaviors and transitions statistics
+--------------------------------------------------------------------------------------------------------------------------------------------
+
 .. image:: screenshots/behav_strings_statistics.png
    :alt: behavioral_strings statistics
+
+
+
+Matrix of observed transitions
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+.. image:: observed_transitions_matrix.png
+   :alt: observed transitions matrix
+
+
 
 
 .. image:: screenshots/bsa.png
