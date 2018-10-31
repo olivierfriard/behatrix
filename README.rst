@@ -104,11 +104,18 @@ Matrix of observed transitions
    :alt: observed transitions matrix
 
 
+Flow diagram
+--------------------------------------------------------------------------------------------------------------------------------------------
 
 
-.. image:: screenshots/bsa.png
-   :alt: behavioral_strings statistics
-   :align: left
+.. image:: screenshots/flow_diagram.png
+   :alt: flow diagram
+
+
+
+    .. image:: screenshots/flow_diagram.png
+       :alt: behavioral_strings statistics
+       :align: left
 
 
 
