@@ -54,7 +54,7 @@ Launch of Behatrix on Linux
 
 An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
-
+Extract the archive and launch the **behatrix_gui** executable.
 
 
 Launch Behatrix from sources (all platforms)
@@ -75,7 +75,11 @@ Usage of the GUI interface
 ============================================================================================================================================
 
 
-  python3 behatrix_gui.py
+.. image:: screenshots/main_window.png
+   :alt: Main window
+
+
+
 
 .. image:: screenshots/bsa.png
    :alt: BSA screenshot
@@ -85,7 +89,7 @@ Usage of the GUI interface
 
 
 Usage of command line utility
----------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 
 .. code-block:: text
 
