@@ -113,11 +113,6 @@ Flow diagram
 
 
 
-    .. image:: screenshots/flow_diagram.png
-       :alt: behavioral_strings statistics
-       :align: left
-
-
 
 
 Usage of command line utility
