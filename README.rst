@@ -80,10 +80,14 @@ Usage of the GUI interface
 
 
 .. image:: screenshots/behavioral_strings.png
-   :alt: Main window
+   :alt: behavioral_strings
+
+.. image:: screenshots/behav_strings_statistics.png
+   :alt: behavioral_strings statistics
+
 
 .. image:: screenshots/bsa.png
-   :alt: BSA screenshot
+   :alt: behavioral_strings statistics
    :align: left
 
 
