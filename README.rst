@@ -19,7 +19,7 @@ The details of modifications are available in the `revision history <https://git
 Installation
 ============================================================================================================================================
 
-Behatrix source code and executables are available in `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_.
+Behatrix source code and executable binary programs for Linux, Mac and Microsoft-Windows are available in `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_.
 
 
 
