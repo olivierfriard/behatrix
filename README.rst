@@ -96,7 +96,7 @@ The Behatrix main window
 .. image:: screenshots/main_window.png
    :alt: Main window
 
-The behavioral strings can be paste or loaded from file
+The behavioral strings can be directly written, paste or loaded from file in the **Behavioral strings** edit box.
 (see the BORIS user guide for `exporting behavioral strings <https://boris.readthedocs.io/en/latest/#export-events-as-behavioral-strings>`_).
 
 
