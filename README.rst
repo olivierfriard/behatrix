@@ -9,7 +9,7 @@ Behatrix
 **Behavioral strings analysis with randomization test**
 
 
-Behatrix was formerly named BSA (Behavioral Strings Analysis)
+**Behatrix** was formerly named BSA (Behavioral Strings Analysis)
 
 
 
@@ -33,7 +33,7 @@ If you want to use more than one core you must launch the bsa_gui.py Python scri
 
 
 Launch of Behatrix on Mac OS
-===========================================
+========================================================================
 
 An DMG image containing executable binary is available on `latest release <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
@@ -44,11 +44,17 @@ See `Graphviz on Mac OS <http://www.graphviz.org/Download_macos.php>`_ for detai
 
 
 Launch of Behatrix on Linux
-======================================
+========================================================================
+
+An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
+
+
+Launch Behatrix from sources (all platforms)
+========================================================================
 
 
 Requirements
-------------
+------------------------------------------------------------------------
 
 * Python3
 * Numpy
@@ -57,11 +63,9 @@ Requirements
 
 
 Usage of the GUI interface
-------------------------------------------
+========================================================================
 
-Launch the behatrix_gui.py script with Python3
 
-.. code-block:: text
 
   python3 behatrix_gui.py
 
