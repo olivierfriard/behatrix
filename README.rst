@@ -1,6 +1,6 @@
-=================================
+============================================================================================================================================
 Behatrix
-=================================
+============================================================================================================================================
 
 :Author: `Olivier Friard <http://www.di.unito.it/~friard>`_
 :Author: Marco Gamba
@@ -13,9 +13,10 @@ Behatrix
 
 
 
-Launch of Behatrix on Microsoft Windows
-=============================================================
 
+
+Launch of Behatrix on Microsoft Windows
+============================================================================================================================================
 
 An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
@@ -32,8 +33,10 @@ If you do not add the dot program to the path you must specify the path to the d
 If you want to use more than one core you must launch the bsa_gui.py Python script. See "Launch of BSA on Linux" for details)
 
 
+
+
 Launch of Behatrix on Mac OS
-========================================================================
+============================================================================================================================================
 
 An DMG image containing executable binary is available on `latest release <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
@@ -43,14 +46,19 @@ The `GraphViz package <http://www.graphviz.org>`_ is required for generating gra
 See `Graphviz on Mac OS <http://www.graphviz.org/Download_macos.php>`_ for details.
 
 
+
+
+
 Launch of Behatrix on Linux
-========================================================================
+============================================================================================================================================
 
 An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
 
+
+
 Launch Behatrix from sources (all platforms)
-========================================================================
+============================================================================================================================================
 
 
 Requirements
@@ -62,14 +70,14 @@ Requirements
 * graphviz package (optional)
 
 
-Usage of the GUI interface
-========================================================================
 
+Usage of the GUI interface
+============================================================================================================================================
 
 
   python3 behatrix_gui.py
 
-.. image:: bsa.png
+.. image:: screenshots/bsa.png
    :alt: BSA screenshot
    :align: left
 
@@ -86,9 +94,9 @@ Usage of command line utility
                            [--exclusions EXCLUSIONS] [--n_random NRANDOM]
                            [--n_cpu N_CPU] [--block_first] [--block_last]
                            [--quiet]
-    
+
     Behatrix command line utility
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -v                    Behatrix version
@@ -101,7 +109,7 @@ Usage of command line utility
       --block_first         block first behavior during randomization test
       --block_last          block last behavior during randomization test
       --quiet               Do not print results on terminal
-  
+
 
 
 
