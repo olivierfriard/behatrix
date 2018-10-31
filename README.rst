@@ -15,6 +15,16 @@ Behatrix
 The details of modifications are available in the `revision history <https://github.com/olivierfriard/behatrix/wiki/revision-history>`_ .
 
 
+
+Installation
+============================================================================================================================================
+
+Behatrix source code and executables are available in `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_.
+
+
+
+
+
 Launch of Behatrix on Microsoft Windows
 ============================================================================================================================================
 
