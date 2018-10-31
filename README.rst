@@ -79,7 +79,8 @@ Usage of the GUI interface
    :alt: Main window
 
 
-
+.. image:: screenshots/behavioral_strings.png
+   :alt: Main window
 
 .. image:: screenshots/bsa.png
    :alt: BSA screenshot
