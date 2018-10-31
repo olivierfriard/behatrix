@@ -100,7 +100,7 @@ Behaviors and transitions statistics
 Matrix of observed transitions
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-.. image:: observed_transitions_matrix.png
+.. image:: screenshots/observed_transitions_matrix.png
    :alt: observed transitions matrix
 
 
