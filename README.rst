@@ -12,7 +12,7 @@ Behatrix
 **Behatrix** was formerly named BSA (Behavioral Strings Analysis)
 
 
-
+The details of modifications are available in the `revision history <https://github.com/olivierfriard/behatrix/wiki/revision-history>`_ .
 
 
 Launch of Behatrix on Microsoft Windows
