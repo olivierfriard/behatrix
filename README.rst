@@ -119,6 +119,14 @@ Permutations test
    :alt: Permutations test
 
 
+Permutations test with exclusions
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Some transitions can be excluded from the permutations test:
+
+.. image:: screenshots/permutations_test_with_exclusions.png
+   :alt: Permutations test
+
 
 
 
