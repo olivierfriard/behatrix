@@ -86,7 +86,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram("png"))
         self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
-        self.pte_gv.textChanged.connect(self.flow_diagram)
+        # self.pte_gv.textChanged.connect(self.flow_diagram)
         self.pb_save_png.clicked.connect(lambda: self.save_diagram("png"))
         self.pb_save_svg.clicked.connect(lambda: self.save_diagram("svg"))
 
@@ -135,7 +135,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             date=version.__version_date__,
                             python_ver=platform.python_version()))
         _ = about_dialog.exec_()
-
 
     def behavioral_strings_changed(self):
         """
@@ -394,6 +393,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
+
             if error:
                 QMessageBox.warning(self, "Behatrix", error.decode("utf-8"))
                 return ""
