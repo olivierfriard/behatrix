@@ -476,15 +476,17 @@ def permutations_test(nrandom: int,
 
                         if element in lspazio2:
                             lspazio2 = list([x for x in lspazio2 if x != element])
+                            '''lspazio2 = [x for x in lspazio2 if x != element]'''
 
                         if seq[-1] in lspazio2:
                             lspazio2 = list([x for x in lspazio2 if x != seq[-1]])
+                            '''lspazio2 = [x for x in lspazio2 if x != seq[-1]]'''
 
                 newseq.append(new_element)
                 element = new_element
 
             if block_last:
-                newseq += seq[-1]
+                newseq.append(seq[-1])
 
             perm_sequences.append(newseq)
 
@@ -495,7 +497,7 @@ def permutations_test(nrandom: int,
     for sequence in sequences:
         space += sequence[int(block_first):len(sequence) - int(block_last)]
 
-    # modifiy exclusions list to avoid repetitions
+    # modify exclusions list to avoid repetitions
     if no_repetition:
         for behavior in behaviours:
             if behavior not in exclusion_list:
@@ -521,8 +523,10 @@ def permutations_test(nrandom: int,
 
             for seq in permuted_sequences:
                 for i in range(len(seq) - 1):
-                    '''if seq[i] in behaviours and seq[i + 1] in behaviours:'''
-                    permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
+                    try:
+                        permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
+                    except:
+                        print(str(sys.exc_info()[1]))
 
             results = results + (permuted_transitions_matrix >= observed_matrix)
 

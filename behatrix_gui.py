@@ -40,9 +40,7 @@ from shutil import copyfile
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-#from PyQt5 import QtSvg
 from PyQt5.QtWidgets import *
-
 
 
 from behatrix_ui import Ui_MainWindow
@@ -50,7 +48,6 @@ import behatrix_cli
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-
 
     def __init__(self, parent=None):
 
@@ -112,6 +109,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.cb_plot_significativity.setEnabled(False)
 
+        config_file_path = str(pathlib.Path(os.path.expanduser("~")) / ".behatrix")
+        if os.path.isfile(config_file_path):
+            settings = QSettings(config_file_path, QSettings.IniFormat)
+            self.le_dot_path.setText(settings.value("dot_prog_path"))
+
 
     def about(self):
 
@@ -135,6 +137,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             date=version.__version_date__,
                             python_ver=platform.python_version()))
         _ = about_dialog.exec_()
+
+
+    def closeEvent(self, event):
+        settings = QSettings(str(pathlib.Path(os.path.expanduser("~")) / ".behatrix"),
+                             QSettings.IniFormat)
+
+        settings.setValue("dot_prog_path", self.le_dot_path.text())
 
     def behavioral_strings_changed(self):
         """
@@ -404,14 +413,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.lb_flow_chart.setPixmap(myScaledPixmap)
 
             return tmp_image_path
-
-            '''
-            renderer =  QtSvg.QSvgRenderer(tmp_image_path)
-            self.lb_flow_chart.resize(renderer.defaultSize())
-            painter = QPainter(self.lb_flow_chart)
-            painter.restore()
-            renderer.render(painter)
-            '''
 
             '''
             else:
