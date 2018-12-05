@@ -325,9 +325,11 @@ def draw_diagram(cutoff_all,
                     else:
                         node2 = "{}".format(i1)
 
+                    pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
+
                     out += f_edge_label(edge_label, node1, node2, unique_transitions[i],
                                         tot_trans_after_node[i0], tot_trans, decimals_number,
-                                        pen_width(significativity[behaviors.index(i0), behaviors.index(i1)]))
+                                        pen_width)
 
         elif cutoff_behavior:
 
@@ -348,8 +350,11 @@ def draw_diagram(cutoff_all,
                     else:
                         node2 = "{}".format(i1)
 
+                    pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
+
                     out += f_edge_label(edge_label, node1, node2, unique_transitions[i],
-                                        tot_trans_after_node[i0], tot_trans, decimals_number)
+                                        tot_trans_after_node[i0], tot_trans, decimals_number,
+                                        pen_width)
 
         else:
 
@@ -369,7 +374,6 @@ def draw_diagram(cutoff_all,
                     node2 = "{}".format(i1)
 
                 pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
-
 
                 out += f_edge_label(edge_label,
                                     node1,
