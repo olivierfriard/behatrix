@@ -242,15 +242,22 @@ def draw_diagram(cutoff_all,
         """
 
 
-        def f_edge_label(edge_label, node1, node2, di, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1):
+        def f_edge_label(edge_label,
+                         node1,
+                         node2,
+                         di,
+                         tot_trans_after_node_i0,
+                         tot_trans,
+                         decimals_number,
+                         pen_width=1):
 
             if edge_label == "fraction_node":
 
-                return '"{node1}" -> "{node2}" [label = "{di}/{tot_transition_after_node}" penwidth={pen_width}];\n'.format(
+                return '"{node1}" -> "{node2}" [label = "{di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'.format(
                     node1=node1,
                     node2=node2,
                     di=di,
-                    tot_transition_after_node_i0=tot_transition_after_node_i0,
+                    tot_trans_after_node_i0=tot_trans_after_node_i0,
                     pen_width=pen_width)
 
             elif edge_label == "percent_node":
@@ -270,6 +277,7 @@ def draw_diagram(cutoff_all,
                             if decimals_number else round(di / tot_trans * 100.0),
                     pen_width=pen_width
                 )
+
 
         def width(p):
             """
@@ -362,10 +370,15 @@ def draw_diagram(cutoff_all,
 
                 pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
 
-                out += f_edge_label(edge_label, node1, node2, unique_transitions[i],
-                                    tot_trans_after_node[i0], tot_trans, decimals_number,
-                                    pen_width)
 
+                out += f_edge_label(edge_label,
+                                    node1,
+                                    node2,
+                                    unique_transitions[i],
+                                    tot_trans_after_node[i0],
+                                    tot_trans,
+                                    decimals_number,
+                                    pen_width)
 
         out += '}\n'
 

@@ -145,6 +145,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         settings.setValue("dot_prog_path", self.le_dot_path.text())
 
+
     def behavioral_strings_changed(self):
         """
         behavioral string changed by user
@@ -153,6 +154,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cb_plot_significativity.setEnabled(False)
         for w in [self.pte_statistics, self.pte_gv, self.pte_random]:
             w.clear()
+        # test if | separator present
+        if "|" in self.pte_behav_strings.toPlainText():
+            self.le_behaviors_separator.setText("|")
 
 
     def browse_dot_path(self):
