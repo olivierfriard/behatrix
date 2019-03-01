@@ -201,7 +201,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              tot_trans, tot_trans_after_node,
              behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                             behaviors_separator=self.le_behaviors_separator.text(),
-                                                            chunk=0)
+                                                            chunk=0,
+                                                            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked())
 
             output = ""
             output += ("Behaviours list:\n================\n{}\n".format("\n".join(behaviours)))
@@ -250,7 +251,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
          tot_trans, tot_trans_after_node,
          behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                         behaviors_separator=self.le_behaviors_separator.text(),
-                                                        chunk=0)
+                                                        chunk=0,
+                                                        flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked())
 
         if sequences:
 
@@ -280,7 +282,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
          tot_trans, tot_trans_after_node,
          behaviors) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                        behaviors_separator=self.le_behaviors_separator.text(),
-                                                       chunk=0)
+                                                       chunk=0,
+                                                       flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
+                                                       )
 
         # type of labels
         edge_label = "percent_node"
@@ -447,6 +451,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             QMessageBox.warning(self, "Behatrix", "No GV script found. Generate the GraphViz script first.")
 
+
     def exclude_behavior_repetitions(self):
         """
         insert repetition of same behavior in exclusions list
@@ -470,7 +475,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              tot_trans, tot_trans_after_node,
              behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                             behaviors_separator=self.le_behaviors_separator.text(),
-                                                            chunk=0)
+                                                            chunk=0,
+                                                            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
+                                                            )
 
             # check exclusion list
             if self.pte_excluded_transitions.toPlainText():

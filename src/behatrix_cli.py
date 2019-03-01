@@ -6,7 +6,7 @@ Behavioural Strings Analysis (BSA)).
 
 Behavioral strings analysis with randomization test
 
-Copyright 2017-2018 Olivier Friard
+Copyright 2017-2019 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -31,7 +31,9 @@ import argparse
 import numpy as np
 import concurrent.futures
 import random
+import itertools
 import version
+
 
 
 SEPARATOR = "@%&£$"
@@ -56,14 +58,18 @@ def remove_comments(s: str) -> str:
     return "\n".join(strings_list)
 
 
-def behav_strings_stats(string, chunk=0, behaviors_separator=""):
+def behav_strings_stats(string,
+                        behaviors_separator="",
+                        chunk=0,
+                        flag_remove_repetitions=False):
     """
     extract some information from behavioral strings
 
     Args:
         string (str): behavioral strings
-        chunk (int): limit analysis to the chunk first characters
         separator (str): string to use to split sequences in behaviors
+        chunk (int): limit analysis to the chunk first characters
+        flag_remove_repetitions (bool): if true remove behaviors repetions
 
     Returns:
         bool: 0 -> OK
@@ -71,9 +77,6 @@ def behav_strings_stats(string, chunk=0, behaviors_separator=""):
 
     return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
     """
-
-    # replace space by underscore (_)
-    # string = string.replace(" ", "_")
 
     # remove lines starting with #
     string = remove_comments(string)
@@ -103,10 +106,11 @@ def behav_strings_stats(string, chunk=0, behaviors_separator=""):
         if not row:
             continue
 
-        if flagOne:
-            r = list(row.strip())
-        else:
-            r = row.strip().split(behaviors_separator)
+        r = list(row.strip()) if flagOne else row.strip().split(behaviors_separator)
+
+        # check if repetitions
+        if flag_remove_repetitions:
+            r = [k for k, g in itertools.groupby(r)]
 
         if chunk:
             r = r[0:chunk]

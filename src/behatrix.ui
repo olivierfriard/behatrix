@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
@@ -108,6 +108,13 @@
          </layout>
         </item>
         <item>
+         <widget class="QCheckBox" name="cb_remove_repeated_behaviors">
+          <property name="text">
+           <string>Remove repeated behaviors</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
            <string>&lt;b&gt;Behavioral strings statistics&lt;/b&gt;</string>
@@ -193,6 +200,7 @@
        <zorder>label_13</zorder>
        <zorder>pte_statistics</zorder>
        <zorder>label_2</zorder>
+       <zorder>cb_remove_repeated_behaviors</zorder>
       </widget>
       <widget class="QWidget" name="tab_flow_diagram">
        <attribute name="title">
@@ -204,7 +212,7 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
              <widget class="QLabel" name="label_8">
