@@ -126,7 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         about_dialog.setInformativeText(
             ("<b>{prog_name}</b> {ver} - {date}"
-             "<p>Copyright &copy; 2017-2018 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
+             "<p>Copyright &copy; 2017-2019 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
              "Department of Life Sciences and Systems Biology<br>"
              "University of Torino - Italy<br>"
              "<br>"
