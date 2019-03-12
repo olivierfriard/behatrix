@@ -35,17 +35,21 @@ Launch of Behatrix on Microsoft Windows
 
 An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
-Launch the **behatrix_gui.exe** program
+Launch the **behatrix.exe** program
 
 The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
 Once installed you can add the directory containing the **dot** program to the PATH environment variable.
 See `Adding directory to PATH Environment Variable in Windows <https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10>`_ for details.
-If you do not add the dot program to the path you must specify the path to the dot program in BSA.
+If you do not add the dot program to the path you must specify the path to the dot program in Behatrix.
 
+Alternatively to installing Graphviz you can use remote Graphviz services like:
 
+* `Viz.js <http://viz-js.com/>`_
 
-**Please note**: the binary version for Windows do NOT allow to run the randomization test using more than one core.
-If you want to use more than one core you must launch the bsa_gui.py Python script. See "Launch of BSA on Linux" for details)
+* `WebGraphviz <http://www.webgraphviz.com/>`_
+
+* `GraphvizOnline <https://dreampuf.github.io/GraphvizOnline>`_
+
 
 
 
@@ -55,7 +59,7 @@ Launch of Behatrix on Mac OS
 
 An DMG image containing executable binary is available on `latest release <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
-Mount the **behatrix.dmg** image and launch **behatrix_gui** program.
+Mount the **behatrix.dmg** image and launch **behatrix** program.
 
 The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
 See `Graphviz on Mac OS <http://www.graphviz.org/Download_macos.php>`_ for details.
@@ -69,7 +73,7 @@ Launch of Behatrix on Linux
 
 An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
-Extract the archive and launch the **behatrix_gui** executable.
+Extract the archive and launch the **behatrix** executable.
 
 
 Launch Behatrix from sources (all platforms)
@@ -136,6 +140,11 @@ Permutations test
    :alt: Permutations test
 
 
+**Please note**: the binary version for Windows do NOT allow to run the permutations test using more than one core.
+If you want to use more than one core you must run Behatrix from sources.
+
+
+
 Permutations test with exclusions
 --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -143,6 +152,7 @@ Some transitions can be excluded from the permutations test:
 
 .. image:: screenshots/permutations_test_with_exclusions.png
    :alt: Permutations test
+
 
 
 
@@ -229,7 +239,7 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
 Legal
 =====
 
-Copyright 2017-2018 Olivier Friard
+Copyright 2017-2019 Olivier Friard
 
 **Behatrix** is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
