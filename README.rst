@@ -11,7 +11,7 @@ Behatrix
 :Author: Marco Gamba
 
 
-**Behavioral strings analysis with randomization test**
+**Behavioral sequences analysis with permutation test**
 
 
 **Behatrix** was formerly named BSA (Behavioral Strings Analysis)
@@ -37,7 +37,7 @@ An executable binary program is available on the `latest releases <https://githu
 
 Launch the **behatrix.exe** program
 
-The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
+The `Graphviz package <http://www.graphviz.org>`_ is required for generating graph.
 Once installed you can add the directory containing the **dot** program to the PATH environment variable.
 See `Adding directory to PATH Environment Variable in Windows <https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10>`_ for details.
 If you do not add the dot program to the path you must specify the path to the dot program in Behatrix.
@@ -125,12 +125,18 @@ Matrix of observed transitions
    :alt: observed transitions matrix
 
 
+
+
 Flow diagram
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 
 .. image:: screenshots/flow_diagram.png
    :alt: flow diagram
+
+
+**Graphviz required**
+
 
 
 Permutations test
