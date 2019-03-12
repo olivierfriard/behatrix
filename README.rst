@@ -130,12 +130,13 @@ Matrix of observed transitions
 Flow diagram
 --------------------------------------------------------------------------------------------------------------------------------------------
 
+Graphviz is required.
 
 .. image:: screenshots/flow_diagram.png
    :alt: flow diagram
 
 
-**Graphviz required**
+
 
 
 
