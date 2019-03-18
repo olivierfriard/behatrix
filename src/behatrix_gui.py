@@ -446,7 +446,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                "SVG files (*.svg);;All files (*)"
                                                                )
             diagram_tmp_file_path = self.flow_diagram(image_format=image_format)
-            if diagram_tmp_file_path:
+            if diagram_tmp_file_path and file_name:
                 copyfile(diagram_tmp_file_path, file_name)
         else:
             QMessageBox.warning(self, "Behatrix", "No GV script found. Generate the GraphViz script first.")

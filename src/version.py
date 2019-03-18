@@ -4,7 +4,7 @@
 Behatrix
 Behavioural Strings Analysis (BSA)).
 
-Behavioral strings analysis with randomization test
+Behavioral strings analysis with permutations test
 
 Copyright 2017-2019 Olivier Friard
 
@@ -25,5 +25,5 @@ This file is part of Behatrix.
 
 """
 
-__version__ = "0.5"
-__version_date__ = "2019-01-03"
+__version__ = "0.5.1"
+__version_date__ = "2019-03-20"
