@@ -364,23 +364,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.pte_gv.toPlainText():
 
-            '''
-            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file and format to save the flow diagram", "",
-                                                                         "PNG files (*.png);;SVG files (*.svg);;All files (*)")
-            '''
-
-
-            # image_format = diagram_format
-            '''
-            if not os.path.splitext(file_name)[1]:
-                if "svg" in filter_:
-                    file_name += ".svg"
-                    image_format = "svg"
-                if "png" in filter_:
-                    file_name += ".png"
-                    image_format = "png"
-            '''
-
             gv_script = self.pte_gv.toPlainText()
 
             tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
@@ -388,9 +371,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 tmp_gv_file.write(gv_script)
 
             tmp_image_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("temp_flow_diagram." + image_format))
-
-            print("tmp_gv_path", tmp_gv_path)
-            print("tmp_image_path", tmp_image_path)
 
             # check dot path
             if self.le_dot_path.text():
@@ -422,10 +402,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             return tmp_image_path
 
-            '''
-            else:
-                QMessageBox.warning(self, "Behatrix", "No GV script found. Generate the GraphViz script first.")
-            '''
 
 
     def clear_diagram(self):
