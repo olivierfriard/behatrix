@@ -4,7 +4,7 @@
 Behatrix
 Behavioural Strings Analysis (BSA)).
 
-Behavioral strings analysis with randomization test
+Behavioral strings analysis with permutations test
 
 Copyright 2017-2019 Olivier Friard
 
@@ -58,10 +58,10 @@ def remove_comments(s: str) -> str:
     return "\n".join(strings_list)
 
 
-def behav_strings_stats(string,
-                        behaviors_separator="",
-                        chunk=0,
-                        flag_remove_repetitions=False):
+def behav_strings_stats(string:str,
+                        behaviors_separator:str="",
+                        chunk:int=0,
+                        flag_remove_repetitions:bool=False)->(bool, list):
     """
     extract some information from behavioral strings
 
@@ -219,7 +219,7 @@ def check_exclusion_list(exclusion_str, sequences, behaviors_separator=""):
             for i in range(len(seq) - 1):
                 if seq[i] in exclusion_list and seq[i + 1] in exclusion_list[seq[i]]:
                     return {"error_code": 1,
-                            "message": "The behavioral strings contain an excluded transition: {} -> {}".format(seq[i], seq[i + 1]),
+                            "message": f"The behavioral strings contain an excluded transition: {seq[i]} -> {seq[i + 1]}",
                             "exclusion_list": {}}
 
     return {"error_code": 0, "exclusion_list": exclusion_list}
@@ -256,32 +256,15 @@ def draw_diagram(cutoff_all,
                          pen_width=1):
 
             if edge_label == "fraction_node":
-
-                return '"{node1}" -> "{node2}" [label = "{di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'.format(
-                    node1=node1,
-                    node2=node2,
-                    di=di,
-                    tot_trans_after_node_i0=tot_trans_after_node_i0,
-                    pen_width=pen_width)
+                return f'"{node1}" -> "{node2}" [label = "{di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
 
             elif edge_label == "percent_node":
-                return '"{node1}" -> "{node2}" [label = "{percent} %" penwidth={pen_width}];\n'.format(
-                    node1=node1,
-                    node2=node2,
-                    percent=round(di / tot_trans_after_node[i0] * 100, decimals_number)
-                            if decimals_number else round(di / tot_trans_after_node[i0] * 100),
-                    pen_width=pen_width
-                    )
+                percent = round(di / tot_trans_after_node[i0] * 100, decimals_number) if decimals_number else round(di / tot_trans_after_node[i0] * 100)
+                return f'"{node1}" -> "{node2}" [label = "{percent} %" penwidth={pen_width}];\n'
 
             elif edge_label == "percent_total":
-                return '"{node1}" -> "{node2}" [label = "{percent} %" penwidth={pen_width}];\n'.format(
-                    node1=node1,
-                    node2=node2,
-                    percent=round(di / tot_trans * 100.0, decimals_number)
-                            if decimals_number else round(di / tot_trans * 100.0),
-                    pen_width=pen_width
-                )
-
+                percent = round(di / tot_trans * 100.0, decimals_number) if decimals_number else round(di / tot_trans * 100.0)
+                return f'"{node1}" -> "{node2}" [label = "{percent} %" penwidth={pen_width}];\n'
 
         def width(p):
             """
@@ -319,15 +302,15 @@ def draw_diagram(cutoff_all,
                     i0, i1 = i.split(SEPARATOR)
 
                     if i0 in starting_nodes:
-                        node1 = "{} ({})".format(i0, starting_nodes[i0])
+                        node1 = f"{i0} ({starting_nodes[i0]})"
                     else:
-                        node1 = "{}".format(i0)
+                        node1 = f"{i0}"
 
                     if i1 in starting_nodes:
-                        node2 = "{} ({})".format(i1, starting_nodes[i1])
+                        node2 = f"{i1} ({starting_nodes[i1]})"
 
                     else:
-                        node2 = "{}".format(i1)
+                        node2 = f"{i1}"
 
                     pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
 
@@ -344,15 +327,15 @@ def draw_diagram(cutoff_all,
                 if unique_transitions[i] / tot_trans_after_node[i0] * 100 >= cutoff_behavior:
 
                     if i0 in starting_nodes and include_first:
-                        node1 = "{} ({})".format(i0, starting_nodes[i0])
+                        node1 = f"{i0} ({starting_nodes[i0]})"
                     else:
-                        node1 = "{}".format(i0)
+                        node1 = f"{i0}"
 
                     if i1 in starting_nodes and include_first:
-                        node2 = "{} ({})".format(i1, starting_nodes[i1])
+                        node2 = f"{i1} ({starting_nodes[i1]})"
 
                     else:
-                        node2 = "{}".format(i1)
+                        node2 = f"{i1}"
 
                     pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
 
@@ -367,15 +350,15 @@ def draw_diagram(cutoff_all,
                 i0, i1 = i.split(SEPARATOR)
 
                 if i0 in starting_nodes:
-                    node1 = "{} ({})".format(i0, starting_nodes[i0])
+                    node1 = f"{i0} ({starting_nodes[i0]})"
                 else:
-                    node1 = "{}".format(i0)
+                    node1 = f"{i0}"
 
                 if i1 in starting_nodes:
-                    node2 = "{} ({})".format(i1, starting_nodes[i1])
+                    node2 = f"{i1} ({starting_nodes[i1]})"
 
                 else:
-                    node2 = "{}".format(i1)
+                    node2 = f"{i1}"
 
                 pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
 
@@ -576,7 +559,7 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        print("version {} - {}".format(version.__version__, version.__version_date__))
+        print(f"version {version.__version__} - {version.__version_date__}")
         sys.exit()
 
     if not args.strings:
@@ -586,7 +569,7 @@ def main():
         sys.exit()
     else:
         if not os.path.isfile(args.strings):
-            print("{} is not a file\n".format(args.strings))
+            print(f"{args.strings} is not a file\n")
             sys.exit()
 
     with open(args.strings) as f_in:
@@ -606,7 +589,7 @@ def main():
 
         if args.exclusions:
             if not os.path.isfile(args.exclusions):
-                print("{} is not a file\n".format(args.exclusions))
+                print(f"{args.exclusions} is not a file\n")
                 sys.exit()
             else:
                 with open(args.exclusions) as f_in:
@@ -630,10 +613,10 @@ def main():
         print("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
 
         print("Statistics\n==========")
-        print('Number of different behaviours: {}'.format(len(behaviours)))
-        print('Total number of behaviours: {}'.format(tot_nodes))
-        print('Number of different transitions: {}'.format(len(unique_transitions)))
-        print('Total number of transitions: {}'.format(tot_trans))
+        print(f'Number of different behaviours: {len(behaviours)}')
+        print(f'Total number of behaviours: {tot_nodes}')
+        print(f'Number of different transitions: {len(unique_transitions)}')
+        print(f'Total number of transitions: {tot_trans}')
 
         print('\nBehaviours frequencies:\n=======================')
 
@@ -642,10 +625,7 @@ def main():
             for seq in sequences:
                 countBehaviour += seq.count(behaviour)
 
-            print("{behaviour}\t{freq:.3f}\t{countBehaviour} / {tot_nodes}".format(behaviour=behaviour,
-                                                                                   freq=countBehaviour / tot_nodes,
-                                                                                   countBehaviour=countBehaviour,
-                                                                                   tot_nodes=tot_nodes))
+            print(f"{behaviour}\t{countBehaviour / tot_nodes:.3f}\t{countBehaviour} / {tot_nodes}")
 
     observed_matrix = create_observed_transition_matrix(sequences, behaviours)
 
@@ -653,12 +633,11 @@ def main():
         print("\nObserved transition matrix:\n===========================\n{}".format(observed_matrix))
 
     if args.output:
-        file_name = '{fileName}.observed_transitions.tsv'.format(fileName=args.output)
+        file_name = f'{args.output}.observed_transitions.tsv'
     else:
-        file_name = '{fileName}.observed_transitions.tsv'.format(fileName=args.strings)
+        file_name = f'{args.strings}.observed_transitions.tsv'
 
     np.savetxt(file_name, observed_matrix, fmt='%d', delimiter='\t')
-
 
     with open(file_name, mode="r", encoding="utf-8") as f_in:
         rows = f_in.readlines()
@@ -704,7 +683,7 @@ def main():
 
                 n_required_randomizations += n_random_by_proc
 
-            print("\nnumber of required randomizations: ", n_required_randomizations)
+            print("\nnumber of required permutations: ", n_required_randomizations)
 
             nb_randomization_done = 0
 
@@ -713,7 +692,7 @@ def main():
                 results += l.result()[1]
 
 
-        print("Number of done randomizations: {}".format(nb_randomization_done))
+        print(f"Number of permutations done: {nb_randomization_done}")
 
         if not args.quiet:
             print("\nRandomized transition matrix:\n===========================\n{}".format(results / nrandom))
@@ -734,7 +713,6 @@ def main():
             for row in rows:
                 f.write((behaviours)[c] + "\t" + row)
                 c += 1
-
 
 
 if __name__ == '__main__':

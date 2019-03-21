@@ -295,19 +295,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.rb_fraction_after_behav.isChecked():
             edge_label = "fraction_node"
 
-        # cutoff
-        '''
-        try:
-            cutoff_all = self.sb_cutoff_total_transition.value()
-        except Exception:
-            QMessageBox.critical(self, "Behatrix", "{} value is not allowed".format(cutoff_all))
-            return
-        try:
-            cutoff_behavior = self.sb_cutoff_transition_after_behav.value()
-        except Exception:
-            QMessageBox.critical(self, "Behatrix", "{} value is not allowed".format(cutoff_behavior))
-            return
-        '''
 
         # check significativity
         if self.cb_plot_significativity.isChecked() and self.permutations_test_matrix is None:
@@ -342,14 +329,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.pte_gv.toPlainText():
 
             file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the GraphViz script", "",
-                                                                         "GV files (*.gv);;TXT files (*.txt);;All files (*)")
+                                                               "GV files (*.gv);;TXT files (*.txt);;All files (*)")
 
             if file_name:
                 with open(file_name, "w") as f_out:
                     f_out.write(self.pte_gv.toPlainText())
 
 
-    def flow_diagram(self, image_format="png"):
+    def flow_diagram(self, image_format:str="png")->str:
         """
         generate flow diagram from pte_gv content
         in PNG or SVG format
@@ -383,16 +370,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 dot_path = "dot"
 
-            cmd = '"{prog}" -T{image_format} "{gv_file}" -o "{image_file_name}"'.format(prog=dot_path,
-                                                                                  image_file_name=tmp_image_path,
-                                                                                  gv_file=tmp_gv_path,
-                                                                                  image_format=image_format)
+            cmd = f'"{dot_path}" -T{image_format} "{tmp_gv_path}" -o "{tmp_image_path}"'
 
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
 
             if error:
                 QMessageBox.warning(self, "Behatrix", error.decode("utf-8"))
+                return ""
+
+            if not os.path.isfile(tmp_image_path):
+                QMessageBox.critical(self, "Behatrix",
+                                     "Error during the graph creation.")
                 return ""
 
             if image_format == "png":
@@ -439,7 +428,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                              chunk=0)
         self.pte_excluded_transitions.insertPlainText("\n")
         for behavior in behaviors:
-            self.pte_excluded_transitions.insertPlainText("{behavior}:{behavior}\n".format(behavior=behavior))
+            self.pte_excluded_transitions.insertPlainText(f"{behavior}:{behavior}\n")
 
 
     def permutation_test(self):
@@ -542,8 +531,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.cb_plot_significativity.setEnabled(True)
 
                 QMessageBox.information(self, "Behatrix",
-                                        ("Randomization finished<br>"
-                                         "{} permutations done<br><br>").format(nb_randomization_done))
+                                        ("Permutations test finished<br>"
+                                         f"{nb_randomization_done} permutations done<br><br>"))
 
             else:
                 QMessageBox.warning(self, "Behatrix", "Select the number of permutations to execute")
