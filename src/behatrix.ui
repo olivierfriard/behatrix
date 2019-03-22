@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
@@ -442,6 +442,9 @@
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
+           <property name="childrenCollapsible">
+            <bool>true</bool>
+           </property>
            <widget class="QWidget" name="layoutWidget">
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
@@ -589,7 +592,7 @@
             <item>
              <widget class="QPushButton" name="pb_exclude_repetition">
               <property name="text">
-               <string>Exclude behaviors repetition</string>
+               <string>Exclude repeated behaviors</string>
               </property>
              </widget>
             </item>
@@ -665,7 +668,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_7">
           <item>
-           <widget class="QPushButton" name="pb_run_randomization_test">
+           <widget class="QPushButton" name="pb_run_permutations_test">
             <property name="text">
              <string>Run random permutations test</string>
             </property>
@@ -699,6 +702,9 @@
            <font>
             <family>Monospace</family>
            </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

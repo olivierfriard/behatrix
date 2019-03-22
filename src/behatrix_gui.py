@@ -90,7 +90,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # tab permutations test
         self.pb_exclude_repetition.clicked.connect(self.exclude_behavior_repetitions)
         self.pb_clear_excluded_transitions.clicked.connect(self.pte_excluded_transitions.clear)
-        self.pb_run_randomization_test.clicked.connect(self.permutation_test)
+        self.pb_run_permutations_test.clicked.connect(self.permutation_test)
         self.pb_save_random.clicked.connect(self.save_random)
 
         self.pte_behav_strings.setLineWrapMode(0)
@@ -369,6 +369,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 dot_path = self.le_dot_path.text()
             else:
                 dot_path = "dot"
+            # remove previous file
+            if os.path.isfile(tmp_image_path):
+                os.remove(tmp_image_path)
 
             cmd = f'"{dot_path}" -T{image_format} "{tmp_gv_path}" -o "{tmp_image_path}"'
 
@@ -377,7 +380,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if error:
                 QMessageBox.warning(self, "Behatrix", error.decode("utf-8"))
-                return ""
 
             if not os.path.isfile(tmp_image_path):
                 QMessageBox.critical(self, "Behatrix",
@@ -538,7 +540,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(self, "Behatrix", "Select the number of permutations to execute")
 
         else:
-            QMessageBox.warning("Behatrix", "No behavioral strings found!")
+            QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
 
 
     def save_random(self):

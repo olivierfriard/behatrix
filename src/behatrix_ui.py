@@ -2,11 +2,12 @@
 
 # Form implementation generated from reading ui file 'behatrix.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.2
+# Created by: PyQt5 UI code generator 5.12
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -212,6 +213,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout_6)
         self.horizontal_splitter = QtWidgets.QSplitter(self.vertical_splitter)
         self.horizontal_splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontal_splitter.setChildrenCollapsible(True)
         self.horizontal_splitter.setObjectName("horizontal_splitter")
         self.layoutWidget1 = QtWidgets.QWidget(self.horizontal_splitter)
         self.layoutWidget1.setObjectName("layoutWidget1")
@@ -311,9 +313,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.pb_run_randomization_test = QtWidgets.QPushButton(self.tab_randomization)
-        self.pb_run_randomization_test.setObjectName("pb_run_randomization_test")
-        self.horizontalLayout_7.addWidget(self.pb_run_randomization_test)
+        self.pb_run_permutations_test = QtWidgets.QPushButton(self.tab_randomization)
+        self.pb_run_permutations_test.setObjectName("pb_run_permutations_test")
+        self.horizontalLayout_7.addWidget(self.pb_run_permutations_test)
         spacerItem12 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_7.addItem(spacerItem12)
         self.verticalLayout_6.addLayout(self.horizontalLayout_7)
@@ -324,6 +326,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Monospace")
         self.pte_random.setFont(font)
+        self.pte_random.setReadOnly(True)
         self.pte_random.setObjectName("pte_random")
         self.verticalLayout_6.addWidget(self.pte_random)
         self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
@@ -357,7 +360,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -397,12 +400,12 @@ class Ui_MainWindow(object):
         self.cb_block_first_behavior.setText(_translate("MainWindow", "Block first behavior"))
         self.cb_block_last_behavior.setText(_translate("MainWindow", "Block last behavior"))
         self.label_7.setText(_translate("MainWindow", "Excluded transitions"))
-        self.pb_exclude_repetition.setText(_translate("MainWindow", "Exclude behaviors repetition"))
+        self.pb_exclude_repetition.setText(_translate("MainWindow", "Exclude repeated behaviors"))
         self.pb_clear_excluded_transitions.setText(_translate("MainWindow", "Clear excluded transitions"))
         self.label.setText(_translate("MainWindow", "Number of permutations"))
         self.leNumberRandomizations.setText(_translate("MainWindow", "100"))
         self.label_3.setText(_translate("MainWindow", "Number of cores to use"))
-        self.pb_run_randomization_test.setText(_translate("MainWindow", "Run random permutations test"))
+        self.pb_run_permutations_test.setText(_translate("MainWindow", "Run random permutations test"))
         self.label_15.setText(_translate("MainWindow", "Transitions p values"))
         self.pb_save_random.setText(_translate("MainWindow", "Save results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_randomization), _translate("MainWindow", "Random permutations test"))
@@ -410,4 +413,5 @@ class Ui_MainWindow(object):
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
         self.actionDocumentation.setText(_translate("MainWindow", "Documentation"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
+
 
