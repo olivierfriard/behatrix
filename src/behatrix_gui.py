@@ -92,18 +92,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_clear_excluded_transitions.clicked.connect(self.pte_excluded_transitions.clear)
         self.pb_run_permutations_test.clicked.connect(self.permutation_test)
         self.pb_save_random.clicked.connect(self.save_random)
-
         self.pte_behav_strings.setLineWrapMode(0)
-
         num_available_proc = os.cpu_count()
-
         self.sb_nb_cores.setMinimum(1)
         self.sb_nb_cores.setMaximum(num_available_proc)
-
         if num_available_proc <= 2:
             self.sb_nb_cores.setValue(1)
         else:
             self.sb_nb_cores.setValue(num_available_proc - 1)
+        
+        # tab Levenshtein
+        self.pb_levenshtein.clicked.connect(self.levenshtein_distance)
 
         self.permutations_test_matrix = None
 
@@ -556,6 +555,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 with open(file_name, "w") as f_out:
                     f_out.write(self.pte_random.toPlainText())
 
+    def levenshtein_distance(self):
+        """
+        Levenshtein distance between 2 behavioral sequences
+        """
+        seq1 = self.pte_seq1.toPlainText()
+        seq2 = self.pte_seq2.toPlainText()
+        self.le_levenshtein_distance.setText(f"{behatrix_cli.levenshtein(seq1, seq2)}")
+        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
