@@ -548,7 +548,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if self.pte_random.toPlainText():
 
-            file_name, filter_ = QFileDialog(self).getSaveFileName(self, "Select the file to save the matrix", "",
+            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the matrix", "",
                                                                          "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
 
             if file_name:
