@@ -41,7 +41,7 @@ from shutil import copyfile
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-
+import behatrix_qrc
 
 from behatrix_ui import Ui_MainWindow
 import behatrix_cli
@@ -53,9 +53,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+        self.setWindowIcon(QIcon(":/logo"))
 
-        self.setWindowIcon(QIcon(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
-        self.setWindowTitle("Behatrix - Behavioral Strings Analysis")
+        #self.setWindowIcon(QIcon(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
+        self.setWindowTitle("Behatrix - Behavioral Sequences Analysis")
 
         self.vertical_splitter.setStretchFactor(1, 10)
         self.horizontal_splitter.setStretchFactor(1, 1)
@@ -120,7 +121,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def about(self):
 
         about_dialog = QMessageBox()
-        about_dialog.setIconPixmap(QPixmap(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
+        about_dialog.setIconPixmap(QPixmap(":/logo"))
+        #about_dialog.setIconPixmap(QPixmap(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
         about_dialog.setWindowTitle("About Behatrix")
         about_dialog.setStandardButtons(QMessageBox.Ok)
         about_dialog.setDefaultButton(QMessageBox.Ok)
@@ -603,6 +605,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setApplicationName("Behatrix")
     mainWindow = MainWindow()
 
     mainWindow.show()
