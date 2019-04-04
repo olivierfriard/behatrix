@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>893</width>
-    <height>598</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -736,46 +736,60 @@
       </widget>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Levenshtein distance</string>
+        <string>Behavioral sequences distances</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_12">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_11">
+         <widget class="QSplitter" name="splitter">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QWidget" name="layoutWidget">
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Behavioral sequence 1</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPlainTextEdit" name="pte_seq1"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="layoutWidget">
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Behavioral sequence 2</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPlainTextEdit" name="pte_seq2"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_20">
           <item>
-           <widget class="QSplitter" name="splitter">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Behaviors separator</string>
             </property>
-            <widget class="QWidget" name="">
-             <layout class="QVBoxLayout" name="verticalLayout_9">
-              <item>
-               <widget class="QLabel" name="label_5">
-                <property name="text">
-                 <string>Behavioral sequence 1</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="pte_seq1"/>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QWidget" name="">
-             <layout class="QVBoxLayout" name="verticalLayout_10">
-              <item>
-               <widget class="QLabel" name="label_6">
-                <property name="text">
-                 <string>Behavioral sequence 2</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="pte_seq2"/>
-              </item>
-             </layout>
-            </widget>
            </widget>
           </item>
+          <item>
+           <widget class="QLineEdit" name="le_behaviors_separator_distance"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_21">
           <item>
            <widget class="QPushButton" name="pb_levenshtein">
             <property name="text">
@@ -784,14 +798,55 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_19">
+           <widget class="QPushButton" name="pb_needleman_wunsch">
             <property name="text">
-             <string>Result</string>
+             <string>Needleman-Wunsch identity</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="le_levenshtein_distance"/>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_22">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <widget class="QLabel" name="label_19">
+              <property name="text">
+               <string>Results</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPlainTextEdit" name="pte_distances_results"/>
           </item>
          </layout>
         </item>

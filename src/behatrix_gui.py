@@ -102,7 +102,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.sb_nb_cores.setValue(num_available_proc - 1)
         
         # tab Levenshtein
+        self.pte_seq1.textChanged.connect(self.behavioral_seq_distances_changed)
+        self.pte_seq2.textChanged.connect(self.behavioral_seq_distances_changed)
         self.pb_levenshtein.clicked.connect(self.levenshtein_distance)
+        self.pb_needleman_wunsch.clicked.connect(self.needleman_wunsch_identity)
 
         self.permutations_test_matrix = None
 
@@ -148,6 +151,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def behavioral_strings_changed(self):
         """
         behavioral string changed by user
+        test separator for behaviors
         """
         self.permutations_test_matrix = None
         self.cb_plot_significativity.setEnabled(False)
@@ -555,14 +559,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 with open(file_name, "w") as f_out:
                     f_out.write(self.pte_random.toPlainText())
 
+    def behavioral_seq_distances_changed(self):
+        """
+        behavioral sequences changed by user
+        test separator for behaviors
+        """
+        self.pte_distances_results.clear()
+
+        # test if | separator present
+        for w in [self.pte_seq1, self.pte_seq2]:
+            if "|" in w.toPlainText():
+                self.le_behaviors_separator_distance.setText("|")
+
+
     def levenshtein_distance(self):
         """
         Levenshtein distance between 2 behavioral sequences
         """
         seq1 = self.pte_seq1.toPlainText()
         seq2 = self.pte_seq2.toPlainText()
-        self.le_levenshtein_distance.setText(f"{behatrix_cli.levenshtein(seq1, seq2)}")
-        
+        if self.le_behaviors_separator_distance.text():
+            seq1 = seq1.split(self.le_behaviors_separator_distance.text())
+            seq2 = seq2.split(self.le_behaviors_separator_distance.text())
+        results = round(behatrix_cli.levenshtein(seq1, seq2))
+        self.pte_distances_results.clear()
+        self.pte_distances_results.insertPlainText(f"Levenshtein distance: {results}")
+
+
+    def needleman_wunsch_identity(self):
+        """
+        Needleman-Wunsch identity
+        """
+        seq1 = self.pte_seq1.toPlainText()
+        seq2 = self.pte_seq2.toPlainText()
+        if self.le_behaviors_separator_distance.text():
+            seq1 = seq1.split(self.le_behaviors_separator_distance.text())
+            seq2 = seq2.split(self.le_behaviors_separator_distance.text())
+        results = behatrix_cli.needleman_wunsch(seq1, seq2)
+        self.pte_distances_results.clear()
+        self.pte_distances_results.insertPlainText(f"Needleman-Wunsch identity: {results['identity']:.2f} %")
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
