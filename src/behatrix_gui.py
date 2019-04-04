@@ -91,7 +91,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_exclude_repetition.clicked.connect(self.exclude_behavior_repetitions)
         self.pb_clear_excluded_transitions.clicked.connect(self.pte_excluded_transitions.clear)
         self.pb_run_permutations_test.clicked.connect(self.permutation_test)
-        self.pb_save_random.clicked.connect(self.save_random)
+        self.pb_save_random.clicked.connect(self.save_permutations_test_results)
         self.pte_behav_strings.setLineWrapMode(0)
         num_available_proc = os.cpu_count()
         self.sb_nb_cores.setMinimum(1)
@@ -542,14 +542,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
 
 
-    def save_random(self):
+    def save_permutations_test_results(self):
         """
-        save matrix
+        Save permutations test matrix
         """
         if self.pte_random.toPlainText():
 
-            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the matrix", "",
-                                                                         "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
+            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the results", "",
+                                                               "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
 
             if file_name:
                 with open(file_name, "w") as f_out:
