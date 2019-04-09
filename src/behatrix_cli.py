@@ -867,12 +867,12 @@ def main():
         print(f"Number of permutations done: {nb_randomization_done}")
 
         if not args.quiet:
-            print("\nRandomized transition matrix:\n===========================\n{}".format(results / nrandom))
+            print("\nP-values matrix:\n===========================\n{}".format(results / nrandom))
 
         if args.output:
-            file_name = '{fileName}.randomized_transitions.{nrandom}.tsv'.format(fileName=args.output, nrandom=nrandom)
+            file_name = '{fileName}.p-values.{nrandom}.tsv'.format(fileName=args.output, nrandom=nrandom)
         else:
-            file_name = '{fileName}.randomized_transitions.{nrandom}.tsv'.format(fileName=args.strings, nrandom=nrandom)
+            file_name = '{fileName}.p-values.{nrandom}.tsv'.format(fileName=args.strings, nrandom=nrandom)
 
         np.savetxt(file_name, results / nrandom, fmt='%f', delimiter='\t')
 
