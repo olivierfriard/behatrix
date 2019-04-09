@@ -240,8 +240,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                           "",
                                                           "All files (*)")[0]
             if file_name:
-                with open(file_name, "w") as f_out:
-                    f_out.write(self.pte_statistics.toPlainText())
+                try:
+                    with open(file_name, "w") as f_out:
+                        f_out.write(self.pte_statistics.toPlainText())
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Results not saved!")
         else:
             QMessageBox.warning(self, "Behatrix", "No results to save!")
 
@@ -337,8 +340,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                "GV files (*.gv);;TXT files (*.txt);;All files (*)")
 
             if file_name:
-                with open(file_name, "w") as f_out:
-                    f_out.write(self.pte_gv.toPlainText())
+                try:
+                    with open(file_name, "w") as f_out:
+                        f_out.write(self.pte_gv.toPlainText())
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
 
     def flow_diagram(self, image_format:str="png")->str:
@@ -359,8 +365,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             gv_script = self.pte_gv.toPlainText()
 
             tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
-            with open(tmp_gv_path, "w") as tmp_gv_file:
-                tmp_gv_file.write(gv_script)
+            try:
+                with open(tmp_gv_path, "w") as tmp_gv_file:
+                    tmp_gv_file.write(gv_script)
+            except Exception:
+                QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
+                return
 
             tmp_image_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("temp_flow_diagram." + image_format))
 
@@ -558,20 +568,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
 
             if file_name:
-                with open(file_name, "w") as f_out:
-                    f_out.write(self.pte_random.toPlainText())
-
-    def behavioral_seq_distances_changed(self):
-        """
-        behavioral sequences changed by user
-        test separator for behaviors
-        """
-        self.pte_distances_results.clear()
-        # test if | separator present
-        #for w in [self.pte_seq1, self.pte_seq2]:
-        for w in [self.pte_seq]:
-            if "|" in w.toPlainText():
-                self.le_behaviors_separator_distance.setText("|")
+                try:
+                    with open(file_name, "w") as f_out:
+                        f_out.write(self.pte_random.toPlainText())
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
 
     def levenshtein_distance(self):
@@ -597,7 +598,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pte_distances_results.setPlainText(out)
 
 
-
     def needleman_wunsch_identity(self):
         """
         Needleman-Wunsch identities between behavioral sequences
@@ -619,6 +619,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             out += "\t".join([f"{x:.2f}" for x in results[r, :]]) + "\n"
 
         self.pte_distances_results.setPlainText(out)
+
+
+    def save_distances_results(self):
+        """
+        Save distances matrix
+        """
+        if self.pte_distances_results.toPlainText():
+
+            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the results", "",
+                                                               "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
+
+            if file_name:
+                try:
+                    with open(file_name, "w") as f_out:
+                        f_out.write(self.pte_distances_results.toPlainText())
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
 
         '''
