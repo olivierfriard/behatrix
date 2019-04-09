@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
@@ -727,20 +727,12 @@
             <item>
              <widget class="QLabel" name="label_5">
               <property name="text">
-<<<<<<< HEAD
                <string>Behavioral sequences</string>
-=======
-               <string>Behavioral sequence 1</string>
->>>>>>> c400fecbef3e144007f18f2f161c7d1eea8f9734
               </property>
              </widget>
             </item>
             <item>
-<<<<<<< HEAD
              <widget class="QPlainTextEdit" name="pte_seq"/>
-=======
-             <widget class="QPlainTextEdit" name="pte_seq1"/>
->>>>>>> c400fecbef3e144007f18f2f161c7d1eea8f9734
             </item>
            </layout>
           </widget>
@@ -848,7 +840,7 @@
      <x>0</x>
      <y>0</y>
      <width>893</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
