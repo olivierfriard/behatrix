@@ -540,10 +540,13 @@ def permutations_test(nrandom: int,
     return count_tot, results
 
 
-def levenshtein(seq1, seq2):
+def levenshtein_distance(seq1: list, seq2: list) -> int:
+    """
+    calculate the Levenshtein distance between the 2 sequences
+    """
     size_x = len(seq1) + 1
     size_y = len(seq2) + 1
-    matrix = np.zeros ((size_x, size_y))
+    matrix = np.zeros((size_x, size_y))
     for x in range(size_x):
         matrix [x, 0] = x
     for y in range(size_y):
@@ -566,8 +569,28 @@ def levenshtein(seq1, seq2):
     return matrix[matrix.shape[0] - 1, matrix.shape[1] - 1]
 
 
+def levenshtein_distance_seq_list(seq_list: list):
+    """
+    calculate Levenshtein distances for all combinations of 2 sequences in list
 
-def needleman_wunsch(seq1, seq2):
+    Args:
+        seq_list (list): list of sequences
+
+    Returns:
+        numpy array: Levenshtein distances
+    """
+
+    results = np.zeros((len(seq_list), len(seq_list)))
+    for p in itertools.combinations(enumerate(seq_list), 2):
+        results[p[0][0], p[1][0]] = levenshtein_distance(p[0][1], p[1][1])
+        results[p[1][0], p[0][0]] = results[p[0][0], p[1][0]]
+    return results
+
+
+def needleman_wunsch_identity(seq1: list, seq2: list) -> dict:
+    """
+    calculate the Needleman-Wunsch identity between the 2 sequences
+    """
 
     match_award = 1
     mismatch_penalty = -1
@@ -580,14 +603,13 @@ def needleman_wunsch(seq1, seq2):
             return gap_penalty
         else:
             return mismatch_penalty
-    
-    
+
     def finalize(align1, align2):
         align1 = align1[::-1]    #reverse sequence 1
         align2 = align2[::-1]    #reverse sequence 2
-    
+
         i,j = 0,0
-    
+
         #calculate identity, score and aligned sequeces
         symbol = []
         found = 0
@@ -599,20 +621,20 @@ def needleman_wunsch(seq1, seq2):
                 symbol.append(align1[i])
                 identity = identity + 1
                 score += match_score(align1[i], align2[i])
-    
+
             # if they are not identical and none of them is gap
             elif align1[i] != align2[i] and align1[i] != '-' and align2[i] != '-':
                 score += match_score(align1[i], align2[i])
                 symbol.append(" ")
                 found = 0
-    
+
             #if one of them is a gap, output a space
             elif align1[i] == '-' or align2[i] == '-':
                 symbol.append(" ")
                 score += gap_penalty
-    
+
         identity = float(identity) / len(align1) * 100
-    
+
         return {'identity': identity,
                 'score': score,
                 "align1": align1,
@@ -671,6 +693,23 @@ def needleman_wunsch(seq1, seq2):
 
     return finalize(align1, align2)
 
+
+def needleman_wunsch_identity_seq_list(seq_list: list):
+    """
+    calculate the Needleman-Wunsch identities for all combinations of 2 sequences in list
+
+    Args:
+        seq_list (list): list of sequences
+
+    Returns:
+        numpy array: Needleman-Wunsch identities
+    """
+
+    results = np.zeros((len(seq_list), len(seq_list)))
+    for p in itertools.combinations(enumerate(seq_list), 2):
+        results[p[0][0], p[1][0]] = needleman_wunsch_identity(p[0][1], p[1][1])["identity"]
+        results[p[1][0], p[0][0]] = results[p[0][0], p[1][0]]
+    return results
 
 
 def main():

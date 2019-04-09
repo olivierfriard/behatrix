@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
@@ -716,56 +716,7 @@
        <attribute name="title">
         <string>Behavioral sequences distances</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_12">
-        <item>
-         <widget class="QSplitter" name="splitter">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <widget class="QWidget" name="layoutWidget">
-           <layout class="QVBoxLayout" name="verticalLayout_9">
-            <item>
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Behavioral sequences</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPlainTextEdit" name="pte_seq"/>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="layoutWidget">
-           <layout class="QVBoxLayout" name="verticalLayout_10">
-            <item>
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>Behavioral sequence 2</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPlainTextEdit" name="pte_seq2"/>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_20">
-          <item>
-           <widget class="QLabel" name="label_20">
-            <property name="text">
-             <string>Behaviors separator</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="le_behaviors_separator_distance"/>
-          </item>
-         </layout>
-        </item>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_21">
           <item>
@@ -845,11 +796,19 @@
    </property>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionLoad_behavioral_sequences"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp_2">
+    <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuHelp"/>
+   <addaction name="menuHelp_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -871,6 +830,16 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionLoad_behavioral_sequences">
+   <property name="text">
+    <string>Open behavioral sequences</string>
    </property>
   </action>
  </widget>

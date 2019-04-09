@@ -71,6 +71,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tabWidget.setCurrentIndex(0)
 
         # connections
+        self.actionLoad_behavioral_sequences.triggered.connect(self.pbSelectStringsFilename)
+        self.actionQuit.triggered.connect(app.quit)
         self.actionAbout.triggered.connect(self.about)
         self.pb_select_behav_strings_file.clicked.connect(self.pbSelectStringsFilename)
         self.pb_statistics.clicked.connect(self.behav_strings_statistics)
@@ -101,12 +103,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.sb_nb_cores.setValue(1)
         else:
             self.sb_nb_cores.setValue(num_available_proc - 1)
-        
-        # tab Levenshtein
-        self.pte_seq1.textChanged.connect(self.behavioral_seq_distances_changed)
-        self.pte_seq2.textChanged.connect(self.behavioral_seq_distances_changed)
+
+        # tab distances
         self.pb_levenshtein.clicked.connect(self.levenshtein_distance)
         self.pb_needleman_wunsch.clicked.connect(self.needleman_wunsch_identity)
+        self.pte_distances_results.setLineWrapMode(0)
 
         self.permutations_test_matrix = None
 
@@ -122,7 +123,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         about_dialog = QMessageBox()
         about_dialog.setIconPixmap(QPixmap(":/logo"))
-        #about_dialog.setIconPixmap(QPixmap(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
         about_dialog.setWindowTitle("About Behatrix")
         about_dialog.setStandardButtons(QMessageBox.Ok)
         about_dialog.setDefaultButton(QMessageBox.Ok)
@@ -567,31 +567,61 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         test separator for behaviors
         """
         self.pte_distances_results.clear()
-
         # test if | separator present
-        for w in [self.pte_seq1, self.pte_seq2]:
+        #for w in [self.pte_seq1, self.pte_seq2]:
+        for w in [self.pte_seq]:
             if "|" in w.toPlainText():
                 self.le_behaviors_separator_distance.setText("|")
 
 
     def levenshtein_distance(self):
         """
-        Levenshtein distance between 2 behavioral sequences
+        Levenshtein distances between behavioral sequences
         """
-        seq1 = self.pte_seq1.toPlainText()
-        seq2 = self.pte_seq2.toPlainText()
-        if self.le_behaviors_separator_distance.text():
-            seq1 = seq1.split(self.le_behaviors_separator_distance.text())
-            seq2 = seq2.split(self.le_behaviors_separator_distance.text())
-        results = round(behatrix_cli.levenshtein(seq1, seq2))
-        self.pte_distances_results.clear()
-        self.pte_distances_results.insertPlainText(f"Levenshtein distance: {results}")
+
+        seq_list = [x.strip() for x in self.pte_behav_strings.toPlainText().split("\n") if x.strip()]
+
+        if self.le_behaviors_separator.text():
+            seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]  # seq1.split(self.le_behaviors_separator_distance.text())
+
+        results = behatrix_cli.levenshtein_distance_seq_list(seq_list)
+
+        # display results
+        out = "Levenshtein distances:\n"
+        # header
+        out += "\t{}\n".format("\t".join([f"seq #{x + 1}" for x, _ in enumerate(seq_list)]))
+        for r in range(results.shape[0]):
+            out += f"seq #{r + 1}\t"
+            out += "\t".join([f"{int(x)}" for x in results[r, :]]) + "\n"
+
+        self.pte_distances_results.setPlainText(out)
+
 
 
     def needleman_wunsch_identity(self):
         """
-        Needleman-Wunsch identity
+        Needleman-Wunsch identities between behavioral sequences
         """
+
+        seq_list = [x.strip() for x in self.pte_behav_strings.toPlainText().split("\n") if x.strip()]
+
+        if self.le_behaviors_separator.text():
+            seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]  # seq1.split(self.le_behaviors_separator_distance.text())
+
+        results = behatrix_cli.needleman_wunsch_identity_seq_list(seq_list)
+
+        # display results
+        out = "Needleman-Wunsch identities:\n"
+        # header
+        out += "\t{}\n".format("\t".join([f"seq #{x + 1}" for x, _ in enumerate(seq_list)]))
+        for r in range(results.shape[0]):
+            out += f"seq #{r + 1}\t"
+            out += "\t".join([f"{x:.2f}" for x in results[r, :]]) + "\n"
+
+        self.pte_distances_results.setPlainText(out)
+
+
+        '''
         seq1 = self.pte_seq1.toPlainText()
         seq2 = self.pte_seq2.toPlainText()
         if self.le_behaviors_separator_distance.text():
@@ -600,6 +630,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         results = behatrix_cli.needleman_wunsch(seq1, seq2)
         self.pte_distances_results.clear()
         self.pte_distances_results.insertPlainText(f"Needleman-Wunsch identity: {results['identity']:.2f} %")
+        '''
 
 
 
