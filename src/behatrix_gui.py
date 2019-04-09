@@ -109,6 +109,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # tab distances
         self.pb_levenshtein.clicked.connect(self.levenshtein_distance)
         self.pb_needleman_wunsch.clicked.connect(self.needleman_wunsch_identity)
+        self.pb_save_distances.clicked.connect(self.save_distances_results)
         self.pte_distances_results.setLineWrapMode(0)
 
         self.permutations_test_matrix = None
