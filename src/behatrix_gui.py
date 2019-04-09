@@ -74,6 +74,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionLoad_behavioral_sequences.triggered.connect(self.pbSelectStringsFilename)
         self.actionQuit.triggered.connect(app.quit)
         self.actionAbout.triggered.connect(self.about)
+
+        # behavioral sequences
         self.pb_select_behav_strings_file.clicked.connect(self.pbSelectStringsFilename)
         self.pb_statistics.clicked.connect(self.behav_strings_statistics)
         self.pb_save_stats_results.clicked.connect(self.save_stats_results)
@@ -157,7 +159,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.permutations_test_matrix = None
         self.cb_plot_significativity.setEnabled(False)
-        for w in [self.pte_statistics, self.pte_gv, self.pte_random]:
+        for w in [self.pte_statistics, self.pte_gv, self.pte_random, self.pte_distances_results]:
             w.clear()
         # test if | separator present
         if "|" in self.pte_behav_strings.toPlainText():
