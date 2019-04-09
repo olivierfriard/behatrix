@@ -101,7 +101,7 @@
           <item>
            <widget class="QPushButton" name="pb_select_behav_strings_file">
             <property name="text">
-             <string>Load from file</string>
+             <string>Load strings from file</string>
             </property>
            </widget>
           </item>
@@ -117,7 +117,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>&lt;b&gt;Behavioral strings statistics&lt;/b&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Descriptive statistics&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
@@ -133,7 +133,7 @@
           <item>
            <widget class="QPushButton" name="pb_save_observed_matrix">
             <property name="text">
-             <string>Observed transition matrix</string>
+             <string>Transition matrix</string>
             </property>
            </widget>
           </item>
@@ -206,132 +206,110 @@
        <attribute name="title">
         <string>Flow diagram</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_8">
+       <layout class="QVBoxLayout" name="verticalLayout_13">
         <item>
          <widget class="QSplitter" name="vertical_splitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QWidget" name="layoutWidget">
-           <layout class="QVBoxLayout" name="verticalLayout_5">
+          <widget class="QWidget" name="">
+           <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
-             <widget class="QLabel" name="label_8">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Edge labels</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <layout class="QHBoxLayout" name="horizontalLayout_23">
               <item>
-               <widget class="QRadioButton" name="rb_percent_after_behav">
+               <widget class="QLabel" name="label_8">
                 <property name="text">
-                 <string>% of transitions after behavior</string>
+                 <string>Set cut-off</string>
                 </property>
-                <property name="checked">
-                 <bool>true</bool>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                 </property>
                </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <layout class="QVBoxLayout" name="verticalLayout_5">
                 <item>
-                 <widget class="QLabel" name="label_9">
-                  <property name="text">
-                   <string>Cut-off</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_10">
+                  <item>
+                   <widget class="QRadioButton" name="rb_percent_after_behav">
+                    <property name="text">
+                     <string>% of transitions after behavior</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_4">
+                    <item>
+                     <widget class="QDoubleSpinBox" name="sb_cutoff_transition_after_behav"/>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>%</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_9">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="sb_cutoff_transition_after_behav"/>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_11">
-                  <property name="text">
-                   <string>%</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_18">
+                  <item>
+                   <widget class="QRadioButton" name="rb_percent_total_transitions">
+                    <property name="text">
+                     <string>% of total transitions</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_8">
+                    <item>
+                     <widget class="QDoubleSpinBox" name="sb_cutoff_total_transition"/>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>%</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_13">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </item>
-              <item>
-               <spacer name="horizontalSpacer_9">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
              </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_18">
-              <item>
-               <widget class="QRadioButton" name="rb_percent_total_transitions">
-                <property name="text">
-                 <string>% of total transitions</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_8">
-                <item>
-                 <widget class="QLabel" name="label_10">
-                  <property name="text">
-                   <string>Cut-off</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="sb_cutoff_total_transition"/>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_12">
-                  <property name="text">
-                   <string>%</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_13">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="rb_fraction_after_behav">
-              <property name="text">
-               <string>fraction of transitions after behavior</string>
-              </property>
-             </widget>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_9">
@@ -340,7 +318,7 @@
                 <item>
                  <widget class="QLabel" name="label_18">
                   <property name="text">
-                   <string>Number of decimals in edges labels</string>
+                   <string>Decimals in edges labels</string>
                   </property>
                  </widget>
                 </item>
@@ -359,7 +337,7 @@
               <item>
                <widget class="QCheckBox" name="cb_plot_significativity">
                 <property name="text">
-                 <string>Add significativity to edges (require that permutations test has already ran)</string>
+                 <string>Add significativity to edges (perform the permutations test before)</string>
                 </property>
                </widget>
               </item>
@@ -468,7 +446,7 @@
                <item>
                 <widget class="QPushButton" name="pb_save_gv">
                  <property name="text">
-                  <string>Save results</string>
+                  <string>Save script</string>
                  </property>
                 </widget>
                </item>
@@ -692,7 +670,7 @@
         <item>
          <widget class="QLabel" name="label_15">
           <property name="text">
-           <string>Transitions p values</string>
+           <string>P-values matrix</string>
           </property>
          </widget>
         </item>
@@ -749,12 +727,20 @@
             <item>
              <widget class="QLabel" name="label_5">
               <property name="text">
+<<<<<<< HEAD
+               <string>Behavioral sequences</string>
+=======
                <string>Behavioral sequence 1</string>
+>>>>>>> c400fecbef3e144007f18f2f161c7d1eea8f9734
               </property>
              </widget>
             </item>
             <item>
+<<<<<<< HEAD
+             <widget class="QPlainTextEdit" name="pte_seq"/>
+=======
              <widget class="QPlainTextEdit" name="pte_seq1"/>
+>>>>>>> c400fecbef3e144007f18f2f161c7d1eea8f9734
             </item>
            </layout>
           </widget>
