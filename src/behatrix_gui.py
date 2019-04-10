@@ -303,8 +303,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             edge_label = "percent_node"
         if self.rb_percent_total_transitions.isChecked():
             edge_label = "percent_total"
+        '''
         if self.rb_fraction_after_behav.isChecked():
             edge_label = "fraction_node"
+        '''
 
 
         # check significativity
