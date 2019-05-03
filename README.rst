@@ -1,4 +1,4 @@
-.. image:: behatrix_128px.png
+.. image:: behatrix.png
    :alt: Behatrix logo
 
 
