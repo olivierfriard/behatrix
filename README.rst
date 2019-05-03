@@ -1,6 +1,6 @@
 .. image:: behatrix.png
    :alt: Behatrix logo
-   :width: 20%
+   :width: 250px
 
 
 
