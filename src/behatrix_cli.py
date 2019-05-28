@@ -63,10 +63,10 @@ def behav_strings_stats(string:str,
                         chunk:int=0,
                         flag_remove_repetitions:bool=False)->(bool, list):
     """
-    extract some information from behavioral strings
+    extract some information from behavioral sequences
 
     Args:
-        string (str): behavioral strings
+        string (str): behavioral sequences
         separator (str): string to use to split sequences in behaviors
         chunk (int): limit analysis to the chunk first characters
         flag_remove_repetitions (bool): if true remove behaviors repetions

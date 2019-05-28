@@ -41,6 +41,7 @@ from shutil import copyfile
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from PyQt5 import QtSvg
 import behatrix_qrc
 
 from behatrix_ui import Ui_MainWindow
@@ -57,6 +58,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #self.setWindowIcon(QIcon(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
         self.setWindowTitle("Behatrix - Behavioral Sequences Analysis")
+
+        #self.verticalLayout_4.insertWidget(2, QLabel("TEST"))
+        #self.horizontal_splitter.insertWidget(2, QLabel("TEST"))
+        self.svg_display = QtSvg.QSvgWidget()
+        self.horizontal_splitter.insertWidget(2, self.svg_display)
+        #svgWidget = QtSvg.QSvgWidget('Zeichen_123.svg')
 
         self.vertical_splitter.setStretchFactor(1, 10)
         self.horizontal_splitter.setStretchFactor(1, 1)
@@ -85,7 +92,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
         self.pb_save_gv.clicked.connect(self.save_gv)
-        self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram("png"))
+        self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram("svg"))
         self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
         # self.pte_gv.textChanged.connect(self.flow_diagram)
@@ -186,7 +193,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def pbSelectStringsFilename(self):
 
-        filename = QFileDialog(self).getOpenFileName(self, "Select the file containing the behavioral strings", "", "All files (*)")[0]
+        filename = QFileDialog().getOpenFileName(self, "Select the file containing the behavioral sequences", "", "All files (*)")[0]
 
         if filename:
             self.leStringsFileName.setText(filename)
@@ -199,7 +206,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def behav_strings_statistics(self):
         """
-        statistics about behavioral strings
+        statistics about behavioral sequences
         """
 
         if self.pte_behav_strings.toPlainText():
@@ -213,7 +220,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked())
 
             output = ""
-            output += ("Behaviours list:\n================\n{}\n".format("\n".join(behaviours)))
+            output += ("Number of sequences:\n================\n{}\n".format(len(sequences)))
+            output += ("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
             output += ("\nStatistics\n==========\n")
             output += ('Number of different behaviours: {}\n'.format(len(behaviours)))
             output += ('Total number of behaviours: {}\n'.format(tot_nodes))
@@ -367,6 +375,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.pte_gv.toPlainText():
 
+
             gv_script = self.pte_gv.toPlainText()
 
             tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
@@ -406,10 +415,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                      "Error during the graph creation.")
                 return ""
 
+            if image_format == "svg":
+                self.svg_display.load(tmp_image_path)
+
             if image_format == "png":
                 myPixmap = QPixmap(tmp_image_path)
-                myScaledPixmap = myPixmap.scaled(self.lb_flow_chart.size(), Qt.KeepAspectRatio)
-                self.lb_flow_chart.setPixmap(myScaledPixmap)
+                scaled_pixmap = myPixmap.scaled(self.lb_flow_chart.size(), Qt.KeepAspectRatio)
+                self.lb_flow_chart.setPixmap(scaled_pixmap)
 
             return tmp_image_path
 

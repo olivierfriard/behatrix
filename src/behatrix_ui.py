@@ -397,23 +397,23 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp_2.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Bed intersection"))
-        self.label_2.setText(_translate("MainWindow", "<b>Behavioral strings</b>"))
-        self.pb_clear_behavioral_strings.setText(_translate("MainWindow", "Clear strings"))
+        self.label_2.setText(_translate("MainWindow", "<b>Behavioral sequences</b>"))
+        self.pb_clear_behavioral_strings.setText(_translate("MainWindow", "Clear sequences"))
         self.label_17.setText(_translate("MainWindow", "Behaviors separator"))
-        self.pb_select_behav_strings_file.setText(_translate("MainWindow", "Load strings from file"))
+        self.pb_select_behav_strings_file.setText(_translate("MainWindow", "Load sequences from file"))
         self.cb_remove_repeated_behaviors.setText(_translate("MainWindow", "Remove repeated behaviors"))
         self.label_4.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Descriptive statistics</span></p></body></html>"))
         self.pb_statistics.setText(_translate("MainWindow", "Generate statistics"))
         self.pb_save_observed_matrix.setText(_translate("MainWindow", "Transition matrix"))
         self.label_13.setText(_translate("MainWindow", "Results"))
         self.pb_save_stats_results.setText(_translate("MainWindow", "Save results"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_strings), _translate("MainWindow", "Behavioral strings"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_strings), _translate("MainWindow", "Behavioral sequences"))
         self.label_8.setText(_translate("MainWindow", "Set cut-off"))
         self.rb_percent_after_behav.setText(_translate("MainWindow", "% of transitions after behavior"))
         self.label_11.setText(_translate("MainWindow", "%"))

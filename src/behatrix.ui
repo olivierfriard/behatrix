@@ -18,17 +18,17 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
-        <string>Behavioral strings</string>
+        <string>Behavioral sequences</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>&lt;b&gt;Behavioral strings&lt;/b&gt;</string>
+           <string>&lt;b&gt;Behavioral sequences&lt;/b&gt;</string>
           </property>
          </widget>
         </item>
@@ -48,7 +48,7 @@
             <item>
              <widget class="QPushButton" name="pb_clear_behavioral_strings">
               <property name="text">
-               <string>Clear strings</string>
+               <string>Clear sequences</string>
               </property>
              </widget>
             </item>
@@ -101,7 +101,7 @@
           <item>
            <widget class="QPushButton" name="pb_select_behav_strings_file">
             <property name="text">
-             <string>Load strings from file</string>
+             <string>Load sequences from file</string>
             </property>
            </widget>
           </item>
