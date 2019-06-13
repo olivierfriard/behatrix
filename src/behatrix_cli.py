@@ -2,9 +2,9 @@
 
 """
 Behatrix
-Behavioural Strings Analysis (BSA)).
+Behavioural Sequences Analysis (BSA)).
 
-Behavioral strings analysis with permutations test
+Behavioral Sequences analysis with permutations test
 
 Copyright 2017-2019 Olivier Friard
 
@@ -61,7 +61,8 @@ def remove_comments(s: str) -> str:
 def behav_strings_stats(string:str,
                         behaviors_separator:str="",
                         chunk:int=0,
-                        flag_remove_repetitions:bool=False)->(bool, list):
+                        flag_remove_repetitions:bool=False,
+                        ngram=1) -> (bool, list):
     """
     extract some information from behavioral sequences
 
@@ -70,6 +71,7 @@ def behav_strings_stats(string:str,
         separator (str): string to use to split sequences in behaviors
         chunk (int): limit analysis to the chunk first characters
         flag_remove_repetitions (bool): if true remove behaviors repetions
+        ngram: number of behaviors to group
 
     Returns:
         bool: 0 -> OK
@@ -177,7 +179,30 @@ def behav_strings_stats(string:str,
 
     behaviours.sort()
 
-    return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
+    out_ngrams = ""
+
+    if ngram > 1:
+        tot_ngrams, uniq_ngrams  = [], []
+        for sequence in sequences:
+            for idx, behavior in enumerate(sequence):
+                try:
+                    n = [behavior]
+                    for i in range(ngram-1):
+                        n.append(sequence[idx + i + 1])
+                    tot_ngrams.append(n)
+                    if n not in uniq_ngrams:
+                        uniq_ngrams.append(n)
+                except Exception:
+                    pass
+
+        for element in sorted(uniq_ngrams):
+            ngram_count = sum([behaviors_separator.join(sequence).count(behaviors_separator.join(element)) for sequence in sequences])
+            out_ngrams += (f"{behaviors_separator.join(element)}\t"
+            f"{ngram_count / len(tot_ngrams):.3f}\t"
+            f"{ngram_count} / {len(tot_ngrams)}\n"
+            )
+
+    return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours, out_ngrams
 
 
 def check_exclusion_list(exclusion_str, sequences, behaviors_separator=""):
@@ -716,8 +741,8 @@ def main():
 
     parser = argparse.ArgumentParser(description="Behatrix command line utility")
     parser.add_argument("-v", action="store_true", dest='version', help='Behatrix version')
-    parser.add_argument("--strings", action="store", dest='strings', help='Path of file containing behavioral sequences')
-
+    parser.add_argument("--sequences", action="store", dest='sequences', help='Path of file containing behavioral sequences')
+    parser.add_argument("--separator", action="store", dest='separator', help='Behaviors separator')
     parser.add_argument("--output", action="store", dest='output', help='Path of output files')
     parser.add_argument("--exclusions", action="store", dest='exclusions', help='Path of file containing exclusions')
     parser.add_argument("--n_random", action="store", dest='nrandom', help='Number of permutations', type=int, default=0)
@@ -725,6 +750,7 @@ def main():
     parser.add_argument("--block_first", action="store_true", dest='block_first', help='block first behavior during permutations test')
     parser.add_argument("--block_last", action="store_true", dest='block_last', help='block last behavior during permutations test')
     parser.add_argument("--no_repetition", action="store_true", dest='no_repetition', help='exclude repetitions during permutations test')
+    parser.add_argument("--n-gram", action="store", default=1, dest='ngram', help='n-gram value', type=int)
 
     parser.add_argument("--quiet", action="store_true", dest='quiet', default=False, help='Do not print results on terminal')
 
@@ -734,22 +760,25 @@ def main():
         print(f"version {version.__version__} - {version.__version_date__}")
         sys.exit()
 
-    if not args.strings:
-        print("The 'strings' argument is required\n")
+    if not args.sequences:
+        print("The 'sequences' argument is required\n")
         parser.print_usage()
         print()
         sys.exit()
     else:
-        if not os.path.isfile(args.strings):
-            print(f"{args.strings} is not a file\n")
+        if not os.path.isfile(args.sequences):
+            print(f"{args.sequences} is not a file\n")
             sys.exit()
 
-    with open(args.strings) as f_in:
+    with open(args.sequences) as f_in:
         behav_str = f_in.read()
 
     (return_code, sequences,
      unique_transitions, nodes, starting_nodes, tot_nodes,
-     tot_trans, tot_trans_after_node, behaviours) = behav_strings_stats(behav_str, chunk=0)
+     tot_trans, tot_trans_after_node, behaviours, ngrams_freq) = behav_strings_stats(behav_str,
+                                                                                     behaviors_separator=args.separator,
+                                                                                     chunk=0,
+                                                                                     ngram=args.ngram)
 
 
     if args.nrandom:
@@ -799,6 +828,11 @@ def main():
 
             print(f"{behaviour}\t{countBehaviour / tot_nodes:.3f}\t{countBehaviour} / {tot_nodes}")
 
+        # n-grams
+        if args.ngram > 1:
+            print(f"\nFrequencies of {args.ngram}-grams:\n=======================")
+            print(ngrams_freq)
+
     observed_matrix = create_observed_transition_matrix(sequences, behaviours)
 
     if not args.quiet:
@@ -807,7 +841,7 @@ def main():
     if args.output:
         file_name = f'{args.output}.observed_transitions.tsv'
     else:
-        file_name = f'{args.strings}.observed_transitions.tsv'
+        file_name = f'{args.sequences}.observed_transitions.tsv'
 
     np.savetxt(file_name, observed_matrix, fmt='%d', delimiter='\t')
 
@@ -872,7 +906,7 @@ def main():
         if args.output:
             file_name = '{fileName}.p-values.{nrandom}.tsv'.format(fileName=args.output, nrandom=nrandom)
         else:
-            file_name = '{fileName}.p-values.{nrandom}.tsv'.format(fileName=args.strings, nrandom=nrandom)
+            file_name = '{fileName}.p-values.{nrandom}.tsv'.format(fileName=args.sequences, nrandom=nrandom)
 
         np.savetxt(file_name, results / nrandom, fmt='%f', delimiter='\t')
 

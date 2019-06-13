@@ -61,9 +61,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #self.verticalLayout_4.insertWidget(2, QLabel("TEST"))
         #self.horizontal_splitter.insertWidget(2, QLabel("TEST"))
+
+        '''
         self.svg_display = QtSvg.QSvgWidget()
         self.horizontal_splitter.insertWidget(2, self.svg_display)
+        '''
+
         #svgWidget = QtSvg.QSvgWidget('Zeichen_123.svg')
+
+        #self.horizontal_splitter.removeWidget(self.lb_flow_chart)
+
+        '''
+        self.lb_flow_chart.deleteLater()
+        self.lb_flow_chart = None
+        '''
 
         self.vertical_splitter.setStretchFactor(1, 10)
         self.horizontal_splitter.setStretchFactor(1, 1)
@@ -92,7 +103,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
         self.pb_save_gv.clicked.connect(self.save_gv)
-        self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram("svg"))
+        self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram("png"))
         self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
         # self.pte_gv.textChanged.connect(self.flow_diagram)
@@ -144,8 +155,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              "Department of Life Sciences and Systems Biology<br>"
              "University of Torino - Italy<br>"
              "<br>"
-             """BORIS is released under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a><br>"""
-             """See <a href="http://www.boris.unito.it/behatrix">www.boris.unito.it/behatrix</a> for more details.<br>"""
+             """BORIS is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>"""
+             """See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>"""
              "<hr>").format(prog_name="Behatrix",
                             ver=version.__version__,
                             date=version.__version_date__,
@@ -214,10 +225,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (return_code, sequences,
              d, nodes, starting_nodes, tot_nodes,
              tot_trans, tot_trans_after_node,
-             behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+             behaviours, ngrams_freq) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                             behaviors_separator=self.le_behaviors_separator.text(),
                                                             chunk=0,
-                                                            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked())
+                                                            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+                                                            ngram=self.sb_ngram.value())
 
             output = ""
             output += ("Number of sequences:\n================\n{}\n".format(len(sequences)))
@@ -238,6 +250,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                                              freq=countBehaviour / tot_nodes,
                                                                                              countBehaviour=countBehaviour,
                                                                                              tot_nodes=tot_nodes)
+
+            # n-grams
+            if self.sb_ngram.value() > 1:
+                output += f"\nFrequencies of {self.sb_ngram.value()}-grams:\n=======================\n"
+                output += ngrams_freq
 
             self.pte_statistics.setPlainText(output)
 
@@ -268,7 +285,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         (return_code, sequences,
          d, nodes, starting_nodes, tot_nodes,
          tot_trans, tot_trans_after_node,
-         behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+         behaviours, _) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                         behaviors_separator=self.le_behaviors_separator.text(),
                                                         chunk=0,
                                                         flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked())
@@ -299,7 +316,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         (return_code, sequences,
          unique_transitions, nodes, starting_nodes, tot_nodes,
          tot_trans, tot_trans_after_node,
-         behaviors) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+         behaviors, _) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                        behaviors_separator=self.le_behaviors_separator.text(),
                                                        chunk=0,
                                                        flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
@@ -360,7 +377,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
 
-    def flow_diagram(self, image_format:str="png")->str:
+    def flow_diagram(self, image_format:str="png") -> str:
         """
         generate flow diagram from pte_gv content
         in PNG or SVG format
@@ -434,6 +451,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lb_flow_chart.clear()
 
 
+
+
     def save_diagram(self, image_format):
         """
         save diagram
@@ -457,7 +476,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         (return_code, _,
          _, _, _, _,
-         _, _, behaviors) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+         _, _, behaviors, _) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                              behaviors_separator=self.le_behaviors_separator.text(),
                                                              chunk=0)
         self.pte_excluded_transitions.insertPlainText("\n")
@@ -472,7 +491,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (return_code, sequences,
              d, nodes, starting_nodes, tot_nodes,
              tot_trans, tot_trans_after_node,
-             behaviours) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+             behaviours, _) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                             behaviors_separator=self.le_behaviors_separator.text(),
                                                             chunk=0,
                                                             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
