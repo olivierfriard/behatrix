@@ -35,18 +35,17 @@ import concurrent.futures
 import tempfile
 import pathlib
 import platform
-import version
 from shutil import copyfile
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5 import QtSvg
-import behatrix_qrc
+from behatrix import behatrix_qrc
 
-from behatrix_ui import Ui_MainWindow
-import behatrix_cli
-
+from behatrix.behatrix_ui import Ui_MainWindow
+from behatrix import behatrix_cli
+from behatrix import version
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -90,7 +89,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # connections
         self.actionLoad_behavioral_sequences.triggered.connect(self.pbSelectStringsFilename)
-        self.actionQuit.triggered.connect(app.quit)
+        self.actionQuit.triggered.connect(QApplication.quit)
         self.actionAbout.triggered.connect(self.about)
 
         # behavioral sequences
@@ -520,7 +519,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if nrandom:
 
                 self.statusbar.showMessage("Permutations test running... Be patient", 0)
-                app.processEvents()
+                QApplication.processEvents()
 
                 num_proc = self.sb_nb_cores.value()
 
@@ -685,9 +684,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pte_distances_results.insertPlainText(f"Needleman-Wunsch identity: {results['identity']:.2f} %")
         '''
 
+def main():
 
-
-if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setApplicationName("Behatrix")
     mainWindow = MainWindow()
@@ -695,3 +693,6 @@ if __name__ == "__main__":
     mainWindow.show()
     mainWindow.raise_()
     sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()
