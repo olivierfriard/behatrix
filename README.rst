@@ -43,18 +43,14 @@ Lauching Behatrix
    python3 -m behatrix
 
 
-If pip (the Python Package Index) is not installed on your system see the following sections.
+If pip (the Python Package Index) is not installed on your system download an executable version from `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_ and follow the following sections.
 
 
 
 Microsoft Windows
 ----------------------------------------------------------------------------------------
 
-
-
-If pip (the Python Package Index) is not installed on your system:
-
-Launch the **behatrix.exe** program
+**Extract the archive** and launch the **behatrix.exe** program
 
 The `Graphviz package <http://www.graphviz.org>`_ is required for generating graph.
 Once installed you can add the directory containing the **dot** program to the PATH environment variable.
@@ -76,8 +72,6 @@ Alternatively to installing Graphviz you can use remote Graphviz services like:
 Mac OS
 ----------------------------------------------------------------------------------------
 
-
-If pip (the Python Package Index) is not installed on your system a DMG image containing executable binary is available on `latest release <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
 Mount the **behatrix.dmg** image and launch **behatrix** program.
 
