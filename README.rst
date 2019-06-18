@@ -25,16 +25,34 @@ The details of modifications are available in the `revision history <https://git
 Installation
 ============================================================================================================================================
 
-Behatrix source code and executable binary programs for Linux, Mac and Microsoft-Windows are available in `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_.
+.. code-block:: python
+
+   pip install behatrix
+
+
+If pip (the Python Package Index) is not installed on your system the executable binary programs for Linux, Mac and Microsoft-Windows are available in `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_.
 
 
 
 
+Lauching Behatrix
+=====================================================================
 
-Launch of Behatrix on Microsoft Windows
-============================================================================================================================================
+.. code-block:: python
 
-An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
+   python3 -m behatrix
+
+
+If pip (the Python Package Index) is not installed on your system see the following sections.
+
+
+
+Microsoft Windows
+----------------------------------------------------------------------------------------
+
+
+
+If pip (the Python Package Index) is not installed on your system:
 
 Launch the **behatrix.exe** program
 
@@ -55,10 +73,11 @@ Alternatively to installing Graphviz you can use remote Graphviz services like:
 
 
 
-Launch of Behatrix on Mac OS
-============================================================================================================================================
+Mac OS
+----------------------------------------------------------------------------------------
 
-An DMG image containing executable binary is available on `latest release <https://github.com/olivierfriard/behatrix/releases/latest>`_
+
+If pip (the Python Package Index) is not installed on your system a DMG image containing executable binary is available on `latest release <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
 Mount the **behatrix.dmg** image and launch **behatrix** program.
 
@@ -72,9 +91,11 @@ See `Graphviz on Mac OS <http://www.graphviz.org/Download_macos.php>`_ for detai
 Launch of Behatrix on Linux
 ============================================================================================================================================
 
-An executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
+
+If pip (the Python Package Index) is not installed on your system an executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
 
 Extract the archive and launch the **behatrix** executable.
+
 
 
 Launch Behatrix from sources (all platforms)
@@ -98,7 +119,7 @@ Usage of the GUI interface
 The Behatrix main window
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-.. image:: screenshots/main_window.png
+.. image:: docs/screenshots/main_window.png
    :alt: Main window
 
 The behavioral strings can be directly written, paste or loaded from file in the **Behavioral strings** edit box.
@@ -106,7 +127,7 @@ The behavioral strings can be directly written, paste or loaded from file in the
 See the `BORIS <http://www.boris.unito.it/>`_ user guide for `exporting behavioral strings <https://boris.readthedocs.io/en/latest/#export-events-as-behavioral-strings>`_.
 
 
-.. image:: screenshots/behavioral_strings.png
+.. image:: docs/screenshots/behavioral_strings.png
    :alt: behavioral_strings
 
 
@@ -114,7 +135,7 @@ See the `BORIS <http://www.boris.unito.it/>`_ user guide for `exporting behavior
 Behaviors and transitions statistics
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-.. image:: screenshots/behav_strings_statistics.png
+.. image:: docs/screenshots/behav_strings_statistics.png
    :alt: behavioral_strings statistics
 
 
@@ -122,7 +143,7 @@ Behaviors and transitions statistics
 Matrix of observed transitions
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-.. image:: screenshots/observed_transitions_matrix.png
+.. image:: docs/screenshots/observed_transitions_matrix.png
    :alt: observed transitions matrix
 
 
@@ -133,7 +154,7 @@ Flow diagram
 
 Graphviz is required.
 
-.. image:: screenshots/flow_diagram.png
+.. image:: docs/screenshots/flow_diagram.png
    :alt: flow diagram
 
 
@@ -144,7 +165,7 @@ Graphviz is required.
 Permutations test
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-.. image:: screenshots/permutations_test.png
+.. image:: docs/screenshots/permutations_test.png
    :alt: Permutations test
 
 
@@ -158,7 +179,7 @@ Permutations test with exclusions
 
 Some transitions can be excluded from the permutations test:
 
-.. image:: screenshots/permutations_test_with_exclusions.png
+.. image:: docs/screenshots/permutations_test_with_exclusions.png
    :alt: Permutations test
 
 
@@ -171,7 +192,7 @@ Usage of command line utility
 .. code-block:: text
 
 
-    usage: behatrix_cli.py [-h] [-v] [--strings STRINGS] [--output OUTPUT]
+    usage: behatrix_cli.py [-h] [-v] [--sequences PATH_TO_FILE_CONTAINING_SEQUENCES] [--output OUTPUT]
                            [--exclusions EXCLUSIONS] [--n_random NRANDOM]
                            [--n_cpu N_CPU] [--block_first] [--block_last]
                            [--quiet]
@@ -181,7 +202,8 @@ Usage of command line utility
     optional arguments:
       -h, --help            show this help message and exit
       -v                    Behatrix version
-      --strings STRINGS     Path of file containing behavioral strings
+      --sequences PATH_TO_FILE_CONTAINING_SEQUENCES
+                            Path of file containing behavioral strings
       --output OUTPUT       Path of output files
       --exclusions EXCLUSIONS
                             Path of file containing exclusions
