@@ -1,4 +1,4 @@
-.. image:: src/icons/behatrix_128px.png
+.. image:: behatrix/icons/behatrix_128px.png
    :alt: Behatrix logo
 
 
