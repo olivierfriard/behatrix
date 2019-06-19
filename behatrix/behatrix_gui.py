@@ -29,7 +29,7 @@ This file is part of Behatrix.
 
 import os
 import sys
-import numpy
+import numpy as np
 import subprocess
 import concurrent.futures
 import tempfile
@@ -37,14 +37,14 @@ import pathlib
 import platform
 from shutil import copyfile
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5 import QtSvg
+from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QFileDialog
+#from PyQt5 import QtSvg
 from behatrix import behatrix_qrc
-
 from behatrix.behatrix_ui import Ui_MainWindow
-from behatrix import behatrix_cli
+
+from behatrix import behatrix_functions
 from behatrix import version
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -149,17 +149,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         about_dialog.setEscapeButton(QMessageBox.Ok)
 
         about_dialog.setInformativeText(
-            ("<b>{prog_name}</b> {ver} - {date}"
+            (f"<b>Behatirx</b> {version.__version__} - {version.__version_date__}"
              "<p>Copyright &copy; 2017-2019 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
              "Department of Life Sciences and Systems Biology<br>"
              "University of Torino - Italy<br>"
              "<br>"
              """BORIS is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>"""
              """See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>"""
-             "<hr>").format(prog_name="Behatrix",
-                            ver=version.__version__,
-                            date=version.__version_date__,
-                            python_ver=platform.python_version()))
+             "<hr>"))
         _ = about_dialog.exec_()
 
 
@@ -224,7 +221,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (return_code, sequences,
              d, nodes, starting_nodes, tot_nodes,
              tot_trans, tot_trans_after_node,
-             behaviours, ngrams_freq) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+             behaviours, ngrams_freq) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                             behaviors_separator=self.le_behaviors_separator.text(),
                                                             chunk=0,
                                                             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
@@ -284,14 +281,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         (return_code, sequences,
          d, nodes, starting_nodes, tot_nodes,
          tot_trans, tot_trans_after_node,
-         behaviours, _) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+         behaviours, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                         behaviors_separator=self.le_behaviors_separator.text(),
                                                         chunk=0,
                                                         flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked())
 
         if sequences:
 
-            observed_matrix = behatrix_cli.create_observed_transition_matrix(sequences, behaviours)
+            observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, behaviours)
 
             # display results
             # header
@@ -315,7 +312,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         (return_code, sequences,
          unique_transitions, nodes, starting_nodes, tot_nodes,
          tot_trans, tot_trans_after_node,
-         behaviors, _) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+         behaviors, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                        behaviors_separator=self.le_behaviors_separator.text(),
                                                        chunk=0,
                                                        flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
@@ -339,7 +336,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
 
-        gv_script = behatrix_cli.draw_diagram(cutoff_all=self.sb_cutoff_total_transition.value(),
+        gv_script = behatrix_functions.draw_diagram(cutoff_all=self.sb_cutoff_total_transition.value(),
                                               cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
                                               unique_transitions=unique_transitions,
                                               nodes=nodes,
@@ -475,7 +472,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         (return_code, _,
          _, _, _, _,
-         _, _, behaviors, _) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+         _, _, behaviors, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                              behaviors_separator=self.le_behaviors_separator.text(),
                                                              chunk=0)
         self.pte_excluded_transitions.insertPlainText("\n")
@@ -490,7 +487,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (return_code, sequences,
              d, nodes, starting_nodes, tot_nodes,
              tot_trans, tot_trans_after_node,
-             behaviours, _) = behatrix_cli.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+             behaviours, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                             behaviors_separator=self.le_behaviors_separator.text(),
                                                             chunk=0,
                                                             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
@@ -498,7 +495,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # check exclusion list
             if self.pte_excluded_transitions.toPlainText():
-                result = behatrix_cli.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), sequences)
+                result = behatrix_functions.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), sequences)
 
                 if not result["error_code"]:
                     exclusion_list = result["exclusion_list"]
@@ -526,14 +523,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if num_proc > nrandom:
                     num_proc = nrandom
 
-                observed_matrix = behatrix_cli.create_observed_transition_matrix(sequences, behaviours)
+                observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, behaviours)
 
-                results = numpy.zeros((len(behaviours), len(behaviours)))
+                results = np.zeros((len(behaviours), len(behaviours)))
 
                 # frozen script by pyinstaller does not allow to use multiprocessing
                 if sys.platform.startswith("win") and getattr(sys, "frozen", False):
                     n_random_by_proc = nrandom
-                    nb_randomization_done, results = behatrix_cli.permutations_test(n_random_by_proc,
+                    nb_randomization_done, results = behatrix_functions.permutations_test(n_random_by_proc,
                                                                                     sequences, behaviours,
                                                                                     exclusion_list,
                                                                                     self.cb_block_first_behavior.isChecked(),
@@ -550,7 +547,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             else:
                                 n_random_by_proc = nrandom - n_required_randomizations
 
-                            lst.append(executor.submit(behatrix_cli.permutations_test,
+                            lst.append(executor.submit(behatrix_functions.permutations_test,
                                                        n_random_by_proc,
                                                        sequences, behaviours,
                                                        exclusion_list,
@@ -620,7 +617,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.le_behaviors_separator.text():
             seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]  # seq1.split(self.le_behaviors_separator_distance.text())
 
-        results = behatrix_cli.levenshtein_distance_seq_list(seq_list)
+        results = behatrix_functions.levenshtein_distance_seq_list(seq_list)
 
         # display results
         out = "Levenshtein distances:\n"
@@ -643,7 +640,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.le_behaviors_separator.text():
             seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]  # seq1.split(self.le_behaviors_separator_distance.text())
 
-        results = behatrix_cli.needleman_wunsch_identity_seq_list(seq_list)
+        results = behatrix_functions.needleman_wunsch_identity_seq_list(seq_list)
 
         # display results
         out = "Needleman-Wunsch identities:\n"
@@ -673,17 +670,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
 
-        '''
-        seq1 = self.pte_seq1.toPlainText()
-        seq2 = self.pte_seq2.toPlainText()
-        if self.le_behaviors_separator_distance.text():
-            seq1 = seq1.split(self.le_behaviors_separator_distance.text())
-            seq2 = seq2.split(self.le_behaviors_separator_distance.text())
-        results = behatrix_cli.needleman_wunsch(seq1, seq2)
-        self.pte_distances_results.clear()
-        self.pte_distances_results.insertPlainText(f"Needleman-Wunsch identity: {results['identity']:.2f} %")
-        '''
-
 def main():
 
     app = QApplication(sys.argv)
@@ -693,6 +679,196 @@ def main():
     mainWindow.show()
     mainWindow.raise_()
     sys.exit(app.exec_())
+
+
+def cli():
+
+    import argparse
+    parser = argparse.ArgumentParser(prog="Behatrix",
+                                     usage="\npython3 -m behatrix [options]",
+                                     description="Behatrix command line utility")
+    parser.add_argument("-v", action="store_true", dest="version", help="Behatrix version")
+    parser.add_argument("--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences")
+    parser.add_argument("--separator", action="store", dest="separator", default="", help="Separator of behaviors")
+    parser.add_argument("--output", action="store", dest="output", help="Path of output files")
+    parser.add_argument("--exclusions", action="store", dest='exclusions', help='Path of file containing exclusions')
+    parser.add_argument("--n_random", action="store", dest='nrandom', help='Number of permutations', type=int, default=0)
+    parser.add_argument("--n_cpu", action="store", dest='n_cpu', help='Number of CPU to use for permutations test', type=int, default=0)
+    parser.add_argument("--block_first", action="store_true", dest='block_first', help='block first behavior during permutations test')
+    parser.add_argument("--block_last", action="store_true", dest='block_last', help='block last behavior during permutations test')
+    parser.add_argument("--no_repetition", action="store_true", dest='no_repetition', help='exclude repetitions during permutations test')
+    parser.add_argument("--n-gram", action="store", default=1, dest='ngram', help='n-gram value', type=int)
+
+    parser.add_argument("--quiet", action="store_true", dest='quiet', default=False, help='Do not print results on terminal')
+
+    args = parser.parse_args()
+
+    if args.version:
+        print(f"version {version.__version__} - {version.__version_date__}")
+        sys.exit()
+
+    if not args.sequences:
+        print("The 'sequences' argument is required\n")
+        parser.print_usage()
+        print()
+        sys.exit()
+    else:
+        if not os.path.isfile(args.sequences):
+            print(f"{args.sequences} is not a file\n")
+            sys.exit()
+
+
+    with open(args.sequences) as f_in:
+        behav_str = f_in.read()
+
+    (return_code, sequences,
+     unique_transitions, nodes, starting_nodes, tot_nodes,
+     tot_trans, tot_trans_after_node, behaviours, ngrams_freq) = behatrix_functions.behav_strings_stats(behav_str,
+                                                                                     behaviors_separator=args.separator,
+                                                                                     chunk=0,
+                                                                                     ngram=args.ngram)
+
+
+    if args.nrandom:
+        nrandom = args.nrandom
+    else:
+        nrandom = 0
+
+    if nrandom:
+
+        if args.exclusions:
+            if not os.path.isfile(args.exclusions):
+                print(f"{args.exclusions} is not a file\n")
+                sys.exit()
+            else:
+                with open(args.exclusions) as f_in:
+                    exclusion_str = f_in.read()
+        else:
+            exclusion_str = ""
+
+        result = behatrix_functions.check_exclusion_list(exclusion_str, sequences)
+        if not result["error_code"]:
+            exclusion_list = result["exclusion_list"]
+        else:
+            print(result["message"])
+            return
+
+        block_first = 1 if args.block_first else 0
+        block_last = 1 if args.block_last else 0
+
+
+    if not args.quiet:
+
+        print("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
+
+        print("Statistics\n==========")
+        print(f'Number of different behaviours: {len(behaviours)}')
+        print(f'Total number of behaviours: {tot_nodes}')
+        print(f'Number of different transitions: {len(unique_transitions)}')
+        print(f'Total number of transitions: {tot_trans}')
+
+        print('\nBehaviours frequencies:\n=======================')
+
+        for behaviour in sorted(behaviours):
+            countBehaviour = 0
+            for seq in sequences:
+                countBehaviour += seq.count(behaviour)
+
+            print(f"{behaviour}\t{countBehaviour / tot_nodes:.3f}\t{countBehaviour} / {tot_nodes}")
+
+        # n-grams
+        if args.ngram > 1:
+            print(f"\nFrequencies of {args.ngram}-grams:\n=======================")
+            print(ngrams_freq)
+
+    observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, behaviours)
+
+    if not args.quiet:
+        print("\nObserved transition matrix:\n===========================\n{}".format(observed_matrix))
+
+    if args.output:
+        file_name = f'{args.output}.observed_transitions.tsv'
+    else:
+        file_name = f'{args.sequences}.observed_transitions.tsv'
+
+    np.savetxt(file_name, observed_matrix, fmt='%d', delimiter='\t')
+
+    with open(file_name, mode="r", encoding="utf-8") as f_in:
+        rows = f_in.readlines()
+
+    with open(file_name, mode="w", encoding="utf-8") as f_out:
+        f_out.write('\t' + '\t'.join(behaviours) + '\n')
+        c = 0
+        for row in rows:
+            f_out.write((behaviours)[c] + '\t' + row)
+            c += 1
+
+    # check if permutations test required
+    if nrandom:
+
+        if args.n_cpu:
+            num_proc = args.n_cpu
+        else:
+            num_available_proc = os.cpu_count()
+            if num_available_proc <= 2:
+                num_proc = 1
+            else:
+                num_proc = num_available_proc - 1
+
+        results = np.zeros((len(behaviours), len(behaviours)))
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            lst = []
+            n_required_randomizations = 0
+            for i in range(num_proc):
+
+                if i < num_proc - 1:
+                    n_random_by_proc = nrandom // num_proc
+                else:
+                    n_random_by_proc = nrandom - n_required_randomizations
+
+                lst.append(executor.submit(behatrix_functions.permutations_test,
+                                           n_random_by_proc,
+                                           sequences, behaviours,
+                                           exclusion_list,
+                                           block_first,
+                                           block_last,
+                                           observed_matrix,
+                                           args.no_repetition))
+
+                n_required_randomizations += n_random_by_proc
+
+            print("\nnumber of required permutations: ", n_required_randomizations)
+
+            nb_randomization_done = 0
+
+            for l in lst:
+                nb_randomization_done += l.result()[0]
+                results += l.result()[1]
+
+        print(f"Number of permutations done: {nb_randomization_done}")
+
+        if not args.quiet:
+            print(f"\nP-values matrix:\n===========================\n{results / nrandom}")
+
+        if args.output:
+            file_name = f"{args.output}.p-values.{nrandom}.tsv"
+        else:
+            file_name = f"{args.sequences}.p-values.{nrandom}.tsv"
+
+        np.savetxt(file_name, results / nrandom, fmt='%f', delimiter='\t')
+
+        try:
+            with open(file_name, mode="r", encoding="utf-8") as f:
+                rows = f.readlines()
+            with open(file_name, mode='w', encoding="utf-8") as f:
+                f.write("\t" + "\t".join(list(behaviours)) + "\n")
+                c = 0
+                for row in rows:
+                    f.write((behaviours)[c] + "\t" + row)
+                    c += 1
+        except Exception:
+            print(f"Error during creation of file: {file_name}")
+
 
 if __name__ == "__main__":
     main()

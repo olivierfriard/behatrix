@@ -1,5 +1,12 @@
-from behatrix import main
+#!python3
 
-main()
+import sys
+from behatrix import main, cli
+
+if len(sys.argv) > 1:
+    cli()
+else:
+    main()
+
 
 

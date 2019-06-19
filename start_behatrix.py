@@ -1,3 +1,3 @@
-#!/usr/bin/env python3
+#!python3
 
 import behatrix.__main__
