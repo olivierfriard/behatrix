@@ -686,24 +686,26 @@ def cli():
     import argparse
     parser = argparse.ArgumentParser(prog="Behatrix",
                                      usage="\npython3 -m behatrix [options]",
-                                     description="Behatrix command line utility")
-    parser.add_argument("-v", action="store_true", dest="version", help="Behatrix version")
-    parser.add_argument("--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences")
+                                     description="Behatrix command line utility",
+                                     epilog="See http://www.boris.unito.it/pages/behatrix for details :-)")
+    parser.add_argument("-v", "--version", action="store_true", dest="version", help="Behatrix version")
+    parser.add_argument("-s", "--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences")
     parser.add_argument("--separator", action="store", dest="separator", default="", help="Separator of behaviors")
-    parser.add_argument("--output", action="store", dest="output", help="Path of output files")
-    parser.add_argument("--exclusions", action="store", dest='exclusions', help='Path of file containing exclusions')
-    parser.add_argument("--n_random", action="store", dest='nrandom', help='Number of permutations', type=int, default=0)
-    parser.add_argument("--n_cpu", action="store", dest='n_cpu', help='Number of CPU to use for permutations test', type=int, default=0)
-    parser.add_argument("--block_first", action="store_true", dest='block_first', help='block first behavior during permutations test')
-    parser.add_argument("--block_last", action="store_true", dest='block_last', help='block last behavior during permutations test')
-    parser.add_argument("--no_repetition", action="store_true", dest='no_repetition', help='exclude repetitions during permutations test')
-    parser.add_argument("--n-gram", action="store", default=1, dest='ngram', help='n-gram value', type=int)
+    parser.add_argument("-o", "--output", action="store", dest="output", help="Path of output files")
+    parser.add_argument("--exclusions", action="store", dest="exclusions", help="Path of file containing exclusions")
+    parser.add_argument("--n-random", action="store", dest='nrandom', help="Number of permutations", type=int, default=0)
+    parser.add_argument("--n-cpu", action="store", dest='n_cpu', help="Number of CPU to use for permutations test", type=int, default=0)
+    parser.add_argument("--block-first", action="store_true", dest='block_first', help="block first behavior during permutations test")
+    parser.add_argument("--block-last", action="store_true", dest="block_last", help="block last behavior during permutations test")
+    parser.add_argument("--no-repetition", action="store_true", dest="no_repetition", help="exclude repetitions during permutations test")
+    parser.add_argument("--n-gram", action="store", default=1, dest="ngram", help="n-gram value", type=int)
 
-    parser.add_argument("--quiet", action="store_true", dest='quiet', default=False, help='Do not print results on terminal')
+    parser.add_argument("-q", "--quiet", action="store_true", dest="quiet", default=False, help="Do not print results on terminal")
 
     args = parser.parse_args()
 
     if args.version:
+        print("Copyright (C) 2017-2019 Olivier Friard - Marco Gamba - Sergio Castellano")
         print(f"version {version.__version__} - {version.__version_date__}")
         sys.exit()
 
