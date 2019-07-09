@@ -40,7 +40,7 @@ from shutil import copyfile
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QFileDialog
-#from PyQt5 import QtSvg
+from PyQt5 import QtSvg
 from behatrix import behatrix_qrc
 from behatrix.behatrix_ui import Ui_MainWindow
 
@@ -55,25 +55,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowIcon(QIcon(":/logo"))
 
-        #self.setWindowIcon(QIcon(os.path.dirname(os.path.realpath(__file__)) + "/behatrix_128px.png"))
         self.setWindowTitle("Behatrix - Behavioral Sequences Analysis")
 
-        #self.verticalLayout_4.insertWidget(2, QLabel("TEST"))
-        #self.horizontal_splitter.insertWidget(2, QLabel("TEST"))
-
-        '''
         self.svg_display = QtSvg.QSvgWidget()
         self.horizontal_splitter.insertWidget(2, self.svg_display)
-        '''
-
-        #svgWidget = QtSvg.QSvgWidget('Zeichen_123.svg')
 
         #self.horizontal_splitter.removeWidget(self.lb_flow_chart)
 
-        '''
         self.lb_flow_chart.deleteLater()
         self.lb_flow_chart = None
-        '''
+
 
         self.vertical_splitter.setStretchFactor(1, 10)
         self.horizontal_splitter.setStretchFactor(1, 1)
@@ -102,12 +93,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
         self.pb_save_gv.clicked.connect(self.save_gv)
-        self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram("png"))
+        self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram(action="show"))
         self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
         # self.pte_gv.textChanged.connect(self.flow_diagram)
-        self.pb_save_png.clicked.connect(lambda: self.save_diagram("png"))
-        self.pb_save_svg.clicked.connect(lambda: self.save_diagram("svg"))
+        self.pb_save_png.setVisible(False)
+        # self.pb_save_png.clicked.connect(lambda: self.save_diagram("png"))
+        self.pb_save_svg.clicked.connect(lambda: self.flow_diagram(action="save"))
 
         # tab permutations test
         self.pb_exclude_repetition.clicked.connect(self.exclude_behavior_repetitions)
@@ -329,7 +321,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             edge_label = "fraction_node"
         '''
 
-
         # check significativity
         if self.cb_plot_significativity.isChecked() and self.permutations_test_matrix is None:
             QMessageBox.critical(self, "Behatrix", "Adding significativity to graph requires p values from permutations test")
@@ -373,14 +364,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
 
-    def flow_diagram(self, image_format:str="png") -> str:
+    def flow_diagram(self, action:str="show") -> str:
         """
-        generate flow diagram from pte_gv content
-        in PNG or SVG format
+        generate flow diagram from pte_gv content in SVG format
         with dot program from graphviz package
 
         Args:
-            image_format (str): format of image: png or svg
+            action (str): "show" or "save"
 
         Returns:
             str: path of diagram temp file path or "" in case of error
@@ -388,9 +378,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.pte_gv.toPlainText():
 
+            gv_script = self.pte_gv.toPlainText().replace("\n", " ")
 
-            gv_script = self.pte_gv.toPlainText()
-
+            '''
             tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
             try:
                 with open(tmp_gv_path, "w") as tmp_gv_file:
@@ -398,8 +388,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except Exception:
                 QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
                 return
+            '''
 
+            '''
             tmp_image_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("temp_flow_diagram." + image_format))
+            '''
 
             # check dot path
             if self.le_dot_path.text():
@@ -411,32 +404,78 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 dot_path = self.le_dot_path.text()
             else:
                 dot_path = "dot"
+            '''
             # remove previous file
+
             if os.path.isfile(tmp_image_path):
                 os.remove(tmp_image_path)
+            '''
 
+            '''
             cmd = f'"{dot_path}" -T{image_format} "{tmp_gv_path}" -o "{tmp_image_path}"'
+            '''
+
+            '''
+            cmd = f'"{dot_path}" -Tsvg "{tmp_gv_path}"'
+            '''
+
+            cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
 
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
 
             if error:
-                QMessageBox.warning(self, "Behatrix", error.decode("utf-8"))
+                QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                return
 
+            '''
+            svg_str = out.decode("utf-8")
+            print(svg_str)
+            '''
+
+            '''
             if not os.path.isfile(tmp_image_path):
                 QMessageBox.critical(self, "Behatrix",
                                      "Error during the graph creation.")
                 return ""
+            '''
 
-            if image_format == "svg":
+            if action == "show":
+                '''
                 self.svg_display.load(tmp_image_path)
+                '''
 
+                '''
+                svg_bytes = bytearray(svg_str, encoding='utf-8')
+                self.svg_display.load(svg_bytes)
+                '''
+                self.svg_display.load(out)
+
+            if action == "save":
+                file_name, filter_ = QFileDialog().getSaveFileName(self,
+                                                                   "Select the file and format to save the flow diagram", "",
+                                                                   "SVG files (*.svg);;All files (*)"
+                                                                   )
+                if file_name:
+                    try:
+                        with open(file_name, "w") as f_out:
+                            f_out.write(out.decode("utf-8"))
+                    except Exception:
+                        QMessageBox.critical(self, "Behatrix", "Error saving the file")
+                        return
+
+                    self.svg_display.load(out)
+
+            '''
             if image_format == "png":
                 myPixmap = QPixmap(tmp_image_path)
                 scaled_pixmap = myPixmap.scaled(self.lb_flow_chart.size(), Qt.KeepAspectRatio)
                 self.lb_flow_chart.setPixmap(scaled_pixmap)
+            '''
 
+            '''
             return tmp_image_path
+            '''
 
 
 
@@ -444,7 +483,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         clear diagram
         """
-        self.lb_flow_chart.clear()
+        '''self.lb_flow_chart.clear()'''
+        self.svg_display.clear()
 
 
 

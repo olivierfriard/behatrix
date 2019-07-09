@@ -281,15 +281,15 @@ def draw_diagram(cutoff_all,
                          pen_width=1):
 
             if edge_label == "fraction_node":
-                return f'"{node1}" -> "{node2}" [label = "{di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
+                return f'"{node1}" -> "{node2}" [label = "  {di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
 
             elif edge_label == "percent_node":
                 percent = round(di / tot_trans_after_node[i0] * 100, decimals_number) if decimals_number else round(di / tot_trans_after_node[i0] * 100)
-                return f'"{node1}" -> "{node2}" [label = "{percent} %" penwidth={pen_width}];\n'
+                return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
 
             elif edge_label == "percent_total":
                 percent = round(di / tot_trans * 100.0, decimals_number) if decimals_number else round(di / tot_trans * 100.0)
-                return f'"{node1}" -> "{node2}" [label = "{percent} %" penwidth={pen_width}];\n'
+                return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
 
         def width(p):
             """
