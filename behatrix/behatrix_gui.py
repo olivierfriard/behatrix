@@ -301,6 +301,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         generate GraphViz script
         """
 
+        if '"' in self.pte_behav_strings.toPlainText():
+            QMessageBox.critical(self, "Behatrix",'The double quotes (") are not allowed in behaviors')
+            return
+
         (return_code, sequences,
          unique_transitions, nodes, starting_nodes, tot_nodes,
          tot_trans, tot_trans_after_node,
@@ -379,7 +383,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.pte_gv.toPlainText():
 
             gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
-            print(gv_script)
+            if '"' in gv_script:
+                QMessageBox.critical(self, "Behatrix",'The double quotes (") are not allowed in behaviors')
 
             '''
             tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
