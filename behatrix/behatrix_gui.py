@@ -378,7 +378,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.pte_gv.toPlainText():
 
-            gv_script = self.pte_gv.toPlainText().replace("\n", " ")
+            gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
+            print(gv_script)
 
             '''
             tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
