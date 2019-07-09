@@ -383,8 +383,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.pte_gv.toPlainText():
 
             gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
-            if '"' in gv_script:
-                QMessageBox.critical(self, "Behatrix",'The double quotes (") are not allowed in behaviors')
+
+            # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
+            if sys.platform == "win32":
+                gv_script = gv_script.replace(">", "^^^>")
 
             '''
             tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
@@ -425,7 +427,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             cmd = f'"{dot_path}" -Tsvg "{tmp_gv_path}"'
             '''
 
-            cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
+            if sys.platform == "win32":
+                cmd = f'''echo {gv_script} | "{dot_path}" -Tsvg '''
+
+            else:
+                cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
 
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
