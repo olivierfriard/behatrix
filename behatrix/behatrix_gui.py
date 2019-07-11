@@ -75,7 +75,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.pb_clear_behavioral_strings.clicked.connect(self.pte_behav_strings.clear)
 
-        # set to tab strings
+        # set to behavioral sequences tab 
         self.tabWidget.setCurrentIndex(0)
 
         # connections
@@ -96,9 +96,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram(action="show"))
         self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
-        # self.pte_gv.textChanged.connect(self.flow_diagram)
+        
         self.pb_save_png.setVisible(False)
-        # self.pb_save_png.clicked.connect(lambda: self.save_diagram("png"))
+        
         self.pb_save_svg.clicked.connect(lambda: self.flow_diagram(action="save"))
 
         # tab permutations test
@@ -150,6 +150,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              """See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>"""
              "<hr>"))
         _ = about_dialog.exec_()
+
 
 
     def closeEvent(self, event):
@@ -382,85 +383,73 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.pte_gv.toPlainText():
 
-            gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
+            if self.rb_graphviz.isChecked():
+                # check dot path
+                if self.le_dot_path.text():
+                    if not os.path.isfile(self.le_dot_path.text()):
+                        QMessageBox.critical(self, "Behatrix",
+                                             ("The path for <b>dot</b> program is wrong.<br>"
+                                              "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
+                        return ""
+                    dot_path = self.le_dot_path.text()
+                else:
+                    dot_path = "dot"
+    
+                # test dot program
+                p = subprocess.Popen(f"{dot_path} -V", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                out, error = p.communicate()
+    
+                if b"graphviz version" in error:
+    
+                    gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
+    
+                    # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
+                    if sys.platform == "win32":
+                        gv_script = gv_script.replace(">", "^^^>")
+                        cmd = f'''echo {gv_script} | "{dot_path}" -Tsvg '''
+        
+                    else:
+                        cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
+        
+                    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                    out, error = p.communicate()
+        
+                    if error:
+                        QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                        return
+        
+            if self.rb_vizjs.isChecked():
 
-            # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
-            if sys.platform == "win32":
-                gv_script = gv_script.replace(">", "^^^>")
+                # test if viz.js and nodejs found
+                if os.path.isfile(sys.path[0]):  # pyinstaller
+                    syspath = os.path.dirname(sys.path[0])
+                else:
+                    syspath = sys.path[0]
+                    
+                print("syspath", syspath)
 
-            '''
-            tmp_gv_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("gv_temp.gv"))
-            try:
-                with open(tmp_gv_path, "w") as tmp_gv_file:
-                    tmp_gv_file.write(gv_script)
-            except Exception:
-                QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
-                return
-            '''
+                # escape for echo and nodejs
+                gv_script_escaped = self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
 
-            '''
-            tmp_image_path = str(pathlib.Path(tempfile.gettempdir()) / pathlib.Path("temp_flow_diagram." + image_format))
-            '''
+                js = f"""var data = "{gv_script_escaped}"; var viz = require("{syspath}/viz.js"); var svg = viz.Viz(data, "svg"); console.log(svg);"""
+                
+                '''
+                js = JS_TEMPLATE.replace("###GV_SCRIPT###", gv_script_escaped)
+                '''
 
-            # check dot path
-            if self.le_dot_path.text():
-                if not os.path.isfile(self.le_dot_path.text()):
-                    QMessageBox.critical(self, "Behatrix",
-                                         ("The path for <b>dot</b> program is wrong.<br>"
-                                          "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
-                    return ""
-                dot_path = self.le_dot_path.text()
-            else:
-                dot_path = "dot"
-            '''
-            # remove previous file
+                cmd = f"echo '{js}' | {syspath}/node"
 
-            if os.path.isfile(tmp_image_path):
-                os.remove(tmp_image_path)
-            '''
-
-            '''
-            cmd = f'"{dot_path}" -T{image_format} "{tmp_gv_path}" -o "{tmp_image_path}"'
-            '''
-
-            '''
-            cmd = f'"{dot_path}" -Tsvg "{tmp_gv_path}"'
-            '''
-
-            if sys.platform == "win32":
-                cmd = f'''echo {gv_script} | "{dot_path}" -Tsvg '''
-
-            else:
-                cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
-
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            out, error = p.communicate()
-
-            if error:
-                QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
-                return
-
-            '''
-            svg_str = out.decode("utf-8")
-            print(svg_str)
-            '''
-
-            '''
-            if not os.path.isfile(tmp_image_path):
-                QMessageBox.critical(self, "Behatrix",
-                                     "Error during the graph creation.")
-                return ""
-            '''
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                
+                out, error = p.communicate()
+                
+                if error:
+                    QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                    return
+                else:
+                    self.svg_display.load(out)
 
             if action == "show":
-                '''
-                self.svg_display.load(tmp_image_path)
-                '''
-
-                '''
-                svg_bytes = bytearray(svg_str, encoding='utf-8')
-                self.svg_display.load(svg_bytes)
-                '''
                 self.svg_display.load(out)
 
             if action == "save":
@@ -477,26 +466,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         return
 
                     self.svg_display.load(out)
-
-            '''
-            if image_format == "png":
-                myPixmap = QPixmap(tmp_image_path)
-                scaled_pixmap = myPixmap.scaled(self.lb_flow_chart.size(), Qt.KeepAspectRatio)
-                self.lb_flow_chart.setPixmap(scaled_pixmap)
-            '''
-
-            '''
-            return tmp_image_path
-            '''
-
+            
 
 
     def clear_diagram(self):
         """
         clear diagram
         """
-        '''self.lb_flow_chart.clear()'''
-        self.svg_display.clear()
+
+        self.svg_display.load(b"")
 
 
 
