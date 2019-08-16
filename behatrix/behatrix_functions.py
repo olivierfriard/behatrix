@@ -25,16 +25,16 @@ This file is part of Behatrix.
 
 """
 
-import os
-import sys
 import argparse
-import numpy as np
 import concurrent.futures
-import random
 import itertools
+import os
+import random
+import sys
+
+import numpy as np
+
 from behatrix import version
-
-
 
 SEPARATOR = "@%&£$"
 

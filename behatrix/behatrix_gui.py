@@ -27,25 +27,24 @@ This file is part of Behatrix.
 
 """
 
-import os
-import sys
-import numpy as np
-import subprocess
 import concurrent.futures
-import tempfile
+import os
 import pathlib
 import platform
+import subprocess
+import sys
+import tempfile
 from shutil import copyfile
 
+import numpy as np
+from PyQt5 import QtSvg
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QFileDialog
-from PyQt5 import QtSvg
-from behatrix import behatrix_qrc
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
+
+from behatrix import behatrix_functions, behatrix_qrc, version
 from behatrix.behatrix_ui import Ui_MainWindow
 
-from behatrix import behatrix_functions
-from behatrix import version
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
