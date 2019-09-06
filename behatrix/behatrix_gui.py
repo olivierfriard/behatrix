@@ -74,7 +74,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.pb_clear_behavioral_strings.clicked.connect(self.pte_behav_strings.clear)
 
-        # set to behavioral sequences tab 
+        # set to behavioral sequences tab
         self.tabWidget.setCurrentIndex(0)
 
         # connections
@@ -95,9 +95,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram(action="show"))
         self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
-        
+
         self.pb_save_png.setVisible(False)
-        
+
         self.pb_save_svg.clicked.connect(lambda: self.flow_diagram(action="save"))
 
         # tab permutations test
@@ -140,7 +140,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         about_dialog.setEscapeButton(QMessageBox.Ok)
 
         about_dialog.setInformativeText(
-            (f"<b>Behatirx</b> {version.__version__} - {version.__version_date__}"
+            (f"<b>Behatrix</b> {version.__version__} - {version.__version_date__}"
              "<p>Copyright &copy; 2017-2019 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
              "Department of Life Sciences and Systems Biology<br>"
              "University of Torino - Italy<br>"
@@ -371,7 +371,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def flow_diagram(self, action:str="show") -> str:
         """
         generate flow diagram from pte_gv content in SVG format
-        with dot program from graphviz package
+        with:
+            dot program from graphviz package
+            or
+            viz.js javascript and nodejs
 
         Args:
             action (str): "show" or "save"
@@ -393,55 +396,72 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     dot_path = self.le_dot_path.text()
                 else:
                     dot_path = "dot"
-    
+
                 # test dot program
                 p = subprocess.Popen(f"{dot_path} -V", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()
-    
+
                 if b"graphviz version" in error:
-    
+
                     gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
-    
+
                     # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
                     if sys.platform == "win32":
                         gv_script = gv_script.replace(">", "^^^>")
                         cmd = f'''echo {gv_script} | "{dot_path}" -Tsvg '''
-        
+
                     else:
                         cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
-        
+
                     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     out, error = p.communicate()
-        
+
                     if error:
                         QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
                         return
-        
+
             if self.rb_vizjs.isChecked():
 
                 # test if viz.js and nodejs found
-                if os.path.isfile(sys.path[0]):  # pyinstaller
-                    syspath = os.path.dirname(sys.path[0])
-                else:
+                # script directory
+                print(sys.argv[0])
+                pathlib.Path(sys.argv[0]).parent
+                print(pathlib.Path(sys.argv[0]).parent)
+
+                if pathlib.Path(sys.path[0]).is_file():  # frozen (pyinstaller)
+                    syspath = pathlib.Path(sys.path[0]).parent
+                elif pathlib.Path(sys.path[0]).is_dir():  # python script
                     syspath = sys.path[0]
-                    
-                print("syspath", syspath)
+                else:  # module (pip)
+                    syspath = ""
+
+                print(f"syspath: {syspath}")
+                cmd_node = syspath + ("/" if syspath else "") + "node"
+                print(f"cmd_node {cmd_node}")
+
+                p = subprocess.Popen(f"{cmd_node} -v",stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
+                if not p or p[0] != "v":
+                    cmd_node = "node"
+                    p = subprocess.Popen(f"{cmd_node} -v",stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
+                    if not p or p[0] != "v":
+                        QMessageBox.critical(self, "Behatrix", "node not found!")
+                        return
 
                 # escape for echo and nodejs
                 gv_script_escaped = self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
 
                 js = f"""var data = "{gv_script_escaped}"; var viz = require("{syspath}/viz.js"); var svg = viz.Viz(data, "svg"); console.log(svg);"""
-                
+
                 '''
                 js = JS_TEMPLATE.replace("###GV_SCRIPT###", gv_script_escaped)
                 '''
 
-                cmd = f"echo '{js}' | {syspath}/node"
+                cmd = f"echo '{js}' | {cmd_node}"
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                
+
                 out, error = p.communicate()
-                
+
                 if error:
                     QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
                     return
@@ -465,7 +485,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         return
 
                     self.svg_display.load(out)
-            
+
 
 
     def clear_diagram(self):
@@ -599,7 +619,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.permutations_test_matrix = results / nrandom
 
                 for r in range(self.permutations_test_matrix.shape[0]):
-                    out += "{}\t".format(behaviours[r])
+                    out += f"{behaviours[r]}\t"
                     out += "\t".join(["%8.6f" % x for x in self.permutations_test_matrix[r, :]]) + "\n"
 
                 self.pte_random.setPlainText(out)

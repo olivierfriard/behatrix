@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
@@ -428,7 +428,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="le_dot_path"/>
+               <widget class="QLineEdit" name="le_dot_path">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="pb_browse_dot_path">
@@ -912,7 +916,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
