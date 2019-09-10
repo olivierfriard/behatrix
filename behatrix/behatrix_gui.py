@@ -471,12 +471,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 js = f"""var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);"""
 
+                open("script.js", "w").write(js)
+
                 '''
-                js = JS_TEMPLATE.replace("###GV_SCRIPT###", gv_script_escaped)
+                cmd = f"echo '{js}' | {cmd_node}"
                 '''
 
-                cmd = f"echo '{js}' | {cmd_node}"
+                cmd = f"{cmd node} script.js"
                 print(f"cmd: {cmd}")
+
+
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
