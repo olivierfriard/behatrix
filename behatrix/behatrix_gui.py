@@ -458,6 +458,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     viz_path = str(pathlib.Path(syspath) / pathlib.Path("viz.js"))
                 else:
                     viz_path = "viz.js"
+                viz_path = viz_path.replace(r"\", "/")
 
                 print(f"viz.js path: {viz_path}")
                 if not pathlib.Path(viz_path).is_file():
