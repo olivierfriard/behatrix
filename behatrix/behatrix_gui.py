@@ -477,7 +477,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 cmd = f"echo '{js}' | {cmd_node}"
                 '''
 
-                cmd = f"{cmd node} script.js"
+                cmd = f"{cmd_node} script.js"
                 print(f"cmd: {cmd}")
 
 
