@@ -471,13 +471,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 js = f"""var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);"""
 
-                open("script.js", "w").write(js)
+                print(tempfile.gettempdir())
+                js_script_path = pathlib.Path(tempfile.gettempdir()) / pathlib.Path("behatrix_flow_diagram_script.js")
+                open(js_script_path, "w").write(js)
 
                 '''
                 cmd = f"echo '{js}' | {cmd_node}"
                 '''
 
-                cmd = f"{cmd_node} script.js"
+                cmd = f"{cmd_node} {js_script_path}"
                 print(f"cmd: {cmd}")
 
 
