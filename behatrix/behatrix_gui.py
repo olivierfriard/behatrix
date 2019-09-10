@@ -436,21 +436,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     syspath = ""
 
                 print(f"syspath: {syspath}")
+
+                # node (nodejs)
                 cmd_node = syspath + ("/" if syspath else "") + "node"
-                print(f"cmd_node {cmd_node}")
 
                 p = subprocess.Popen(f"{cmd_node} -v",stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
                 if not p or p[0] != "v":
+                    # test if node is installed on path
                     cmd_node = "node"
                     p = subprocess.Popen(f"{cmd_node} -v",stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
                     if not p or p[0] != "v":
-                        QMessageBox.critical(self, "Behatrix", "node not found!")
+                        QMessageBox.critical(self, "Behatrix", "nodejs not found!")
                         return
+                print(f"cmd_node {cmd_node}")
+
+                # viz.js
+                viz_path = syspath + ("/" if syspath else "") + "viz.js"
+                print(f"viz.js path: {viz_path}")
+                if not pathlib.Path(viz_path).is_file():
+                    QMessageBox.critical(self, "Behatrix", "viz.js file not found!")
+                    return
+
 
                 # escape for echo and nodejs
                 gv_script_escaped = self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
 
-                js = f"""var data = "{gv_script_escaped}"; var viz = require("{syspath}/viz.js"); var svg = viz.Viz(data, "svg"); console.log(svg);"""
+                js = f"""var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);"""
 
                 '''
                 js = JS_TEMPLATE.replace("###GV_SCRIPT###", gv_script_escaped)
