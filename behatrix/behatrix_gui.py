@@ -438,7 +438,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print(f"syspath: {syspath}")
 
                 # node (nodejs)
-                cmd_node = syspath + ("/" if syspath else "") + "node"
+                if syspath:
+                    cmd_node = str(pathlib.Path(syspath) / pathlib.Path("node"))
+                else:
+                    cmd_node = "node"
 
                 p = subprocess.Popen(f"{cmd_node} -v",stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
                 if not p or p[0] != "v":
