@@ -476,6 +476,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 '''
 
                 cmd = f"echo '{js}' | {cmd_node}"
+                print(f"cmd: {cmd}")
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
