@@ -2,7 +2,7 @@
 
 """
 Behatrix
-Behavioural Strings Analysis (BSA)).
+Behavioural Sequences Analysis (BSA)).
 
 Behavioral strings analysis with permutations test
 
@@ -26,4 +26,4 @@ This file is part of Behatrix.
 """
 
 __version__ = "0.8"
-__version_date__ = "2019-07-09"
+__version_date__ = "2019-09-30"
