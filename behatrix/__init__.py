@@ -1,8 +1,8 @@
 """
 Behatrix
-Behavioural Sequences Analysis (BSA).
+Behavioral Sequences Analysis (BSA).
 
-Behavioral Sequences analysis with permutations test
+Behavioral sequences analysis with permutations test
 
 
 Copyright 2017-2019 Olivier Friard
@@ -24,9 +24,6 @@ This file is part of Behatrix.
 
 """
 
-name = "behatrix"
-
 from .behatrix_gui import main, cli
 
-
-
+name = "behatrix"

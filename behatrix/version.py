@@ -2,9 +2,9 @@
 
 """
 Behatrix
-Behavioural Sequences Analysis (BSA)).
+Behavioral Sequences Analysis (BSA)).
 
-Behavioral strings analysis with permutations test
+Behavioral sequences analysis with permutations test
 
 Copyright 2017-2019 Olivier Friard
 

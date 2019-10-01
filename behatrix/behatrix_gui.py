@@ -3,9 +3,9 @@
 
 """
 Behatrix
-Behavioural Sequences Analysis (BSA).
+Behavioral Sequences Analysis (BSA).
 
-Behavioral Sequences analysis with permutations test
+Behavioral sequences analysis with permutations test
 
 
 Copyright 2017-2019 Olivier Friard
@@ -59,7 +59,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.svg_display = QtSvg.QSvgWidget()
         self.horizontal_splitter.insertWidget(2, self.svg_display)
 
-        #self.horizontal_splitter.removeWidget(self.lb_flow_chart)
+        # self.horizontal_splitter.removeWidget(self.lb_flow_chart)
 
         self.lb_flow_chart.deleteLater()
         self.lb_flow_chart = None
@@ -368,7 +368,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
 
-    def flow_diagram(self, action:str="show") -> str:
+    def flow_diagram(self, action: str="show") -> str:
         """
         generate flow diagram from pte_gv content in SVG format
         with:
@@ -443,7 +443,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     cmd_node = "node"
 
-                p = subprocess.Popen(f"{cmd_node} -v",stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
+                p = subprocess.Popen(f"{cmd_node} -v", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
                 if not p or p[0] != "v":
                     # test if node is installed on path
                     cmd_node = "node"
