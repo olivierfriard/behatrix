@@ -186,27 +186,32 @@ Usage of command line utility
 .. code-block:: text
 
 
-    usage: behatrix_cli.py [-h] [-v] [--sequences PATH_TO_FILE_CONTAINING_SEQUENCES] [--output OUTPUT]
-                           [--exclusions EXCLUSIONS] [--n_random NRANDOM]
-                           [--n_cpu N_CPU] [--block_first] [--block_last]
-                           [--quiet]
-
+    usage: 
+    python3 -m behatrix [options]
+    
     Behatrix command line utility
-
+    
     optional arguments:
       -h, --help            show this help message and exit
-      -v                    Behatrix version
-      --sequences PATH_TO_FILE_CONTAINING_SEQUENCES
-                            Path of file containing behavioral strings
-      --output OUTPUT       Path of output files
+      -v, --version         Behatrix version
+      -s SEQUENCES, --sequences SEQUENCES
+                            Path of file containing behavioral sequences
+      --separator SEPARATOR
+                            Separator of behaviors
+      -o OUTPUT, --output OUTPUT
+                            Path of output files
       --exclusions EXCLUSIONS
                             Path of file containing exclusions
-      --n_random NRANDOM    Number of randomizations
-      --n_cpu N_CPU         Number of CPU to use for randomizations test
-      --block_first         block first behavior during randomization test
-      --block_last          block last behavior during randomization test
-      --quiet               Do not print results on terminal
-
+      --n-random NRANDOM    Number of permutations
+      --n-cpu N_CPU         Number of CPU to use for permutations test
+      --block-first         block first behavior during permutations test
+      --block-last          block last behavior during permutations test
+      --no-repetition       exclude repetitions during permutations test
+      --n-gram NGRAM        n-gram value
+      -q, --quiet           Do not print results on terminal
+    
+    See http://www.boris.unito.it/pages/behatrix for details :-)
+  
 
 
 
@@ -215,7 +220,7 @@ Example of use
 
 .. code-block:: text
 
-  python3 behatrix_cli.py --strings behav_strings.txt --output behav_strings_results --n_cpu 6 --n_random 10000
+    python3 -m behatrix --strings behav_strings.txt --output behav_strings_results --n_cpu 6 --n_random 10000
 
 
 
