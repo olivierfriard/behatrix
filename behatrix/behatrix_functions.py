@@ -2,9 +2,9 @@
 
 """
 Behatrix
-Behavioural Sequences Analysis (BSA)).
+Behavioral Sequences Analysis (BSA).
 
-Behavioral Sequences analysis with permutations test
+Behavioral sequences analysis with permutations test
 
 Copyright 2017-2019 Olivier Friard
 
@@ -58,10 +58,10 @@ def remove_comments(s: str) -> str:
     return "\n".join(strings_list)
 
 
-def behav_strings_stats(string:str,
-                        behaviors_separator:str="",
-                        chunk:int=0,
-                        flag_remove_repetitions:bool=False,
+def behav_strings_stats(string: str,
+                        behaviors_separator: str="",
+                        chunk: int=0,
+                        flag_remove_repetitions: bool=False,
                         ngram=1) -> (bool, list):
     """
     extract some information from behavioral sequences
@@ -182,12 +182,12 @@ def behav_strings_stats(string:str,
     out_ngrams = ""
 
     if ngram > 1:
-        tot_ngrams, uniq_ngrams  = [], []
+        tot_ngrams, uniq_ngrams = [], []
         for sequence in sequences:
             for idx, behavior in enumerate(sequence):
                 try:
                     n = [behavior]
-                    for i in range(ngram-1):
+                    for i in range(ngram - 1):
                         n.append(sequence[idx + i + 1])
                     tot_ngrams.append(n)
                     if n not in uniq_ngrams:
@@ -198,9 +198,9 @@ def behav_strings_stats(string:str,
         for element in sorted(uniq_ngrams):
             ngram_count = sum([behaviors_separator.join(sequence).count(behaviors_separator.join(element)) for sequence in sequences])
             out_ngrams += (f"{behaviors_separator.join(element)}\t"
-            f"{ngram_count / len(tot_ngrams):.3f}\t"
-            f"{ngram_count} / {len(tot_ngrams)}\n"
-            )
+                           f"{ngram_count / len(tot_ngrams):.3f}\t"
+                           f"{ngram_count} / {len(tot_ngrams)}\n"
+                          )
 
     return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours, out_ngrams
 
@@ -554,7 +554,7 @@ def permutations_test(nrandom: int,
                 for i in range(len(seq) - 1):
                     try:
                         permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
-                    except:
+                    except Exception:
                         print(str(sys.exc_info()[1]))
 
             results = results + (permuted_transitions_matrix >= observed_matrix)
@@ -573,20 +573,20 @@ def levenshtein_distance(seq1: list, seq2: list) -> int:
     size_y = len(seq2) + 1
     matrix = np.zeros((size_x, size_y))
     for x in range(size_x):
-        matrix [x, 0] = x
+        matrix[x, 0] = x
     for y in range(size_y):
-        matrix [0, y] = y
+        matrix[0, y] = y
 
     for x in range(1, size_x):
         for y in range(1, size_y):
             if seq1[x - 1] == seq2[y - 1]:
-                matrix [x, y] = min(
+                matrix[x, y] = min(
                     matrix[x - 1, y] + 1,
                     matrix[x - 1, y - 1],
                     matrix[x, y - 1] + 1
                 )
             else:
-                matrix [x,y] = min(
+                matrix[x, y] = min(
                     matrix[x - 1, y] + 1,
                     matrix[x - 1, y - 1] + 1,
                     matrix[x, y - 1] + 1
@@ -619,7 +619,7 @@ def needleman_wunsch_identity(seq1: list, seq2: list) -> dict:
 
     match_award = 1
     mismatch_penalty = -1
-    gap_penalty = -1 # both for opening and extanding
+    gap_penalty = -1  # both for opening and extanding
 
     def match_score(alpha, beta):
         if alpha == beta:
@@ -630,30 +630,27 @@ def needleman_wunsch_identity(seq1: list, seq2: list) -> dict:
             return mismatch_penalty
 
     def finalize(align1, align2):
-        align1 = align1[::-1]    #reverse sequence 1
-        align2 = align2[::-1]    #reverse sequence 2
+        align1 = align1[::-1]    # reverse sequence 1
+        align2 = align2[::-1]    # reverse sequence 2
 
-        i,j = 0,0
+        i, j = 0, 0
 
-        #calculate identity, score and aligned sequeces
+        # calculate identity, score and aligned sequences
         symbol = []
         found = 0
         score = 0
         identity = 0
-        for i in range(0,len(align1)):
-            # if two AAs are the same, then output the letter
+        for i in range(0, len(align1)):
             if align1[i] == align2[i]:
                 symbol.append(align1[i])
                 identity = identity + 1
                 score += match_score(align1[i], align2[i])
 
-            # if they are not identical and none of them is gap
             elif align1[i] != align2[i] and align1[i] != '-' and align2[i] != '-':
                 score += match_score(align1[i], align2[i])
                 symbol.append(" ")
                 found = 0
 
-            #if one of them is a gap, output a space
             elif align1[i] == '-' or align2[i] == '-':
                 symbol.append(" ")
                 score += gap_penalty

@@ -214,7 +214,7 @@ class Ui_MainWindow(object):
         self.label_16.setObjectName("label_16")
         self.horizontalLayout_14.addWidget(self.label_16)
         self.le_dot_path = QtWidgets.QLineEdit(self.layoutWidget)
-        self.le_dot_path.setReadOnly(True)
+        self.le_dot_path.setReadOnly(False)
         self.le_dot_path.setObjectName("le_dot_path")
         self.horizontalLayout_14.addWidget(self.le_dot_path)
         self.pb_browse_dot_path = QtWidgets.QPushButton(self.layoutWidget)
