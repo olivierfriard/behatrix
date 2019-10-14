@@ -28,6 +28,7 @@ This file is part of Behatrix.
 """
 
 import concurrent.futures
+import multiprocessing
 import os
 import pathlib
 import platform
@@ -38,7 +39,7 @@ from shutil import copyfile
 
 import numpy as np
 from PyQt5 import QtSvg
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtCore import QSettings, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 
@@ -47,6 +48,8 @@ from behatrix.behatrix_ui import Ui_MainWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
+
+    permutations_finished_signal = pyqtSignal(list)
 
     def __init__(self, parent=None):
 
@@ -128,6 +131,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if os.path.isfile(config_file_path):
             settings = QSettings(config_file_path, QSettings.IniFormat)
             self.le_dot_path.setText(settings.value("dot_prog_path"))
+
+        self.permutations_finished_signal.connect(self.get_permutations_results)
 
 
     def about(self):
@@ -555,14 +560,52 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pte_excluded_transitions.insertPlainText(f"{behavior}:{behavior}\n")
 
 
+    def get_permutations_results(self, results):
+        print(results)
+        nb_randomization_done = 0
+        permutation_results = np.zeros((len(self.behaviours), len(self.behaviours)))
+        for n_permut, result in results:
+             nb_randomization_done += n_permut
+             permutation_results += result
+             # results += l.result()[1]
+
+        print(nb_randomization_done)
+
+        out = "\t{}\n".format("\t".join(list(self.behaviours)))
+
+        self.permutations_test_matrix = permutation_results / self.nrandom
+
+        for r in range(self.permutations_test_matrix.shape[0]):
+            out += f"{self.behaviours[r]}\t"
+            out += "\t".join(["%8.6f" % x for x in self.permutations_test_matrix[r, :]]) + "\n"
+
+        self.pte_random.setPlainText(out)
+
+        self.statusbar.showMessage("", 0)
+
+        self.cb_plot_significativity.setEnabled(True)
+
+        QMessageBox.information(self, "Behatrix",
+                                ("Permutations test finished<br>"
+                                 f"{nb_randomization_done} permutations done<br><br>"))
+
+
+        
+
+    def permutations_test_finished(self, results):
+        print("finished")
+        self.permutations_finished_signal.emit(results)
+
+
     def permutation_test(self):
 
         if self.pte_behav_strings.toPlainText():
+            self.pte_random.clear()
 
             (return_code, sequences,
              d, nodes, starting_nodes, tot_nodes,
              tot_trans, tot_trans_after_node,
-             behaviours, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
+             self.behaviours, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
                                                             behaviors_separator=self.le_behaviors_separator.text(),
                                                             chunk=0,
                                                             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
@@ -582,29 +625,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if self.leNumberRandomizations.text():
                 try:
-                    nrandom = int(self.leNumberRandomizations.text())
+                    self.nrandom = int(self.leNumberRandomizations.text())
                 except Exception:
-                    nrandom = 0
+                    self.nrandom = 0
                     QMessageBox.warning(self, "Behatrix", "The number of Permutations is not valid")
                     return
 
-            if nrandom:
+            if self.nrandom:
 
                 self.statusbar.showMessage("Permutations test running... Be patient", 0)
                 QApplication.processEvents()
 
                 num_proc = self.sb_nb_cores.value()
 
-                if num_proc > nrandom:
-                    num_proc = nrandom
+                if num_proc > self.nrandom:
+                    num_proc = self.nrandom
 
-                observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, behaviours)
+                observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, self.behaviours)
 
-                results = np.zeros((len(behaviours), len(behaviours)))
 
                 # frozen script by pyinstaller does not allow to use multiprocessing
                 if sys.platform.startswith("win") and getattr(sys, "frozen", False):
-                    n_random_by_proc = nrandom
+                    n_random_by_proc = self.nrandom
                     nb_randomization_done, results = behatrix_functions.permutations_test(n_random_by_proc,
                                                                                     sequences, behaviours,
                                                                                     exclusion_list,
@@ -613,6 +655,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                                     observed_matrix)
                 else:
 
+                    self.nb_randomization_done = 0
+                    pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
+
+                    n_random_by_proc = round(self.nrandom / num_proc + 1)
+
+                    pool.starmap_async(behatrix_functions.permutations_test,
+                                       [(n_random_by_proc,
+                                        sequences, self.behaviours,
+                                        exclusion_list,
+                                        self.cb_block_first_behavior.isChecked(),
+                                        self.cb_block_last_behavior.isChecked(),
+                                        observed_matrix)
+                                       ] * num_proc,
+                                       callback=self.permutations_test_finished)
+
+
+                    '''
                     with concurrent.futures.ProcessPoolExecutor() as executor:
                         lst = []
                         n_required_randomizations = 0
@@ -637,9 +696,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         for l in lst:
                             nb_randomization_done += l.result()[0]
                             results += l.result()[1]
+                    '''
 
                 # display results
                 # header
+                '''
                 out = "\t{}\n".format("\t".join(list(behaviours)))
 
                 self.permutations_test_matrix = results / nrandom
@@ -657,6 +718,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.information(self, "Behatrix",
                                         ("Permutations test finished<br>"
                                          f"{nb_randomization_done} permutations done<br><br>"))
+                '''
 
             else:
                 QMessageBox.warning(self, "Behatrix", "Select the number of permutations to execute")
@@ -944,4 +1006,5 @@ def cli():
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     main()
