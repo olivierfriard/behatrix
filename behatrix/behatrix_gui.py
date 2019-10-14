@@ -302,7 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         if '"' in self.pte_behav_strings.toPlainText():
-            QMessageBox.critical(self, "Behatrix",'The double quotes (") are not allowed in behaviors')
+            QMessageBox.critical(self, "Behatrix", 'The double quotes (") are not allowed in behaviors')
             return
 
         (return_code, sequences,
@@ -443,11 +443,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     cmd_node = "node"
 
-                p = subprocess.Popen(f"{cmd_node} -v", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
+                p = subprocess.Popen(f"{cmd_node} -v",
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
+                                     shell=True).communicate()[0].decode("utf-8")
                 if not p or p[0] != "v":
                     # test if node is installed on path
                     cmd_node = "node"
-                    p = subprocess.Popen(f"{cmd_node} -v",stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()[0].decode("utf-8")
+                    p = subprocess.Popen(f"{cmd_node} -v",
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         shell=True).communicate()[0].decode("utf-8")
                     if not p or p[0] != "v":
                         QMessageBox.critical(self, "Behatrix", "nodejs not found!")
                         return
@@ -469,7 +475,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # escape for echo and nodejs
                 gv_script_escaped = self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
 
-                js = f"""var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);"""
+                js = f'var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);'
 
                 print(tempfile.gettempdir())
                 js_script_path = pathlib.Path(tempfile.gettempdir()) / pathlib.Path("behatrix_flow_diagram_script.js")
@@ -792,13 +798,9 @@ def cli():
     with open(args.sequences) as f_in:
         behav_str = f_in.read()
 
-    (return_code, sequences,
-     unique_transitions, nodes, starting_nodes, tot_nodes,
-     tot_trans, tot_trans_after_node, behaviours, ngrams_freq) = behatrix_functions.behav_strings_stats(behav_str,
-                                                                                     behaviors_separator=args.separator,
-                                                                                     chunk=0,
-                                                                                     ngram=args.ngram)
-
+    (return_code, sequences, unique_transitions, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours,
+     ngrams_freq) = behatrix_functions.behav_strings_stats(
+         behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram)
 
     if args.nrandom:
         nrandom = args.nrandom
