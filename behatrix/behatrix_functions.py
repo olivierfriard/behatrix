@@ -445,7 +445,7 @@ def permutations_test(nrandom: int,
                             exclusion_list: list,
                             block_first: bool,
                             block_last: bool,
-                            no_repetition: bool=False):
+                            no_repetition: bool=False) -> list:
         """
         create permutations of sequences following exclusions list, block first/last behavior
 
@@ -455,6 +455,9 @@ def permutations_test(nrandom: int,
             exclusion_list (dict): dict of excluded behaviors
             block_first (bool):
 
+        Returns:
+        
+            list: permuted sequences
         """
 
         space = list(space)
@@ -505,11 +508,9 @@ def permutations_test(nrandom: int,
 
                         if element in lspazio2:
                             lspazio2 = list([x for x in lspazio2 if x != element])
-                            '''lspazio2 = [x for x in lspazio2 if x != element]'''
 
                         if seq[-1] in lspazio2:
                             lspazio2 = list([x for x in lspazio2 if x != seq[-1]])
-                            '''lspazio2 = [x for x in lspazio2 if x != seq[-1]]'''
 
                 newseq.append(new_element)
                 element = new_element
