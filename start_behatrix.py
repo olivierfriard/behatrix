@@ -6,7 +6,6 @@ Behavioral Sequences Analysis (BSA).
 
 Behavioral sequences analysis with permutations test
 
-
 Copyright 2017-2019 Olivier Friard
 
 This file is part of Behatrix.
@@ -26,4 +25,6 @@ This file is part of Behatrix.
 
 """
 
+import multiprocessing
+multiprocessing.freeze_support()
 import behatrix.__main__
