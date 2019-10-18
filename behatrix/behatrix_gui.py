@@ -572,8 +572,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              nb_randomization_done += n_permut
              permutation_results += result
 
-        print(nb_randomization_done)
-
         out = "\t{}\n".format('\t'.join(list(self.behaviours)))
 
         self.permutations_test_matrix = permutation_results / self.nrandom

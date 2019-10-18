@@ -563,7 +563,7 @@ def permutations_test(nrandom: int,
         if count == nrandom:
             break
 
-    return count_tot, results
+    return count, results
 
 
 def levenshtein_distance(seq1: list, seq2: list) -> int:
