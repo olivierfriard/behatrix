@@ -561,17 +561,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def get_permutations_results(self, results):
-        print(results)
+        """
+        handle results of permutations test
+        """
+
+        self.pb_run_permutations_test.setEnabled(True)
         nb_randomization_done = 0
         permutation_results = np.zeros((len(self.behaviours), len(self.behaviours)))
         for n_permut, result in results:
              nb_randomization_done += n_permut
              permutation_results += result
-             # results += l.result()[1]
 
         print(nb_randomization_done)
 
-        out = "\t{}\n".format("\t".join(list(self.behaviours)))
+        out = "\t{}\n".format('\t'.join(list(self.behaviours)))
 
         self.permutations_test_matrix = permutation_results / self.nrandom
 
@@ -593,7 +596,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
     def permutations_test_finished(self, results):
-        print("finished")
+        """
+        permutations test finished
+        """
         self.permutations_finished_signal.emit(results)
 
 
@@ -634,7 +639,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.nrandom:
 
                 self.statusbar.showMessage("Permutations test running... Be patient", 0)
-                QApplication.processEvents()
+                
 
                 num_proc = self.sb_nb_cores.value()
 
@@ -656,20 +661,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                                     observed_matrix)
                 else:
                 '''
-                self.nb_randomization_done = 0
-                pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
+                if True:
+                    
+                    self.pb_run_permutations_test.setEnabled(False)
+                    self.nb_randomization_done = 0
+                    pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
 
-                n_random_by_proc = round(self.nrandom / num_proc + 1)
+                    n_random_by_proc = round(self.nrandom / num_proc + 1)
 
-                pool.starmap_async(behatrix_functions.permutations_test,
-                                    [(n_random_by_proc,
-                                    sequences, self.behaviours,
-                                    exclusion_list,
-                                    self.cb_block_first_behavior.isChecked(),
-                                    self.cb_block_last_behavior.isChecked(),
-                                    observed_matrix)
-                                    ] * num_proc,
-                                    callback=self.permutations_test_finished)
+                    pool.starmap_async(behatrix_functions.permutations_test,
+                                       [(n_random_by_proc,
+                                        sequences, self.behaviours,
+                                        exclusion_list,
+                                        self.cb_block_first_behavior.isChecked(),
+                                        self.cb_block_last_behavior.isChecked(),
+                                        observed_matrix)
+                                       ] * num_proc,
+                                       callback=self.permutations_test_finished)
 
 
                     '''
