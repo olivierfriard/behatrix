@@ -628,7 +628,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.nrandom = int(self.leNumberRandomizations.text())
                 except Exception:
                     self.nrandom = 0
-                    QMessageBox.warning(self, "Behatrix", "The number of Permutations is not valid")
+                    QMessageBox.warning(self, "Behatrix", "The number of permutations is not valid")
                     return
 
             if self.nrandom:
@@ -645,6 +645,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
                 # frozen script by pyinstaller does not allow to use multiprocessing
+                '''
                 if sys.platform.startswith("win") and getattr(sys, "frozen", False):
                     n_random_by_proc = self.nrandom
                     nb_randomization_done, results = behatrix_functions.permutations_test(n_random_by_proc,
@@ -654,21 +655,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                                     self.cb_block_last_behavior.isChecked(),
                                                                                     observed_matrix)
                 else:
+                '''
+                self.nb_randomization_done = 0
+                pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
 
-                    self.nb_randomization_done = 0
-                    pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
+                n_random_by_proc = round(self.nrandom / num_proc + 1)
 
-                    n_random_by_proc = round(self.nrandom / num_proc + 1)
-
-                    pool.starmap_async(behatrix_functions.permutations_test,
-                                       [(n_random_by_proc,
-                                        sequences, self.behaviours,
-                                        exclusion_list,
-                                        self.cb_block_first_behavior.isChecked(),
-                                        self.cb_block_last_behavior.isChecked(),
-                                        observed_matrix)
-                                       ] * num_proc,
-                                       callback=self.permutations_test_finished)
+                pool.starmap_async(behatrix_functions.permutations_test,
+                                    [(n_random_by_proc,
+                                    sequences, self.behaviours,
+                                    exclusion_list,
+                                    self.cb_block_first_behavior.isChecked(),
+                                    self.cb_block_last_behavior.isChecked(),
+                                    observed_matrix)
+                                    ] * num_proc,
+                                    callback=self.permutations_test_finished)
 
 
                     '''
