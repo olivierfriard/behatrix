@@ -145,7 +145,7 @@ the transition matrix related to the behavioral sequences.
 
 
 Descriptive statistics
---------------------------------------------------------------------------------------------------------------------------------------------
+............................................................................................................................................
 
 Some statistics can be obtained for various **n-gram** by clocking on the **Generate statistics** button.
 
@@ -155,7 +155,7 @@ Some statistics can be obtained for various **n-gram** by clocking on the **Gene
 
 
 Observed transition matrix
---------------------------------------------------------------------------------------------------------------------------------------------
+............................................................................................................................................
 
 .. image:: docs/screenshots/observed_transitions_matrix.png
    :alt: observed transitions matrix
@@ -192,12 +192,38 @@ From version 0.9.1 the binary version for Microsoft-Windows can use the multipro
 
 
 Permutations test with exclusions
---------------------------------------------------------------------------------------------------------------------------------------------
+............................................................................................................................................
 
 Some transitions can be excluded from the permutations test:
 
 .. image:: docs/screenshots/permutations_test_with_exclusions.png
    :alt: Permutations test
+
+
+
+
+
+
+
+
+Behavioral sequences distances
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Levenshtein distances
+............................................................................................................................................
+
+
+
+Needleman-Wunsch identities
+............................................................................................................................................
+
+
+
+
+
+
+
 
 
 
