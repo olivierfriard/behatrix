@@ -60,14 +60,14 @@ You will need a working installation of Python >=3.6.
 * Create a virtual environment (to install the dependencies):
 
 
-.. code-block:: python
+.. code-block:: bash
 
    python3 -m venv behatrix_venv
 
 
 * Activate the virtual environment
 
-.. code-block:: python
+.. code-block:: bash
 
    source behatrix_venv/bin/activate
 
@@ -78,14 +78,14 @@ The prompt should now be prefixed by **behatrix_venv**
 * Install the dependencies
 
 
-.. code-block:: python
+.. code-block:: bash
 
    pip install pyqt5 numpy
 
 
 * Download the source code
 
-.. code-block:: python
+.. code-block:: bash
 
    wget https://github.com/olivierfriard/behatrix/archive/master.zip
    unzip master.zip
@@ -93,13 +93,13 @@ The prompt should now be prefixed by **behatrix_venv**
 
 * Launch Behatrix
 
-.. code-block:: python
+.. code-block:: bash
 
    python3 start_behatrix.py
 
 or
 
-.. code-block:: python
+.. code-block:: bash
 
    python3 -m behatrix
 
