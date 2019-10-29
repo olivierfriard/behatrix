@@ -149,6 +149,13 @@ Descriptive statistics
 
 Some statistics can be obtained for various **n-gram** by clocking on the **Generate statistics** button.
 
+In the results box **Behatrix** will list all the behaviors present in the sequences in alphabetical order,
+the total number of behaviors, the total number of transitions, the number of different transitions and
+the behaviors frequencies.
+
+It is possible to **save results** for both the statistics and the transition matrix.
+
+
 .. image:: docs/screenshots/behav_strings_statistics.png
    :alt: behavioral_strings statistics
 
