@@ -137,8 +137,8 @@ The **Clear strings** button allows to eliminate all the sequences put in the ed
 
 Eventually repeated behaviors in the sequences can be removed by clicking on the **Remove repeated behaviors** button.
 
-Below, click on the **Generate statistics** button to obtain the statistical values and to **observed transition matrix** to generate
-the transition matrix related to the behavioral strings.
+Below, click on the **Generate statistics** button to obtain the statistical values and to **Transition matrix** to generate
+the transition matrix related to the behavioral sequences.
 
 
 
@@ -187,9 +187,7 @@ Permutations test
 .. image:: docs/screenshots/permutations_test.png
    :alt: Permutations test
 
-
-**Please note**: the binary version for Windows do NOT allow to run the permutations test using more than one core.
-If you want to use more than one core you must run Behatrix from sources.
+From version 0.9.1 the binary version for Microsoft-Windows can use the multiprocessing module, the permutations test is able to use many cores.
 
 
 
