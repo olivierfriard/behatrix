@@ -8,7 +8,7 @@
 Behatrix
 ============================================================================================================================================
 
-:Author: `Olivier Friard <http://www.di.unito.it/~friard>`_
+:Author: Olivier Friard
 :Author: Marco Gamba
 
 
@@ -30,7 +30,8 @@ Installation
    pip install behatrix
 
 
-If pip (the Python Package Index) is not installed on your system the executable binary programs for Linux, Mac and Microsoft-Windows are available in `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_.
+If pip (the Python Package Index) is not installed on your system the executable binary programs for Linux, Mac and Microsoft-Windows
+are available in `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_.
 
 
 
@@ -43,7 +44,8 @@ Lauching Behatrix
    python3 -m behatrix
 
 
-If pip (the Python Package Index) is not installed on your system download an executable version from `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_ and follow the following sections.
+If pip (the Python Package Index) is not installed on your system download an executable version
+from `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_ and follow the following sections.
 
 
 
@@ -186,11 +188,11 @@ Usage of command line utility
 .. code-block:: text
 
 
-    usage: 
+    usage:
     python3 -m behatrix [options]
-    
+
     Behatrix command line utility
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -v, --version         Behatrix version
@@ -209,9 +211,9 @@ Usage of command line utility
       --no-repetition       exclude repetitions during permutations test
       --n-gram NGRAM        n-gram value
       -q, --quiet           Do not print results on terminal
-    
+
     See http://www.boris.unito.it/pages/behatrix for details :-)
-  
+
 
 
 
