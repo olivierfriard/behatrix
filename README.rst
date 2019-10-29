@@ -12,7 +12,7 @@ Behatrix
 :Author: Marco Gamba
 
 
-**Behavioral sequences analysis with permutation test**
+**Behavioral sequences analysis with random permutations test**
 
 
 **Behatrix** was formerly named BSA (Behavioral Strings Analysis)
@@ -22,89 +22,89 @@ The details of modifications are available in the `revision history <https://git
 
 
 
-Installation
+Launching Behatrix
 ============================================================================================================================================
+
+Executable binary versions of **Behatrix** can be downloaded from the `GiHub repository <https://github.com/olivierfriard/behatrix/releases>`_
+
+All versions are *portable*, they do not need to be installed on your system.
+
+All previous versions of **Behatrix** are available in the GitHub repository.
+
+
+
+GNU/Linux
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Download the **behatrix-x.y.z.linux64.tar.gz** file, unzip it and launch the **behatrix** program.
+
+
+Microsoft-Windows
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Download the **behatrix-x.y.z.win64.zip** file, unzip it and launch the **behatrix** program.
+
+
+Mac OS
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Download the **behatrix-x.y.z.mac64.dmg** image file, mount it and launch the **behatrix** program.
+
+
+From sources (all platforms)
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+You will need a working installation of Python >=3.6.
+
+* Create a virtual environment (to install the dependencies):
+
 
 .. code-block:: python
 
-   pip install behatrix
+   python3 -m venv behatrix_venv
 
 
-If pip (the Python Package Index) is not installed on your system the executable binary programs for Linux, Mac and Microsoft-Windows
-are available in `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_.
+* Activate the virtual environment
+
+.. code-block:: python
+
+   source behatrix_venv/bin/activate
 
 
+The prompt should now be prefixed by **behatrix_venv**
 
 
-Lauching Behatrix
-=====================================================================
+* Install the dependencies
+
+
+.. code-block:: python
+
+   pip install pyqt5 numpy
+
+
+* Download the source code
+
+.. code-block:: python
+
+   wget https://github.com/olivierfriard/behatrix/archive/master.zip
+   unzip master.zip
+   cd behatrix-master
+
+* Launch Behatrix
+
+.. code-block:: python
+
+   python3 start_behatrix.py
+
+or
 
 .. code-block:: python
 
    python3 -m behatrix
 
 
-If pip (the Python Package Index) is not installed on your system download an executable version
-from `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_ and follow the following sections.
 
-
-
-Microsoft Windows
-----------------------------------------------------------------------------------------
-
-**Extract the archive** and launch the **behatrix.exe** program
-
-The `Graphviz package <http://www.graphviz.org>`_ is required for generating graph.
-Once installed you can add the directory containing the **dot** program to the PATH environment variable.
-See `Adding directory to PATH Environment Variable in Windows <https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10>`_ for details.
-If you do not add the dot program to the path you must specify the path to the dot program in Behatrix.
-
-Alternatively to installing Graphviz you can use remote Graphviz services like:
-
-* `Viz.js <http://viz-js.com/>`_
-
-* `WebGraphviz <http://www.webgraphviz.com/>`_
-
-* `GraphvizOnline <https://dreampuf.github.io/GraphvizOnline>`_
-
-
-
-
-
-Mac OS
-----------------------------------------------------------------------------------------
-
-
-Mount the **behatrix.dmg** image and launch **behatrix** program.
-
-The `GraphViz package <http://www.graphviz.org>`_ is required for generating graph.
-See `Graphviz on Mac OS <http://www.graphviz.org/Download_macos.php>`_ for details.
-
-
-
-
-
-Launch of Behatrix on Linux
-============================================================================================================================================
-
-
-If pip (the Python Package Index) is not installed on your system an executable binary program is available on the `latest releases <https://github.com/olivierfriard/behatrix/releases/latest>`_
-
-Extract the archive and launch the **behatrix** executable.
-
-
-
-Launch Behatrix from sources (all platforms)
-============================================================================================================================================
-
-
-Requirements
---------------------------------------------------------------------------------------------------------------------------------------------
-
-* Python3
-* Numpy
-* PyQt5 for the GUI version
-* graphviz package (optional)
 
 
 
