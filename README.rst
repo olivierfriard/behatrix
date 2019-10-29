@@ -15,6 +15,9 @@ Behatrix
 **Behavioral sequences analysis with random permutations test**
 
 
+**Behatrix is free and open-source software available for GNU/Linux, Windows and Mac OS.**
+
+
 **Behatrix** was formerly named BSA (Behavioral Strings Analysis)
 
 
@@ -108,23 +111,34 @@ or
 
 
 
-Usage of the GUI interface
+Usage of Behatrix
 ============================================================================================================================================
 
 
-The Behatrix main window
+Behavioral sequences
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 .. image:: docs/screenshots/main_window.png
-   :alt: Main window
+   :alt: Behavioral sequences
 
-The behavioral strings can be directly written, paste or loaded from file in the **Behavioral strings** edit box.
+The behavioral sequences can be directly written, paste or loaded from file in the **Behavioral strings** edit box.
 
 See the `BORIS <http://www.boris.unito.it/>`_ user guide for `exporting behavioral strings <https://boris.readthedocs.io/en/latest/#export-events-as-behavioral-strings>`_.
 
 
 .. image:: docs/screenshots/behavioral_strings.png
    :alt: behavioral_strings
+
+
+In a behavioral sequence, the successive behaviors can be separated by any character or group of characters.
+By default BORIS uses the pipe character (|). If no separator is used each different character of the sequence will be interpreted as a behavior.
+
+The **Clear strings** button allows to eliminate all the sequences put in the edit box.
+
+Below, click on the **Generate statistics** button to obtain the statistical values and to **observed transition matrix** to generate
+the transition matrix related to the behavioral strings.
+
+
 
 
 
