@@ -135,6 +135,8 @@ By default BORIS uses the pipe character (|). If no separator is used each diffe
 
 The **Clear strings** button allows to eliminate all the sequences put in the edit box.
 
+Eventually repeated behaviors in the sequences can be removed by clicking on the **Remove repeated behaviors** button.
+
 Below, click on the **Generate statistics** button to obtain the statistical values and to **observed transition matrix** to generate
 the transition matrix related to the behavioral strings.
 
@@ -142,15 +144,17 @@ the transition matrix related to the behavioral strings.
 
 
 
-Behaviors and transitions statistics
+Descriptive statistics
 --------------------------------------------------------------------------------------------------------------------------------------------
+
+Some statistics can be obtained for various **n-gram** by clocking on the **Generate statistics** button.
 
 .. image:: docs/screenshots/behav_strings_statistics.png
    :alt: behavioral_strings statistics
 
 
 
-Matrix of observed transitions
+Observed transition matrix
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 .. image:: docs/screenshots/observed_transitions_matrix.png
@@ -162,11 +166,16 @@ Matrix of observed transitions
 Flow diagram
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-Graphviz is required.
+From the version 0.9.1 the GraphViz package is no more required.
+The embedded **Viz.js** script can be used to generate the flow diagram. See https://github.com/mdaines/viz.js for details.
+
+If installed, the GraphViz package can also be used as previously. If the **dot** program is not on the path you will have to
+indicate the complete path to the dot program.
+
+Click the **Generate GraphViz script** button to obtain the script then click the **Generate flow diagram** button to visualize the flow diagram.
 
 .. image:: docs/screenshots/flow_diagram.png
    :alt: flow diagram
-
 
 
 
