@@ -288,8 +288,28 @@ Example of statistics for 2-gram:
 Observed transition matrix
 ............................................................................................................................................
 
-.. image:: docs/screenshots/observed_transitions_matrix.png
-   :alt: observed transitions matrix
+Example of observed transition matrix:
+
+.. code-block:: text
+
+	Alert	Defecate	Defecate+Urinate	Dig	Drink	Locomotion	Manipulate	Play in the water	Play on the ground	Rest	Rub	Self-groom	Sniff	Swim	Urinate	Vocalize	Yawn
+Alert	0	0	0	0	1	3	1	0	0	0	1	0	4	0	0	1	0
+Defecate	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2
+Defecate+Urinate	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Dig	0	0	0	0	0	1	0	0	0	1	0	0	0	0	0	0	0
+Drink	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Locomotion	3	0	0	1	0	8	1	0	0	0	6	0	5	1	0	0	0
+Manipulate	1	0	0	0	0	3	0	0	0	0	0	0	2	0	0	0	0
+Play in the water	1	0	0	0	0	0	0	2	0	0	0	0	0	2	0	0	0
+Play on the ground	0	0	0	0	0	1	1	0	0	0	0	0	0	0	0	0	0
+Rest	0	0	0	0	0	1	0	0	0	0	1	0	0	0	0	0	0
+Rub	2	0	0	0	0	7	1	0	0	1	0	0	3	0	0	0	0
+Self-groom	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0
+Sniff	3	2	0	1	0	2	2	0	0	0	5	0	1	0	0	0	0
+Swim	0	0	0	0	0	0	0	4	0	0	0	0	0	1	0	0	0
+Urinate	0	0	0	0	0	2	0	0	0	0	0	0	0	0	0	0	0
+Vocalize	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Yawn	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0
 
 
 
