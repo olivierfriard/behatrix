@@ -156,6 +156,67 @@ the behaviors frequencies.
 It is possible to **save results** for both the statistics and the transition matrix.
 
 
+.. code-block:: bash
+    Number of sequences:
+    ================
+    14
+
+    Behaviours list:
+    ================
+    Alert
+    Alert+Vocalize
+    Defecate
+    Defecate+Urinate
+    Defecate+Urinate+Stomp
+    Defecate+Urinate+Yawn
+    Dig
+    Drink
+    Locomotion
+    Locomotion+Sniff
+    Manipulate
+    Play in the water
+    Play on the ground
+    Rest
+    Rub
+    Self-groom
+    Sniff
+    Sniff+Locomotion
+    Swim
+    Urinate
+
+    Statistics
+    ==========
+    Number of different behaviours: 20
+    Total number of behaviours: 116
+    Number of different transitions: 53
+    Total number of transitions: 102
+
+    Behaviours frequencies:
+    =======================
+    Alert	0.095	11 / 116
+    Alert+Vocalize	0.017	2 / 116
+    Defecate	0.017	2 / 116
+    Defecate+Urinate	0.026	3 / 116
+    Defecate+Urinate+Stomp	0.009	1 / 116
+    Defecate+Urinate+Yawn	0.017	2 / 116
+    Dig	0.017	2 / 116
+    Drink	0.009	1 / 116
+    Locomotion	0.250	29 / 116
+    Locomotion+Sniff	0.026	3 / 116
+    Manipulate	0.060	7 / 116
+    Play in the water	0.052	6 / 116
+    Play on the ground	0.017	2 / 116
+    Rest	0.017	2 / 116
+    Rub	0.129	15 / 116
+    Self-groom	0.009	1 / 116
+    Sniff	0.155	18 / 116
+    Sniff+Locomotion	0.009	1 / 116
+    Swim	0.052	6 / 116
+    Urinate	0.017	2 / 116
+
+
+
+
 .. image:: docs/screenshots/behav_strings_statistics.png
    :alt: behavioral_strings statistics
 
