@@ -292,7 +292,7 @@ Example of observed transition matrix:
 
 .. code-block:: text
 
-        Alert	Defecate	Dig	Drink	Locomotion	Manipulate	Play in the water	Play on the ground	Rest	Rub	Self-groom	Sniff	Swim	Urinate	Vocalize	Yawn
+    Alert	Defecate	Dig	Drink	Locomotion	Manipulate	Play in the water	Play on the ground	Rest	Rub	Self-groom	Sniff	Swim	Urinate	Vocalize	Yawn
     Alert	0	0	0	1	3	1	0	0	0	1	0	4	0	0	1	0
     Defecate	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2
     Dig	0	0	0	0	1	0	0	0	1	0	0	0	0	0	0	0
