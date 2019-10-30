@@ -156,6 +156,9 @@ the behaviors frequencies.
 Use the **Save results** button for both the statistics and the transition matrix.
 
 
+Example of statistics for 1-gram:
+
+
 .. code-block:: bash
 
     Number of sequences:
@@ -217,9 +220,68 @@ Use the **Save results** button for both the statistics and the transition matri
 
 
 
+Example of statistics for 2-gram:
 
-.. image:: docs/screenshots/behav_strings_statistics.png
-   :alt: behavioral_strings statistics
+.. code-block:: bash
+
+    (...)
+
+    Frequencies of 2-grams:
+    =======================
+    Alert|Alert+Vocalize	0.010	1 / 102
+    Alert|Drink	0.010	1 / 102
+    Alert|Locomotion	0.020	2 / 102
+    Alert|Manipulate	0.010	1 / 102
+    Alert|Rub	0.010	1 / 102
+    Alert|Sniff	0.039	4 / 102
+    Alert+Vocalize|Alert+Vocalize	0.010	1 / 102
+    Alert+Vocalize|Locomotion	0.010	1 / 102
+    Defecate|Defecate+Urinate	0.020	2 / 102
+    Defecate+Urinate|Defecate+Urinate+Stomp	0.010	1 / 102
+    Defecate+Urinate|Defecate+Urinate+Yawn	0.020	2 / 102
+    Defecate+Urinate+Stomp|Defecate+Urinate	0.010	1 / 102
+    Defecate+Urinate+Yawn|Urinate	0.020	2 / 102
+    Dig|Locomotion	0.010	1 / 102
+    Dig|Rest	0.010	1 / 102
+    Drink|Alert	0.010	1 / 102
+    Locomotion|Alert	0.029	3 / 102
+    Locomotion|Dig	0.010	1 / 102
+    Locomotion|Locomotion	0.069	7 / 102
+    Locomotion|Locomotion+Sniff	0.029	3 / 102
+    Locomotion|Manipulate	0.010	1 / 102
+    Locomotion|Rub	0.059	6 / 102
+    Locomotion|Sniff	0.020	2 / 102
+    Locomotion|Swim	0.010	1 / 102
+    Locomotion+Sniff|Sniff	0.029	3 / 102
+    Manipulate|Alert	0.010	1 / 102
+    Manipulate|Locomotion	0.029	3 / 102
+    Manipulate|Sniff	0.020	2 / 102
+    Play in the water|Alert	0.010	1 / 102
+    Play in the water|Play in the water	0.020	2 / 102
+    Play in the water|Swim	0.020	2 / 102
+    Play on the ground|Locomotion	0.010	1 / 102
+    Play on the ground|Manipulate	0.010	1 / 102
+    Rest|Locomotion	0.010	1 / 102
+    Rest|Rub	0.010	1 / 102
+    Rub|Alert	0.020	2 / 102
+    Rub|Locomotion	0.069	7 / 102
+    Rub|Manipulate	0.010	1 / 102
+    Rub|Rest	0.010	1 / 102
+    Rub|Sniff	0.029	3 / 102
+    Self-groom|Sniff	0.010	1 / 102
+    Sniff|Alert	0.029	3 / 102
+    Sniff|Defecate	0.020	2 / 102
+    Sniff|Dig	0.010	1 / 102
+    Sniff|Locomotion	0.010	1 / 102
+    Sniff|Manipulate	0.020	2 / 102
+    Sniff|Rub	0.049	5 / 102
+    Sniff|Sniff	0.049	5 / 102
+    Sniff|Sniff+Locomotion	0.010	1 / 102
+    Sniff+Locomotion|Sniff	0.010	1 / 102
+    Swim|Play in the water	0.039	4 / 102
+    Swim|Swim	0.010	1 / 102
+    Urinate|Locomotion	0.020	2 / 102
+
 
 
 
