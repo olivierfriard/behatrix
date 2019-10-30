@@ -159,7 +159,7 @@ Use the **Save results** button for both the statistics and the transition matri
 Example of statistics for 1-gram:
 
 
-.. code-block:: bash
+.. code-block:: text
 
     Number of sequences:
     ================
