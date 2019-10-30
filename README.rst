@@ -222,7 +222,7 @@ Example of statistics for 1-gram:
 
 Example of statistics for 2-gram:
 
-.. code-block:: bash
+.. code-block:: text
 
     (...)
 
