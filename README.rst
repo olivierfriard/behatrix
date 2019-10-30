@@ -153,7 +153,7 @@ In the results box **Behatrix** will list all the behaviors present in the seque
 the total number of behaviors, the total number of transitions, the number of different transitions and
 the behaviors frequencies.
 
-It is possible to **save results** for both the statistics and the transition matrix.
+Use the **Save results** button for both the statistics and the transition matrix.
 
 
 .. code-block:: bash
