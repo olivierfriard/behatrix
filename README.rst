@@ -157,6 +157,7 @@ It is possible to **save results** for both the statistics and the transition ma
 
 
 .. code-block:: bash
+
     Number of sequences:
     ================
     14
