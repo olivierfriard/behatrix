@@ -574,7 +574,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         out = "\t{}\n".format('\t'.join(list(self.behaviours)))
 
-        self.permutations_test_matrix = permutation_results / self.nrandom
+        self.permutations_test_matrix = permutation_results / nb_randomization_done
 
         for r in range(self.permutations_test_matrix.shape[0]):
             out += f"{self.behaviours[r]}\t"
@@ -590,8 +590,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 ("Permutations test finished<br>"
                                  f"{nb_randomization_done} permutations done<br><br>"))
 
-
-        
 
     def permutations_test_finished(self, results):
         """
@@ -637,7 +635,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.nrandom:
 
                 self.statusbar.showMessage("Permutations test running... Be patient", 0)
-                
 
                 num_proc = self.sb_nb_cores.value()
 
@@ -646,92 +643,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, self.behaviours)
 
+                self.pb_run_permutations_test.setEnabled(False)
+                self.nb_randomization_done = 0
+                pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
 
-                # frozen script by pyinstaller does not allow to use multiprocessing
-                '''
-                if sys.platform.startswith("win") and getattr(sys, "frozen", False):
-                    n_random_by_proc = self.nrandom
-                    nb_randomization_done, results = behatrix_functions.permutations_test(n_random_by_proc,
-                                                                                    sequences, behaviours,
-                                                                                    exclusion_list,
-                                                                                    self.cb_block_first_behavior.isChecked(),
-                                                                                    self.cb_block_last_behavior.isChecked(),
-                                                                                    observed_matrix)
-                else:
-                '''
-                if True:
-                    
-                    self.pb_run_permutations_test.setEnabled(False)
-                    self.nb_randomization_done = 0
-                    pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
+                n_random_by_proc = round(self.nrandom / num_proc + 1)
 
-                    n_random_by_proc = round(self.nrandom / num_proc + 1)
-
-                    pool.starmap_async(behatrix_functions.permutations_test,
-                                       [(n_random_by_proc,
-                                        sequences, self.behaviours,
-                                        exclusion_list,
-                                        self.cb_block_first_behavior.isChecked(),
-                                        self.cb_block_last_behavior.isChecked(),
-                                        observed_matrix)
-                                       ] * num_proc,
-                                       callback=self.permutations_test_finished)
-
-
-                    '''
-                    with concurrent.futures.ProcessPoolExecutor() as executor:
-                        lst = []
-                        n_required_randomizations = 0
-                        for i in range(num_proc):
-                            if i < num_proc - 1:
-                                n_random_by_proc = nrandom // num_proc
-                            else:
-                                n_random_by_proc = nrandom - n_required_randomizations
-
-                            lst.append(executor.submit(behatrix_functions.permutations_test,
-                                                       n_random_by_proc,
-                                                       sequences, behaviours,
-                                                       exclusion_list,
-                                                       self.cb_block_first_behavior.isChecked(),
-                                                       self.cb_block_last_behavior.isChecked(),
-                                                       observed_matrix))
-
-                            n_required_randomizations += n_random_by_proc
-
-                        nb_randomization_done = 0
-
-                        for l in lst:
-                            nb_randomization_done += l.result()[0]
-                            results += l.result()[1]
-                    '''
-
-                # display results
-                # header
-                '''
-                out = "\t{}\n".format("\t".join(list(behaviours)))
-
-                self.permutations_test_matrix = results / nrandom
-
-                for r in range(self.permutations_test_matrix.shape[0]):
-                    out += f"{behaviours[r]}\t"
-                    out += "\t".join(["%8.6f" % x for x in self.permutations_test_matrix[r, :]]) + "\n"
-
-                self.pte_random.setPlainText(out)
-
-                self.statusbar.showMessage("", 0)
-
-                self.cb_plot_significativity.setEnabled(True)
-
-                QMessageBox.information(self, "Behatrix",
-                                        ("Permutations test finished<br>"
-                                         f"{nb_randomization_done} permutations done<br><br>"))
-                '''
+                pool.starmap_async(behatrix_functions.permutations_test,
+                                    [(n_random_by_proc,
+                                    sequences, self.behaviours,
+                                    exclusion_list,
+                                    self.cb_block_first_behavior.isChecked(),
+                                    self.cb_block_last_behavior.isChecked(),
+                                    observed_matrix)
+                                    ] * num_proc,
+                                    callback=self.permutations_test_finished)
 
             else:
                 QMessageBox.warning(self, "Behatrix", "Select the number of permutations to execute")
 
         else:
-            QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
+            QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
 
 
     def save_permutations_test_results(self):
@@ -900,8 +832,10 @@ def cli():
 
 
     if not args.quiet:
+        sep = "\n"
+        print(f"\nNumber of sequences: {len(sequences)}")
 
-        print("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
+        print(f"\nBehaviours list:\n================\n{sep.join(behaviours)}\n")
 
         print("Statistics\n==========")
         print(f'Number of different behaviours: {len(behaviours)}')
@@ -909,7 +843,7 @@ def cli():
         print(f'Number of different transitions: {len(unique_transitions)}')
         print(f'Total number of transitions: {tot_trans}')
 
-        print('\nBehaviours frequencies:\n=======================')
+        print('\nFrequencies of behaviors:\n=======================')
 
         for behaviour in sorted(behaviours):
             countBehaviour = 0
