@@ -153,20 +153,162 @@ In the results box **Behatrix** will list all the behaviors present in the seque
 the total number of behaviors, the total number of transitions, the number of different transitions and
 the behaviors frequencies.
 
-It is possible to **save results** for both the statistics and the transition matrix.
+Use the **Save results** button for both the statistics and the transition matrix.
 
 
-.. image:: docs/screenshots/behav_strings_statistics.png
-   :alt: behavioral_strings statistics
+Example of statistics for 1-gram:
+
+
+.. code-block:: text
+
+    Number of sequences:
+    ================
+    14
+
+    Behaviours list:
+    ================
+    Alert
+    Alert+Vocalize
+    Defecate
+    Defecate+Urinate
+    Defecate+Urinate+Stomp
+    Defecate+Urinate+Yawn
+    Dig
+    Drink
+    Locomotion
+    Locomotion+Sniff
+    Manipulate
+    Play in the water
+    Play on the ground
+    Rest
+    Rub
+    Self-groom
+    Sniff
+    Sniff+Locomotion
+    Swim
+    Urinate
+
+    Statistics
+    ==========
+    Number of different behaviours: 20
+    Total number of behaviours: 116
+    Number of different transitions: 53
+    Total number of transitions: 102
+
+    Behaviours frequencies:
+    =======================
+    Alert	0.095	11 / 116
+    Alert+Vocalize	0.017	2 / 116
+    Defecate	0.017	2 / 116
+    Defecate+Urinate	0.026	3 / 116
+    Defecate+Urinate+Stomp	0.009	1 / 116
+    Defecate+Urinate+Yawn	0.017	2 / 116
+    Dig	0.017	2 / 116
+    Drink	0.009	1 / 116
+    Locomotion	0.250	29 / 116
+    Locomotion+Sniff	0.026	3 / 116
+    Manipulate	0.060	7 / 116
+    Play in the water	0.052	6 / 116
+    Play on the ground	0.017	2 / 116
+    Rest	0.017	2 / 116
+    Rub	0.129	15 / 116
+    Self-groom	0.009	1 / 116
+    Sniff	0.155	18 / 116
+    Sniff+Locomotion	0.009	1 / 116
+    Swim	0.052	6 / 116
+    Urinate	0.017	2 / 116
+
+
+
+Example of statistics for 2-gram:
+
+.. code-block:: text
+
+    (...)
+
+    Frequencies of 2-grams:
+    =======================
+    Alert|Alert+Vocalize	0.010	1 / 102
+    Alert|Drink	0.010	1 / 102
+    Alert|Locomotion	0.020	2 / 102
+    Alert|Manipulate	0.010	1 / 102
+    Alert|Rub	0.010	1 / 102
+    Alert|Sniff	0.039	4 / 102
+    Alert+Vocalize|Alert+Vocalize	0.010	1 / 102
+    Alert+Vocalize|Locomotion	0.010	1 / 102
+    Defecate|Defecate+Urinate	0.020	2 / 102
+    Defecate+Urinate|Defecate+Urinate+Stomp	0.010	1 / 102
+    Defecate+Urinate|Defecate+Urinate+Yawn	0.020	2 / 102
+    Defecate+Urinate+Stomp|Defecate+Urinate	0.010	1 / 102
+    Defecate+Urinate+Yawn|Urinate	0.020	2 / 102
+    Dig|Locomotion	0.010	1 / 102
+    Dig|Rest	0.010	1 / 102
+    Drink|Alert	0.010	1 / 102
+    Locomotion|Alert	0.029	3 / 102
+    Locomotion|Dig	0.010	1 / 102
+    Locomotion|Locomotion	0.069	7 / 102
+    Locomotion|Locomotion+Sniff	0.029	3 / 102
+    Locomotion|Manipulate	0.010	1 / 102
+    Locomotion|Rub	0.059	6 / 102
+    Locomotion|Sniff	0.020	2 / 102
+    Locomotion|Swim	0.010	1 / 102
+    Locomotion+Sniff|Sniff	0.029	3 / 102
+    Manipulate|Alert	0.010	1 / 102
+    Manipulate|Locomotion	0.029	3 / 102
+    Manipulate|Sniff	0.020	2 / 102
+    Play in the water|Alert	0.010	1 / 102
+    Play in the water|Play in the water	0.020	2 / 102
+    Play in the water|Swim	0.020	2 / 102
+    Play on the ground|Locomotion	0.010	1 / 102
+    Play on the ground|Manipulate	0.010	1 / 102
+    Rest|Locomotion	0.010	1 / 102
+    Rest|Rub	0.010	1 / 102
+    Rub|Alert	0.020	2 / 102
+    Rub|Locomotion	0.069	7 / 102
+    Rub|Manipulate	0.010	1 / 102
+    Rub|Rest	0.010	1 / 102
+    Rub|Sniff	0.029	3 / 102
+    Self-groom|Sniff	0.010	1 / 102
+    Sniff|Alert	0.029	3 / 102
+    Sniff|Defecate	0.020	2 / 102
+    Sniff|Dig	0.010	1 / 102
+    Sniff|Locomotion	0.010	1 / 102
+    Sniff|Manipulate	0.020	2 / 102
+    Sniff|Rub	0.049	5 / 102
+    Sniff|Sniff	0.049	5 / 102
+    Sniff|Sniff+Locomotion	0.010	1 / 102
+    Sniff+Locomotion|Sniff	0.010	1 / 102
+    Swim|Play in the water	0.039	4 / 102
+    Swim|Swim	0.010	1 / 102
+    Urinate|Locomotion	0.020	2 / 102
+
 
 
 
 Observed transition matrix
 ............................................................................................................................................
 
-.. image:: docs/screenshots/observed_transitions_matrix.png
-   :alt: observed transitions matrix
+Example of observed transition matrix:
 
+.. code-block:: text
+
+    Alert	Defecate	Dig	Drink	Locomotion	Manipulate	Play in the water	Play on the ground	Rest	Rub	Self-groom	Sniff	Swim	Urinate	Vocalize	Yawn
+    Alert	0	0	0	1	3	1	0	0	0	1	0	4	0	0	1	0
+    Defecate	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2
+    Dig	0	0	0	0	1	0	0	0	1	0	0	0	0	0	0	0
+    Drink	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+    Locomotion	3	0	1	0	8	1	0	0	0	6	0	5	1	0	0	0
+    Manipulate	1	0	0	0	3	0	0	0	0	0	0	2	0	0	0	0
+    Play in the water	1	0	0	0	0	0	2	0	0	0	0	0	2	0	0	0
+    Play on the ground	0	0	0	0	1	1	0	0	0	0	0	0	0	0	0	0
+    Rest	0	0	0	0	1	0	0	0	0	1	0	0	0	0	0	0
+    Rub	2	0	0	0	7	1	0	0	1	0	0	3	0	0	0	0
+    Self-groom	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0
+    Sniff	3	2	1	0	2	2	0	0	0	5	0	1	0	0	0	0
+    Swim	0	0	0	0	0	0	4	0	0	0	0	0	1	0	0	0
+    Urinate	0	1	0	0	2	0	0	0	0	0	0	0	0	0	0	0
+    Vocalize	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+    Yawn	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0
 
 
 
