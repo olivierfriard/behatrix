@@ -90,7 +90,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_statistics.clicked.connect(self.behav_strings_statistics)
         self.pb_save_stats_results.clicked.connect(self.save_stats_results)
         self.pb_save_observed_matrix.clicked.connect(self.observed_matrix)
-        self.pte_behav_strings.textChanged.connect(self.behavioral_strings_changed)
+        self.pte_behav_strings.textChanged.connect(self.behavioral_sequences_changed)
 
         # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
@@ -150,8 +150,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              "Department of Life Sciences and Systems Biology<br>"
              "University of Torino - Italy<br>"
              "<br>"
-             """BORIS is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>"""
-             """See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>"""
+             'BORIS is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>'
+             'See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>'
              "<hr>"))
         _ = about_dialog.exec_()
 
@@ -164,15 +164,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         settings.setValue("dot_prog_path", self.le_dot_path.text())
 
 
-    def behavioral_strings_changed(self):
+    def behavioral_sequences_changed(self):
         """
-        behavioral string changed by user
+        behavioral sequences changed by user
         test separator for behaviors
         """
         self.permutations_test_matrix = None
         self.cb_plot_significativity.setEnabled(False)
         for w in [self.pte_statistics, self.pte_gv, self.pte_random, self.pte_distances_results]:
             w.clear()
+        # plot significativity
+        self.cb_plot_significativity.setEnabled(False)
+        self.cb_plot_significativity.setChecked(False)
         # test if | separator present
         if "|" in self.pte_behav_strings.toPlainText():
             self.le_behaviors_separator.setText("|")
@@ -182,7 +185,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         browse for dot path
         """
-        filename = QFileDialog(self).getOpenFileName(self, "Select the dot program from GraphViz package", "", "All files (*)")[0]
+        filename = QFileDialog(self).getOpenFileName(self, "Select the dot program from GraphViz package", "",
+                                                     "All files (*)")[0]
         if filename:
 
             p = subprocess.Popen('"{}" -V'.format(filename),
@@ -197,7 +201,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def pbSelectStringsFilename(self):
 
-        filename = QFileDialog().getOpenFileName(self, "Select the file containing the behavioral sequences", "", "All files (*)")[0]
+        filename = QFileDialog().getOpenFileName(self, "Select the file containing the behavioral sequences", "",
+                                                 "All files (*)")[0]
 
         if filename:
             self.leStringsFileName.setText(filename)
@@ -252,7 +257,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pte_statistics.setPlainText(output)
 
         else:
-            QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
+            QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
 
 
     def save_stats_results(self):
@@ -298,7 +303,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pte_statistics.setPlainText(out)
 
         else:
-            QMessageBox.warning(self, "Behatrix", "No behavioral strings found!")
+            QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
 
 
     def graphviz_script(self):
@@ -332,7 +337,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # check significativity
         if self.cb_plot_significativity.isChecked() and self.permutations_test_matrix is None:
-            QMessageBox.critical(self, "Behatrix", "Adding significativity to graph requires p values from permutations test")
+            QMessageBox.critical(self, "Behatrix",
+                                 "Adding significativity to graph requires p values from permutations test")
             return
 
 
@@ -527,8 +533,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.svg_display.load(b"")
 
 
-
-
     def save_diagram(self, image_format):
         """
         save diagram
@@ -691,7 +695,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         seq_list = [x.strip() for x in self.pte_behav_strings.toPlainText().split("\n") if x.strip()]
 
         if self.le_behaviors_separator.text():
-            seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]  # seq1.split(self.le_behaviors_separator_distance.text())
+            seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]
 
         results = behatrix_functions.levenshtein_distance_seq_list(seq_list)
 
@@ -714,7 +718,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         seq_list = [x.strip() for x in self.pte_behav_strings.toPlainText().split("\n") if x.strip()]
 
         if self.le_behaviors_separator.text():
-            seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]  # seq1.split(self.le_behaviors_separator_distance.text())
+            seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]
 
         results = behatrix_functions.needleman_wunsch_identity_seq_list(seq_list)
 
@@ -799,8 +803,8 @@ def cli():
     with open(args.sequences) as f_in:
         behav_str = f_in.read()
 
-    (return_code, sequences, unique_transitions, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours,
-     ngrams_freq) = behatrix_functions.behav_strings_stats(
+    (return_code, sequences, unique_transitions, nodes, starting_nodes, tot_nodes, tot_trans,
+     tot_trans_after_node, behaviours, ngrams_freq) = behatrix_functions.behav_strings_stats(
          behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram)
 
     if args.nrandom:
