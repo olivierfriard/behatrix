@@ -19,6 +19,7 @@ Features
 - Transitions statistics
 - Flow diagram
 - Permutations test
+- Levenshtein distances and Needleman-Wunsch identities
 
 
 
