@@ -26,7 +26,7 @@ setup(
       ],
     entry_points={
         'console_scripts': [
-            'behatrix = behatrix_gui:main',
+            'behatrix = behatrix:main',
         ],
     }
  )
