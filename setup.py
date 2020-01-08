@@ -24,4 +24,9 @@ setup(
           "pyqt5",
           "numpy",
       ],
+    entry_points={
+        'console_scripts': [
+            'behatrix = behatrix_gui:main',
+        ],
+    }
  )
