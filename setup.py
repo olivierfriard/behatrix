@@ -19,11 +19,19 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         "Operating System :: OS Independent",
     ],
-   packages=['behatrix'],  #same as name
-   install_requires=[
-          "pyqt5",
+    packages=['behatrix'],  #same as name
+   
+    install_requires=[
+          "pyqt5==5.14.0",
           "numpy",
       ],
+
+    include_package_data=True,
+
+    # package_data={
+    # 'behatrix': ['behatrix.qrc', 'behatrix.ui', 'LICENSE.TXT', 'README.TXT'],
+    # },
+
     entry_points={
         'console_scripts': [
             'behatrix = behatrix:main',
