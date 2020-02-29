@@ -435,9 +435,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 # test if viz.js and nodejs found
                 # script directory
-                print(sys.argv[0])
-                pathlib.Path(sys.argv[0]).parent
-                print(pathlib.Path(sys.argv[0]).parent)
+                print("sys.argv[0]", sys.argv[0])
+                print("pathlib.Path(sys.argv[0]).parent", pathlib.Path(sys.argv[0]).parent)
 
                 if pathlib.Path(sys.path[0]).is_file():  # frozen (pyinstaller)
                     syspath = pathlib.Path(sys.path[0]).parent
