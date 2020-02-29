@@ -438,6 +438,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print("sys.argv[0]", sys.argv[0])
                 print("sys.path", sys.path)
 
+                print("is file", pathlib.Path(sys.path[0]).is_file())
+                print("is dir", pathlib.Path(sys.path[0]).is_dir())
+
                 if pathlib.Path(sys.path[0]).is_file():  # frozen (pyinstaller)
                     syspath = pathlib.Path(sys.path[0]).parent
                 elif pathlib.Path(sys.path[0]).is_dir():  # python script
