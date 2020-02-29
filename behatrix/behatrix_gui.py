@@ -445,6 +445,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     syspath = sys.path[0]
                 else:  # module (pip)
                     syspath = ""
+                    print("pathlib.Path(sys.argv[0]).parent", pathlib.Path(sys.argv[0]).parent)
                     viz_path = pathlib.Path(sys.argv[0]).parent / pathlib.Path("misc") / pathlib.Path("viz.js")
 
                 print("viz_path1", viz_path)
