@@ -441,9 +441,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if pathlib.Path(sys.path[0]).is_file():  # frozen (pyinstaller)
                     syspath = pathlib.Path(sys.path[0]).parent
                 elif pathlib.Path(sys.path[0]).is_dir():  # python script
+                    viz_path = pathlib.Path(sys.path[0]) / pathlib.Path("misc") / pathlib.Path("viz.js")
                     syspath = sys.path[0]
                 else:  # module (pip)
                     syspath = ""
+                    viz_path = pathlib.Path(sys.path[0]).parent / pathlib.Path("misc") / pathlib.Path("viz.js")
+
+                print("viz_path", viz_path)
 
                 print(f"syspath: {syspath}")
 
