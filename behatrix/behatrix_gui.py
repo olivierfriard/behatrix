@@ -451,7 +451,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     viz_path = pathlib.Path(sys.path[0]) / pathlib.Path("behatrix") / pathlib.Path("misc") / pathlib.Path("viz.js")
                     syspath = sys.path[0]
 
-                viz_path = viz_path.replace("\\", "/")
+                #viz_path = viz_path.replace("\\", "/")
                 print(f"viz.js path: {viz_path}")
                 if not pathlib.Path(viz_path).is_file():
                     QMessageBox.critical(self, "Behatrix", "viz.js file not found!")
