@@ -450,17 +450,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 elif pathlib.Path(sys.path[0]).is_dir():  # python script
                     viz_path = pathlib.Path(sys.path[0]) / pathlib.Path("behatrix") / pathlib.Path("misc") / pathlib.Path("viz.js")
                     syspath = sys.path[0]
-                
 
-                print("viz_path1", viz_path)
-
-                print(f"syspath: {syspath}")
+                viz_path = viz_path.replace("\\", "/")
+                print(f"viz.js path: {viz_path}")
+                if not pathlib.Path(viz_path).is_file():
+                    QMessageBox.critical(self, "Behatrix", "viz.js file not found!")
+                    return
 
                 # node (nodejs)
+                '''
                 if syspath:
                     cmd_node = str(pathlib.Path(syspath) / pathlib.Path("node"))
                 else:
                     cmd_node = "node"
+                '''
+                cmd_node = "node"
 
                 p = subprocess.Popen(f"{cmd_node} -v",
                                      stdout=subprocess.PIPE,
@@ -477,18 +481,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         QMessageBox.critical(self, "Behatrix", "nodejs not found!")
                         return
                 print(f"cmd_node {cmd_node}")
-
-                # viz.js
-                if syspath:
-                    viz_path = str(pathlib.Path(syspath) / pathlib.Path("viz.js"))
-                else:
-                    viz_path = "viz.js"
-                viz_path = viz_path.replace("\\", "/")
-
-                print(f"viz.js path: {viz_path}")
-                if not pathlib.Path(viz_path).is_file():
-                    QMessageBox.critical(self, "Behatrix", "viz.js file not found!")
-                    return
 
 
                 # escape for echo and nodejs
