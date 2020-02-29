@@ -441,7 +441,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print("is file", pathlib.Path(sys.path[0]).is_file())
                 print("is dir", pathlib.Path(sys.path[0]).is_dir())
 
-                if sys.path[0] = "":  # module (pip)
+                if sys.path[0] == "":  # module (pip)
                     syspath = ""
                     print("pathlib.Path(sys.argv[0]).parent", pathlib.Path(sys.argv[0]).parent)
                     viz_path = pathlib.Path(sys.argv[0]).parent / pathlib.Path("misc") / pathlib.Path("viz.js")
