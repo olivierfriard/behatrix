@@ -8,7 +8,7 @@ Behavioral Sequences Analysis (BSA).
 Behavioral sequences analysis with permutations test
 
 
-Copyright 2017-2019 Olivier Friard
+Copyright 2017-2020 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -467,6 +467,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if not viz_path.is_file():
                     QMessageBox.critical(self, "Behatrix", "The viz.js file was not found!")
                     return
+                viz_path = str(viz_path).replace("\\", "/")
 
                 # node (nodejs)
                 node_cmd_list = ["node", "/usr/local/bin/node"]
@@ -791,7 +792,7 @@ def cli():
     args = parser.parse_args()
 
     if args.version:
-        print("Copyright (C) 2017-2019 Olivier Friard - Marco Gamba - Sergio Castellano")
+        print("Copyright (C) 2017-2020 Olivier Friard - Marco Gamba - Sergio Castellano")
         print(f"version {version.__version__} - {version.__version_date__}")
         sys.exit()
 
