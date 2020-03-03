@@ -472,11 +472,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 node_cmd_list = ["node", "/usr/local/bin/node"]
                 node_cmd_verified = ""
                 for node_cmd in node_cmd_list:
-                    p = subprocess.Popen(f"{cmd_node} -v",
+                    p = subprocess.Popen(f"{node_cmd} -v",
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          shell=True)
-                    out, error = .communicate()
+                    out, error = p.communicate()
                     if not error and out.decode("utf-8") and out.decode("utf-8")[0] == "v":
                         node_cmd_verified = node_cmd
                         break
