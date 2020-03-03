@@ -28,7 +28,7 @@ The details of modifications are available in the `revision history <https://git
 Launching Behatrix
 ============================================================================================================================================
 
-Executable binary versions of **Behatrix** can be downloaded from the `GiHub repository <https://github.com/olivierfriard/behatrix/releases>`_
+**Behatrix** can be downloaded from the `GiHub repository <https://github.com/olivierfriard/behatrix/releases>`_
 
 All versions are *portable*, they do not need to be installed on your system.
 
@@ -40,19 +40,19 @@ GNU/Linux
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 
-Download the **behatrix-x.y.z.linux64.tar.gz** file, unzip it and launch the **behatrix** program.
+Download the **behatrix-x.y.z-x86_64.tar.gz** file, unzip it, go to the **bin** directory and launch the **start_behatrix**.
 
 
 Microsoft-Windows
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-Download the **behatrix-x.y.z.win64.zip** file, unzip it and launch the **behatrix** program.
+Download the **behatrix-x.y.z-win64-portable.zip** file, unzip it and launch **start_behatrix.bat**.
 
 
 Mac OS
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-Download the **behatrix-x.y.z.mac64.dmg** image file, mount it and launch the **behatrix** program.
+Download the **behatrix-x.y.z.dmg** image file, mount it and launch the **behatrix** program.
 
 
 From sources (all platforms)
@@ -83,29 +83,15 @@ The prompt should now be prefixed by **behatrix_venv**
 
 .. code-block:: bash
 
-   pip install pyqt5 numpy
+   pip install behatrix
 
-
-* Download the source code
-
-.. code-block:: bash
-
-   wget https://github.com/olivierfriard/behatrix/archive/master.zip
-   unzip master.zip
-   cd behatrix-master
 
 * Launch Behatrix
 
-.. code-block:: bash
-
-   python3 start_behatrix.py
-
-or
 
 .. code-block:: bash
 
    python3 -m behatrix
-
 
 
 
