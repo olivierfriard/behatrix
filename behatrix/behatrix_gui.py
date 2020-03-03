@@ -469,25 +469,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
 
                 # node (nodejs)
-                '''
-                if syspath:
-                    cmd_node = str(pathlib.Path(syspath) / pathlib.Path("node"))
-                else:
-                    cmd_node = "node"
-                '''
-                cmd_node = "node"
-
-                p = subprocess.Popen(f"{cmd_node} -v",
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE,
-                                     shell=True).communicate()[0].decode("utf-8")
-                print(f"node -v: ###{p}###")
-                if not p or p[0] != "v":
+                node_cmd_list = ["node", "/usr/local/bin/node"]
+                node_cmd_verified = ""
+                for node_cmd in node_cmd_list:
+                    p = subprocess.Popen(f"{cmd_node} -v",
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         shell=True)
+                    out, error = .communicate()
+                    if not error and out.decode("utf-8") and out.decode("utf-8")[0] == "v":
+                        node_cmd_verified = node_cmd
+                        break
+                
+                if not node_cmd_verified:
                     QMessageBox.critical(self, "Behatrix",
                                              ("The Node.js JavaScript runtime was not found!\n"
                                               "Please install it or switch to the Graphviz package"))
                     return
-                print(f"cmd_node {cmd_node}")
+                print(f"node_cmd_verified {node_cmd_verified}")
 
 
                 # escape for echo and nodejs
@@ -499,7 +498,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 js_script_path = pathlib.Path(tempfile.gettempdir()) / pathlib.Path("behatrix_flow_diagram_script.js")
                 open(js_script_path, "w").write(js)
 
-                cmd = f"{cmd_node} {js_script_path}"
+                cmd = f"{node_cmd_verified} {js_script_path}"
                 print(f"cmd: {cmd}")
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -958,5 +957,4 @@ def cli():
 
 
 if __name__ == "__main__":
-    multiprocessing.freeze_support()
     main()

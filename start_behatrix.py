@@ -26,5 +26,4 @@ This file is part of Behatrix.
 """
 
 import multiprocessing
-multiprocessing.freeze_support()
 import behatrix.__main__
