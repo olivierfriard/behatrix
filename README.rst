@@ -44,19 +44,19 @@ Download the **behatrix-x.y.z-x86_64.tar.gz** file, unzip it, go to the **bin** 
 
 
 Microsoft-Windows
---------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 Download the **behatrix-x.y.z-win64-portable.zip** file, unzip it and launch **start_behatrix.bat**.
 
 
 Mac OS
---------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 Download the **behatrix-x.y.z.dmg** image file, mount it and launch the **behatrix** program.
 
 
 From sources (all platforms)
---------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 You will need a working installation of Python >=3.6.
 
@@ -95,10 +95,37 @@ The prompt should now be prefixed by **behatrix_venv**
 
 
 
+Flow diagram
+========================================================================================================================
+
+If you want to generate some flow diagrams you have to install **Node.js** or the **Graphviz** package.
+
+Installation of Node.js
+------------------------------------------------------------------
+
+Go to the `Node.js web site <https://nodejs.org/>`_ and download the LTS version (the current version should also work).
+
+IMPORTANT: During the installation choose to add **node** to the path of your system.
+
+See this short `video tutorial for installation on Windows <https://www.youtube.com/watch?v=Tucg8yt6Yic>`_.
+
+The embedded **viz.js** script will be used to generate the flow diagrams.
+See https://github.com/mdaines/viz.js for details.
+
+
+Installation of the Graphviz package
+------------------------------------------------------------------
+
+Go to the `Graphviz web site <https://graphviz.org/download/>`_ and download the version corresponding to your system.
+
+If the **dot** program is not on the path you will have to indicate the complete path to the dot program.
+
+
+
 
 
 Usage of Behatrix
-============================================================================================================================================
+========================================================================================================================
 
 
 Behavioral sequences
@@ -301,11 +328,6 @@ Example of observed transition matrix:
 Flow diagram
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-From the version 0.9.1 the GraphViz package is no more required.
-The embedded **Viz.js** script can be used to generate the flow diagram. See https://github.com/mdaines/viz.js for details.
-
-If installed, the GraphViz package can also be used as previously. If the **dot** program is not on the path you will have to
-indicate the complete path to the dot program.
 
 Click the **Generate GraphViz script** button to obtain the script then click the **Generate flow diagram** button to visualize the flow diagram.
 
