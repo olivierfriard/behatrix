@@ -436,8 +436,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # test if viz.js and nodejs found
                 # script directory
                 print("sys.argv[0]", sys.argv[0])
-                print("sys.path", sys.path)
+                print("sys.argv[0].resolve()", pathlib.Path(sys.argv[0]).resolve())
+                # print("sys.path", sys.path)
+                viz_path = pathlib.Path("")
+                if sys.argv[0].endswith("start_behatrix.py"):
+                    viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "viz.js"
 
+                if sys.argv[0].endswith("__main__.py"):
+                    viz_path = pathlib.Path(sys.argv[0]).parent / "misc" / "viz.js"
+
+                '''
                 print("is file", pathlib.Path(sys.path[0]).is_file())
                 print("is dir", pathlib.Path(sys.path[0]).is_dir())
 
@@ -445,15 +453,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     syspath = ""
                     print("pathlib.Path(sys.argv[0]).parent", pathlib.Path(sys.argv[0]).parent)
                     viz_path = pathlib.Path(sys.argv[0]).parent / pathlib.Path("misc") / pathlib.Path("viz.js")
+
                 elif pathlib.Path(sys.path[0]).is_file():  # frozen (pyinstaller)
                     syspath = pathlib.Path(sys.path[0]).parent
+
                 elif pathlib.Path(sys.path[0]).is_dir():  # python script
                     viz_path = pathlib.Path(sys.path[0]) / pathlib.Path("behatrix") / pathlib.Path("misc") / pathlib.Path("viz.js")
                     syspath = sys.path[0]
-
                 #viz_path = viz_path.replace("\\", "/")
+                '''
+
                 print(f"viz.js path: {viz_path}")
-                if not pathlib.Path(viz_path).is_file():
+                if not viz_path.is_file():
                     QMessageBox.critical(self, "Behatrix", "The viz.js file was not found!")
                     return
 
