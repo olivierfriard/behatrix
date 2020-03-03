@@ -146,7 +146,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         about_dialog.setInformativeText(
             (f"<b>Behatrix</b> {version.__version__} - {version.__version_date__}"
-             "<p>Copyright &copy; 2017-2019 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
+             "<p>Copyright &copy; 2017-2020 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
              "Department of Life Sciences and Systems Biology<br>"
              "University of Torino - Italy<br>"
              "<br>"
@@ -454,7 +454,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 #viz_path = viz_path.replace("\\", "/")
                 print(f"viz.js path: {viz_path}")
                 if not pathlib.Path(viz_path).is_file():
-                    QMessageBox.critical(self, "Behatrix", "viz.js file not found!")
+                    QMessageBox.critical(self, "Behatrix", "The viz.js file was not found!")
                     return
 
                 # node (nodejs)
@@ -478,7 +478,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                          stderr=subprocess.PIPE,
                                          shell=True).communicate()[0].decode("utf-8")
                     if not p or p[0] != "v":
-                        QMessageBox.critical(self, "Behatrix", "nodejs not found!")
+                        QMessageBox.critical(self, "Behatrix",
+                                             ("The Node.js JavaScript runtime was not found!\n"
+                                              "Please install it or switch to the Graphviz package"))
                         return
                 print(f"cmd_node {cmd_node}")
 

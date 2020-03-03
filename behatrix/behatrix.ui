@@ -398,7 +398,7 @@
             <item>
              <widget class="QRadioButton" name="rb_vizjs">
               <property name="text">
-               <string>Use Viz.js</string>
+               <string>Use Viz.js (with Node.js)</string>
               </property>
               <property name="checked">
                <bool>true</bool>

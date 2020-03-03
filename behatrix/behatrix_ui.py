@@ -448,7 +448,7 @@ class Ui_MainWindow(object):
         self.label_12.setText(_translate("MainWindow", "%"))
         self.label_18.setText(_translate("MainWindow", "Decimals in edges labels"))
         self.cb_plot_significativity.setText(_translate("MainWindow", "Add significativity to edges (perform the permutations test before)"))
-        self.rb_vizjs.setText(_translate("MainWindow", "Use Viz.js"))
+        self.rb_vizjs.setText(_translate("MainWindow", "Use Viz.js (with Node.js)"))
         self.rb_graphviz.setText(_translate("MainWindow", "Use the Graphviz package"))
         self.label_16.setText(_translate("MainWindow", "<html><head/><body><p>Path to the <span style=\" font-weight:600;\">dot</span> program (leave empty if dot is on the path)</p></body></html>"))
         self.pb_browse_dot_path.setText(_translate("MainWindow", "Browse"))
