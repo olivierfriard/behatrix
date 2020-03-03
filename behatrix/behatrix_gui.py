@@ -481,19 +481,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      shell=True).communicate()[0].decode("utf-8")
+                print(f"node -v: ###{p}###")
                 if not p or p[0] != "v":
-                    # test if node is installed on path
-                    cmd_node = "node"
-                    p = subprocess.Popen(f"{cmd_node} -v",
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         shell=True).communicate()[0].decode("utf-8")
-                    print("node -v", p)
-                    if not p or p[0] != "v":
-                        QMessageBox.critical(self, "Behatrix",
+                    QMessageBox.critical(self, "Behatrix",
                                              ("The Node.js JavaScript runtime was not found!\n"
                                               "Please install it or switch to the Graphviz package"))
-                        return
+                    return
                 print(f"cmd_node {cmd_node}")
 
 
