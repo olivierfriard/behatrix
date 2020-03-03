@@ -120,7 +120,7 @@ Go to the `Graphviz web site <https://graphviz.org/download/>`_ and download the
 
 If the **dot** program is not on the path you will have to indicate the complete path to the dot program.
 
-
+IMPORTANT: The installation of Graphviz on a MacOS can be VERY long and is not recommended. Use Node.js and viz.js instead.
 
 
 
