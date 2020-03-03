@@ -488,6 +488,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          shell=True).communicate()[0].decode("utf-8")
+                    print("node -v", p)
                     if not p or p[0] != "v":
                         QMessageBox.critical(self, "Behatrix",
                                              ("The Node.js JavaScript runtime was not found!\n"
