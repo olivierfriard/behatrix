@@ -60,7 +60,7 @@ From sources (all platforms)
 
 You will need a working installation of Python >=3.6.
 
-* Create a virtual environment (to install the dependencies):
+* Create a virtual environment (to isolate Behatrix from your system):
 
 
 .. code-block:: bash
@@ -78,7 +78,7 @@ You will need a working installation of Python >=3.6.
 The prompt should now be prefixed by **behatrix_venv**
 
 
-* Install the dependencies
+* Install Behatrix
 
 
 .. code-block:: bash
