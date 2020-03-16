@@ -98,23 +98,34 @@ The prompt should now be prefixed by **behatrix_venv**
 Flow diagram
 ========================================================================================================================
 
-If you want to generate some flow diagrams you have to install **Node.js** or the **Graphviz** package.
 
-Installation of Node.js
+If you want to generate some flow diagrams you have 2 possibilities: **Node.js** or the **Graphviz** package.
+
+
+
+Use of Node.js
 ------------------------------------------------------------------
 
-Go to the `Node.js web site <https://nodejs.org/>`_ and download the LTS version (the current version should also work).
+From the v. 0.9.11 the Node JS executable is embedded into the packages (MacOS, GNU/Linux and Windows).
+You do not have to install a third party package.
 
-IMPORTANT: During the installation choose to add **node** to the path of your system.
 
-See this short `video tutorial for installation on Windows <https://www.youtube.com/watch?v=Tucg8yt6Yic>`_.
+..
+   Go to the `Node.js web site <https://nodejs.org/>`_ and download the LTS version (the current version should also work).
 
-The embedded **viz.js** script will be used to generate the flow diagrams.
-See https://github.com/mdaines/viz.js for details.
+   IMPORTANT: During the installation choose to add **node** to the path of your system.
+
+   See this short `video tutorial for installation on Windows <https://www.youtube.com/watch?v=Tucg8yt6Yic>`_.
+
+   The embedded **viz.js** script will be used to generate the flow diagrams.
+   See https://github.com/mdaines/viz.js for details.
+
 
 
 Installation of the Graphviz package
 ------------------------------------------------------------------
+
+In alternative to Node JS you can generate the flow diagrama with the **GraphViz** package.
 
 Go to the `Graphviz web site <https://graphviz.org/download/>`_ and download the version corresponding to your system.
 
