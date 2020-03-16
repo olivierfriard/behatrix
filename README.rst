@@ -15,7 +15,7 @@ Behatrix
 **Behavioral sequences analysis with random permutations test**
 
 
-**Behatrix is free and open-source software available for GNU/Linux, Windows and Mac OS.**
+**Behatrix is free and open-source software available for GNU/Linux, Windows and MacOS.**
 
 
 **Behatrix** was formerly named BSA (Behavioral Strings Analysis)
@@ -25,7 +25,7 @@ The details of modifications are available in the `revision history <https://git
 
 
 
-Launching Behatrix
+Install Behatrix
 ============================================================================================================================================
 
 **Behatrix** can be downloaded from the `GiHub repository <https://github.com/olivierfriard/behatrix/releases>`_
@@ -129,14 +129,15 @@ Usage of Behatrix
 
 
 Behavioral sequences
---------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 .. image:: docs/screenshots/main_window.png
    :alt: Behavioral sequences
 
 The behavioral sequences can be directly written, paste or loaded from file in the **Behavioral strings** edit box.
 
-See the `BORIS <http://www.boris.unito.it/>`_ user guide for `exporting behavioral strings <https://boris.readthedocs.io/en/latest/#export-events-as-behavioral-strings>`_.
+See the `BORIS <http://www.boris.unito.it/>`_ user guide for 
+`exporting behavioral strings <https://boris.readthedocs.io/en/latest/#export-events-as-behavioral-strings>`_.
 
 
 .. image:: docs/screenshots/behavioral_strings.png
@@ -158,8 +159,7 @@ the transition matrix related to the behavioral sequences.
 
 
 Descriptive statistics
-............................................................................................................................................
-
+........................................................................................................................
 Some statistics can be obtained for various **n-gram** by clocking on the **Generate statistics** button.
 
 In the results box **Behatrix** will list all the behaviors present in the sequences in alphabetical order,
@@ -299,7 +299,7 @@ Example of statistics for 2-gram:
 
 
 Observed transition matrix
-............................................................................................................................................
+........................................................................................................................
 
 Example of observed transition matrix:
 
@@ -326,7 +326,7 @@ Example of observed transition matrix:
 
 
 Flow diagram
---------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 
 Click the **Generate GraphViz script** button to obtain the script then click the **Generate flow diagram** button to visualize the flow diagram.
@@ -339,18 +339,18 @@ Click the **Generate GraphViz script** button to obtain the script then click th
 
 
 Permutations test
---------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 .. image:: docs/screenshots/permutations_test.png
    :alt: Permutations test
 
-From version 0.9.1 the binary version for Microsoft-Windows can use the multiprocessing module, the permutations test is able to use many cores.
+From version 0.9.1 the binary version for Microsoft-Windows can use the multiprocessing module, the permutations test is
+able to use many cores.
 
 
 
 Permutations test with exclusions
-............................................................................................................................................
-
+........................................................................................................................
 Some transitions can be excluded from the permutations test:
 
 .. image:: docs/screenshots/permutations_test_with_exclusions.png
@@ -364,18 +364,18 @@ Some transitions can be excluded from the permutations test:
 
 
 Behavioral sequences distances
---------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 
 Levenshtein distances
-............................................................................................................................................
+........................................................................................................................
 
 
 to be finished...
 
 
 Needleman-Wunsch identities
-............................................................................................................................................
+........................................................................................................................
 
 to be finished...
 
@@ -389,7 +389,7 @@ to be finished...
 
 
 Usage of command line utility
---------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 .. code-block:: text
 

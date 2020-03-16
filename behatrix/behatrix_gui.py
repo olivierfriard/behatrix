@@ -438,30 +438,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print("sys.argv[0]", sys.argv[0])
                 print("sys.argv[0].resolve()", pathlib.Path(sys.argv[0]).resolve())
                 # print("sys.path", sys.path)
+
                 viz_path = pathlib.Path("")
                 if sys.argv[0].endswith("start_behatrix.py"):
                     viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "viz.js"
 
                 if sys.argv[0].endswith("__main__.py"):
-                    viz_path = pathlib.Path(sys.argv[0]).parent / "misc" / "viz.js"
-
-                '''
-                print("is file", pathlib.Path(sys.path[0]).is_file())
-                print("is dir", pathlib.Path(sys.path[0]).is_dir())
-
-                if sys.path[0] == "":  # module (pip)
-                    syspath = ""
-                    print("pathlib.Path(sys.argv[0]).parent", pathlib.Path(sys.argv[0]).parent)
-                    viz_path = pathlib.Path(sys.argv[0]).parent / pathlib.Path("misc") / pathlib.Path("viz.js")
-
-                elif pathlib.Path(sys.path[0]).is_file():  # frozen (pyinstaller)
-                    syspath = pathlib.Path(sys.path[0]).parent
-
-                elif pathlib.Path(sys.path[0]).is_dir():  # python script
-                    viz_path = pathlib.Path(sys.path[0]) / pathlib.Path("behatrix") / pathlib.Path("misc") / pathlib.Path("viz.js")
-                    syspath = sys.path[0]
-                #viz_path = viz_path.replace("\\", "/")
-                '''
+                    viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "misc" / "viz.js"
 
                 print(f"viz.js path: {viz_path}")
                 if not viz_path.is_file():
@@ -470,13 +453,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 viz_path = str(viz_path).replace("\\", "/")
 
                 # node (nodejs)
-                node_cmd_list = ["node", "/usr/local/bin/node"]
+                node_cmd_list = []
+                # embedded nodejs version (packages)
+                if sys.argv[0].endswith("__main__.py"):
+                    if sys.platform == "win32":
+                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node.exe"))
+                    if sys.platform in ["darwin", "linux"]:
+                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node"))
+
+                if sys.argv[0].endswith("start_behatrix.py"):
+                    if sys.platform == "win32":
+                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node.exe"))
+                    if sys.platform in ["darwin", "linux"]:
+                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node"))
+
+                # global installation of nodeJS
+                node_cmd_list.extend(["node", "/usr/local/bin/node"])
                 node_cmd_verified = ""
                 for node_cmd in node_cmd_list:
                     p = subprocess.Popen(f"{node_cmd} -v",
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         shell=True)
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        shell=True)
                     out, error = p.communicate()
                     if not error and out.decode("utf-8") and out.decode("utf-8")[0] == "v":
                         node_cmd_verified = node_cmd
@@ -484,11 +482,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
                 if not node_cmd_verified:
                     QMessageBox.critical(self, "Behatrix",
-                                             ("The Node.js JavaScript runtime was not found!\n"
-                                              "Please install it or switch to the Graphviz package"))
+                                            ("The Node.js JavaScript runtime was not found!\n"
+                                            "Please install it or switch to the Graphviz package"))
                     return
-                print(f"node_cmd_verified {node_cmd_verified}")
 
+                print(f"node_cmd_verified {node_cmd_verified}")
 
                 # escape for echo and nodejs
                 gv_script_escaped = self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
