@@ -37,6 +37,8 @@ import sys
 import tempfile
 from shutil import copyfile
 
+print("sys.argv", sys.argv)
+
 import numpy as np
 from PyQt5 import QtSvg
 from PyQt5.QtCore import QSettings, Qt, pyqtSignal

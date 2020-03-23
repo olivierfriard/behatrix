@@ -13,11 +13,15 @@ setup(
    url="http://www.boris.unito.it/pages/behatrix",
    python_requires=">=3.6",
    classifiers=[
+        "Operating System :: OS Independent",
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: Education",
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        "Operating System :: OS Independent",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: Visualization",
     ],
     packages=['behatrix'],  #same as name
    
@@ -26,11 +30,11 @@ setup(
           "numpy",
       ],
 
-    include_package_data=True,
-
-    # package_data={
-    # 'behatrix': ['behatrix.qrc', 'behatrix.ui', 'LICENSE.TXT', 'README.TXT'],
-    # },
+    # load in behatrix dir
+    package_data={
+     'behatrix': ['behatrix.qrc', 'behatrix.ui', 'misc/viz.js'],
+     "": ["README.TXT", "LICENSE.TXT"],
+    },
 
     entry_points={
         'console_scripts': [

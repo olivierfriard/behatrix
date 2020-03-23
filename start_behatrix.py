@@ -25,5 +25,4 @@ This file is part of Behatrix.
 
 """
 
-import multiprocessing
 import behatrix.__main__
