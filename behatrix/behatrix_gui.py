@@ -1,14 +1,8 @@
-#!/usr/bin/env python3
-
-
 """
 Behatrix
-Behavioral Sequences Analysis (BSA).
-
 Behavioral sequences analysis with permutations test
 
-
-Copyright 2017-2020 Olivier Friard
+Copyright 2017-2021 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -36,8 +30,6 @@ import subprocess
 import sys
 import tempfile
 from shutil import copyfile
-
-print("sys.argv", sys.argv)
 
 import numpy as np
 from PyQt5 import QtSvg
@@ -69,7 +61,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lb_flow_chart.deleteLater()
         self.lb_flow_chart = None
 
-
         self.vertical_splitter.setStretchFactor(1, 10)
         self.horizontal_splitter.setStretchFactor(1, 1)
 
@@ -98,6 +89,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
         self.pb_save_gv.clicked.connect(self.save_gv)
         self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram(action="show"))
+        self.pb_clear_script.clicked.connect(self.clear_script)
         self.pb_clear_diagram.clicked.connect(self.clear_diagram)
         self.pb_browse_dot_path.clicked.connect(self.browse_dot_path)
 
@@ -148,7 +140,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         about_dialog.setInformativeText(
             (f"<b>Behatrix</b> {version.__version__} - {version.__version_date__}"
-             "<p>Copyright &copy; 2017-2020 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
+             "<p>Copyright &copy; 2017-2021 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
              "Department of Life Sciences and Systems Biology<br>"
              "University of Torino - Italy<br>"
              "<br>"
@@ -531,6 +523,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.svg_display.load(out)
 
 
+    def clear_script(self):
+        """
+        clear script window
+        """
+
+        self.pte_gv.clear()
+        self.svg_display.load(b"")
+
 
     def clear_diagram(self):
         """
@@ -792,7 +792,7 @@ def cli():
     args = parser.parse_args()
 
     if args.version:
-        print("Copyright (C) 2017-2020 Olivier Friard - Marco Gamba - Sergio Castellano")
+        print("Copyright (C) 2017-2021 Olivier Friard - Marco Gamba - Sergio Castellano")
         print(f"version {version.__version__} - {version.__version_date__}")
         sys.exit()
 

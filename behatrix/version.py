@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-
 """
 Behatrix
 Behavioral Sequences Analysis (BSA)).
 
 Behavioral sequences analysis with permutations test
 
-Copyright 2017-2020 Olivier Friard
+Copyright 2017-2021 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -26,4 +24,4 @@ This file is part of Behatrix.
 """
 
 __version__ = "0.9.13"
-__version_date__ = "2020-03-23"
+__version_date__ = "2021-01-22"

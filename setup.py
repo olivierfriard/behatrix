@@ -24,9 +24,9 @@ setup(
         "Topic :: Scientific/Engineering :: Visualization",
     ],
     packages=['behatrix'],  #same as name
-   
+
     install_requires=[
-          "pyqt5==5.14.0",
+          "pyqt5==5.15.2",
           "numpy",
       ],
 

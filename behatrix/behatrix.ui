@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Bed intersection</string>
+   <string>Behatrix</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -74,7 +74,7 @@
           <item>
            <widget class="QLabel" name="label_17">
             <property name="text">
-             <string>Behaviors separator</string>
+             <string>Behaviors delimiter</string>
             </property>
            </widget>
           </item>
@@ -357,7 +357,7 @@
                 <item>
                  <widget class="QLabel" name="label_18">
                   <property name="text">
-                   <string>Decimals in edges labels</string>
+                   <string>Number of decimals in edge labels</string>
                   </property>
                  </widget>
                 </item>
@@ -507,6 +507,13 @@
                 <widget class="QPushButton" name="pb_flow_diagram">
                  <property name="text">
                   <string>Generate flow diagram</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pb_clear_script">
+                 <property name="text">
+                  <string>Clear script</string>
                  </property>
                 </widget>
                </item>
@@ -682,6 +689,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string> (default: total number of cores -1)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -744,7 +758,7 @@
           <item>
            <widget class="QPushButton" name="pb_save_random">
             <property name="text">
-             <string>Save results</string>
+             <string>Save significativity matrix</string>
             </property>
            </widget>
           </item>
