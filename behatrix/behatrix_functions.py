@@ -1,7 +1,5 @@
 """
 Behatrix
-Behavioral Sequences Analysis (BSA).
-
 Behavioral sequences analysis with permutations test
 
 Copyright 2017-2021 Olivier Friard
@@ -29,7 +27,6 @@ import itertools
 import os
 import random
 import sys
-
 import numpy as np
 
 from behatrix import version
@@ -60,7 +57,7 @@ def behav_strings_stats(string: str,
                         behaviors_separator: str="",
                         chunk: int=0,
                         flag_remove_repetitions: bool=False,
-                        ngram=1) -> (bool, list):
+                        ngram: int=1) -> (bool, list):
     """
     extract some information from behavioral sequences
 
@@ -69,7 +66,7 @@ def behav_strings_stats(string: str,
         separator (str): string to use to split sequences in behaviors
         chunk (int): limit analysis to the chunk first characters
         flag_remove_repetitions (bool): if true remove behaviors repetions
-        ngram: number of behaviors to group
+        ngram (int): number of behaviors to group
 
     Returns:
         bool: 0 -> OK
@@ -179,7 +176,16 @@ def behav_strings_stats(string: str,
 
     out_ngrams = ""
 
+    print(sequences)
+
     if ngram > 1:
+        tot_ngrams, uniq_ngrams = [], []
+        for sequence in sequences:
+            tot_ngrams.extend([tuple(sequence[i:i + ngram]) for i, _ in enumerate(sequence) if len(sequence[i:i + ngram]) == ngram])
+
+        uniq_ngrams = list(dict.fromkeys(tot_ngrams))
+
+        '''
         tot_ngrams, uniq_ngrams = [], []
         for sequence in sequences:
             for idx, behavior in enumerate(sequence):
@@ -192,9 +198,17 @@ def behav_strings_stats(string: str,
                         uniq_ngrams.append(n)
                 except Exception:
                     pass
+        '''
+
+        print("tot_ngrams", tot_ngrams)
+        print("uniq_ngrams", uniq_ngrams)
 
         for element in sorted(uniq_ngrams):
-            ngram_count = sum([behaviors_separator.join(sequence).count(behaviors_separator.join(element)) for sequence in sequences])
+
+            #ngram_count = sum([behaviors_separator.join(sequence).count(behaviors_separator.join(element)) for sequence in sequences])
+            print(element, [tuple(sequence[i:i + ngram]) for i, _ in enumerate(sequence) if len(sequence[i:i + ngram]) == ngram])
+            ngram_count = sum([[tuple(sequence[i:i + ngram]) for i, _ in enumerate(sequence) if len(sequence[i:i + ngram]) == ngram].count(element) for sequence in sequences])
+
             out_ngrams += (f"{behaviors_separator.join(element)}\t"
                            f"{ngram_count / len(tot_ngrams):.3f}\t"
                            f"{ngram_count} / {len(tot_ngrams)}\n"
