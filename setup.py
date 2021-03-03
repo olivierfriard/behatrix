@@ -26,7 +26,7 @@ setup(
     packages=['behatrix'],  #same as name
 
     install_requires=[
-          "pyqt5==5.15.2",
+          "pyqt5",
           "numpy",
       ],
 
