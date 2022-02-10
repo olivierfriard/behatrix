@@ -27,7 +27,7 @@ setup(
 
     install_requires=[
           "pyqt5==5.15.2",
-          "numpy",
+          "numpy==1.19.5",
       ],
 
     # load in behatrix dir
