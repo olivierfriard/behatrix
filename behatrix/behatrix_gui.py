@@ -33,7 +33,7 @@ from shutil import copyfile
 
 import numpy as np
 from PyQt5 import QtSvg
-from PyQt5.QtCore import QSettings, Qt, pyqtSignal
+from PyQt5.QtCore import QSettings, Qt, pyqtSignal, QT_VERSION_STR, PYQT_VERSION_STR
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 
@@ -138,6 +138,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         about_dialog.setDefaultButton(QMessageBox.Ok)
         about_dialog.setEscapeButton(QMessageBox.Ok)
 
+        current_system = platform.uname()
+        details = (f"Operating system: {current_system.system} {current_system.release} <br>"
+                   f"CPU: {current_system.machine} {current_system.processor}<br><br>"
+                   f"Python {platform.python_version()} ({'64-bit' if sys.maxsize > 2**32 else '32-bit'})"
+                   f" - Qt {QT_VERSION_STR} - PyQt{PYQT_VERSION_STR}<br><br>"
+                  )
+
         about_dialog.setInformativeText(
             (f"<b>Behatrix</b> {version.__version__} - {version.__version_date__}"
              "<p>Copyright &copy; 2017-2021 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
@@ -146,7 +153,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              "<br>"
              'BORIS is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>'
              'See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>'
-             "<hr>"))
+             "<hr>") + details)
+
         _ = about_dialog.exec_()
 
 
