@@ -2,7 +2,7 @@
 Behatrix
 Behavioral sequences analysis with permutations test
 
-Copyright 2017-2021 Olivier Friard
+Copyright 2017-2022 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -21,5 +21,5 @@ This file is part of Behatrix.
 
 """
 
-__version__ = "0.9.14"
-__version_date__ = "2021-02-26"
+__version__ = "0.9.15"
+__version_date__ = "2022-02-10"

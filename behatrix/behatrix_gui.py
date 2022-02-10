@@ -302,7 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def graphviz_script(self):
         """
-        generate GraphViz script
+        generate the GraphViz script
         """
 
         if '"' in self.pte_behav_strings.toPlainText():
@@ -332,29 +332,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # check significativity
         if self.cb_plot_significativity.isChecked() and self.permutations_test_matrix is None:
             QMessageBox.critical(self, "Behatrix",
-                                 "Adding significativity to graph requires p values from permutations test")
+                                 ("Adding significativity to graph requires p values from permutations test.<br>"
+                                   "See the <b>Random permutations test</b> tab.")
+                                )
             return
 
-
         gv_script = behatrix_functions.draw_diagram(cutoff_all=self.sb_cutoff_total_transition.value(),
-                                              cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
-                                              unique_transitions=unique_transitions,
-                                              nodes=nodes,
-                                              starting_nodes=[],
-                                              tot_nodes=tot_nodes,
-                                              tot_trans=tot_trans,
-                                              tot_trans_after_node=tot_trans_after_node,
-                                              edge_label=edge_label,
-                                              decimals_number=self.sb_decimals.value(),
-                                              significativity=self.permutations_test_matrix
-                                                              if (self.permutations_test_matrix is not None)
-                                                                 and (self.cb_plot_significativity.isChecked())
-                                                              else None,
-                                              behaviors=behaviors)
-
+                                                    cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
+                                                    unique_transitions=unique_transitions,
+                                                    nodes=nodes,
+                                                    starting_nodes=[],
+                                                    tot_nodes=tot_nodes,
+                                                    tot_trans=tot_trans,
+                                                    tot_trans_after_node=tot_trans_after_node,
+                                                    edge_label=edge_label,
+                                                    decimals_number=self.sb_decimals.value(),
+                                                    significativity=self.permutations_test_matrix
+                                                                    if (self.permutations_test_matrix is not None)
+                                                                        and (self.cb_plot_significativity.isChecked())
+                                                                    else None,
+                                                    behaviors=behaviors)
 
         self.pte_gv.setPlainText(gv_script)
-
 
     def save_gv(self):
         """
@@ -388,139 +387,142 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             str: path of diagram temp file path or "" in case of error
         """
 
-        if self.pte_gv.toPlainText():
+        if not self.pte_gv.toPlainText():
+            QMessageBox.warning(self, "Behatrix", "You have to generate the GraphViz script before")
+            return ""
 
-            if self.rb_graphviz.isChecked():
-                # check dot path
-                if self.le_dot_path.text():
-                    if not os.path.isfile(self.le_dot_path.text()):
-                        QMessageBox.critical(self, "Behatrix",
-                                             ("The path for <b>dot</b> program is wrong.<br>"
-                                              "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
-                        return ""
-                    dot_path = self.le_dot_path.text()
-                else:
-                    dot_path = "dot"
 
-                # test dot program
-                p = subprocess.Popen(f"{dot_path} -V", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                out, error = p.communicate()
-
-                if b"graphviz version" in error:
-
-                    gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
-
-                    # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
-                    if sys.platform == "win32":
-                        gv_script = gv_script.replace(">", "^^^>")
-                        cmd = f'''echo {gv_script} | "{dot_path}" -Tsvg '''
-
-                    else:
-                        cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
-
-                    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                    out, error = p.communicate()
-
-                    if error:
-                        QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
-                        return
-
-            if self.rb_vizjs.isChecked():
-
-                # test if viz.js and nodejs found
-                # script directory
-                print("sys.argv[0]", sys.argv[0])
-                print("sys.argv[0].resolve()", pathlib.Path(sys.argv[0]).resolve())
-                # print("sys.path", sys.path)
-
-                viz_path = pathlib.Path("")
-                if sys.argv[0].endswith("start_behatrix.py"):
-                    viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "viz.js"
-
-                if sys.argv[0].endswith("__main__.py"):
-                    viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "misc" / "viz.js"
-
-                print(f"viz.js path: {viz_path}")
-                if not viz_path.is_file():
-                    QMessageBox.critical(self, "Behatrix", "The viz.js file was not found!")
-                    return
-                viz_path = str(viz_path).replace("\\", "/")
-
-                # node (nodejs)
-                node_cmd_list = []
-                # embedded nodejs version (packages)
-                if sys.argv[0].endswith("__main__.py"):
-                    if sys.platform == "win32":
-                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node.exe"))
-                    if sys.platform in ["darwin", "linux"]:
-                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node"))
-
-                if sys.argv[0].endswith("start_behatrix.py"):
-                    if sys.platform == "win32":
-                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node.exe"))
-                    if sys.platform in ["darwin", "linux"]:
-                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node"))
-
-                # global installation of nodeJS
-                node_cmd_list.extend(["node", "/usr/local/bin/node"])
-                node_cmd_verified = ""
-                for node_cmd in node_cmd_list:
-                    p = subprocess.Popen(f"{node_cmd} -v",
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
-                                        shell=True)
-                    out, error = p.communicate()
-                    if not error and out.decode("utf-8") and out.decode("utf-8")[0] == "v":
-                        node_cmd_verified = node_cmd
-                        break
-                
-                if not node_cmd_verified:
+        if self.rb_graphviz.isChecked():
+            # check dot path
+            if self.le_dot_path.text():
+                if not os.path.isfile(self.le_dot_path.text()):
                     QMessageBox.critical(self, "Behatrix",
-                                            ("The Node.js JavaScript runtime was not found!\n"
-                                            "Please install it or switch to the Graphviz package"))
-                    return
+                                            ("The path for <b>dot</b> program is wrong.<br>"
+                                            "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
+                    return ""
+                dot_path = self.le_dot_path.text()
+            else:
+                dot_path = "dot"
 
-                print(f"node_cmd_verified {node_cmd_verified}")
+            # test dot program
+            p = subprocess.Popen(f"{dot_path} -V", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out, error = p.communicate()
 
-                # escape for echo and nodejs
-                gv_script_escaped = self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
+            if b"graphviz version" in error:
 
-                js = f'var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);'
+                gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
 
-                print(tempfile.gettempdir())
-                js_script_path = pathlib.Path(tempfile.gettempdir()) / pathlib.Path("behatrix_flow_diagram_script.js")
-                open(js_script_path, "w").write(js)
+                # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
+                if sys.platform == "win32":
+                    gv_script = gv_script.replace(">", "^^^>")
+                    cmd = f'''echo {gv_script} | "{dot_path}" -Tsvg '''
 
-                cmd = f"{node_cmd_verified} {js_script_path}"
-                print(f"cmd: {cmd}")
+                else:
+                    cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
                 out, error = p.communicate()
 
                 if error:
                     QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
                     return
-                else:
-                    self.svg_display.load(out)
 
-            if action == "show":
+        if self.rb_vizjs.isChecked():
+
+            # test if viz.js and nodejs found
+            # script directory
+            print("sys.argv[0]", sys.argv[0])
+            print("sys.argv[0].resolve()", pathlib.Path(sys.argv[0]).resolve())
+            # print("sys.path", sys.path)
+
+            viz_path = pathlib.Path("")
+            if sys.argv[0].endswith("start_behatrix.py"):
+                viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "viz.js"
+
+            if sys.argv[0].endswith("__main__.py"):
+                viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "misc" / "viz.js"
+
+            print(f"viz.js path: {viz_path}")
+            if not viz_path.is_file():
+                QMessageBox.critical(self, "Behatrix", "The viz.js file was not found!")
+                return
+            viz_path = str(viz_path).replace("\\", "/")
+
+            # node (nodejs)
+            node_cmd_list = []
+            # embedded nodejs version (packages)
+            if sys.argv[0].endswith("__main__.py"):
+                if sys.platform == "win32":
+                    node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node.exe"))
+                if sys.platform in ["darwin", "linux"]:
+                    node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node"))
+
+            if sys.argv[0].endswith("start_behatrix.py"):
+                if sys.platform == "win32":
+                    node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node.exe"))
+                if sys.platform in ["darwin", "linux"]:
+                    node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node"))
+
+            # global installation of nodeJS
+            node_cmd_list.extend(["node", "/usr/local/bin/node"])
+            node_cmd_verified = ""
+            for node_cmd in node_cmd_list:
+                p = subprocess.Popen(f"{node_cmd} -v",
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    shell=True)
+                out, error = p.communicate()
+                if not error and out.decode("utf-8") and out.decode("utf-8")[0] == "v":
+                    node_cmd_verified = node_cmd
+                    break
+            
+            if not node_cmd_verified:
+                QMessageBox.critical(self, "Behatrix",
+                                        ("The Node.js JavaScript runtime was not found!\n"
+                                        "Please install it or switch to the Graphviz package"))
+                return
+
+            print(f"node_cmd_verified {node_cmd_verified}")
+
+            # escape for echo and nodejs
+            gv_script_escaped = self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
+
+            js = f'var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);'
+
+            print(tempfile.gettempdir())
+            js_script_path = pathlib.Path(tempfile.gettempdir()) / pathlib.Path("behatrix_flow_diagram_script.js")
+            open(js_script_path, "w").write(js)
+
+            cmd = f"{node_cmd_verified} {js_script_path}"
+            print(f"cmd: {cmd}")
+
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+            out, error = p.communicate()
+
+            if error:
+                QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                return
+            else:
                 self.svg_display.load(out)
 
-            if action == "save":
-                file_name, filter_ = QFileDialog().getSaveFileName(self,
-                                                                   "Select the file and format to save the flow diagram", "",
-                                                                   "SVG files (*.svg);;All files (*)"
-                                                                   )
-                if file_name:
-                    try:
-                        with open(file_name, "w") as f_out:
-                            f_out.write(out.decode("utf-8"))
-                    except Exception:
-                        QMessageBox.critical(self, "Behatrix", "Error saving the file")
-                        return
+        if action == "show":
+            self.svg_display.load(out)
 
-                    self.svg_display.load(out)
+        if action == "save":
+            file_name, filter_ = QFileDialog().getSaveFileName(self,
+                                                                "Select the file and format to save the flow diagram", "",
+                                                                "SVG files (*.svg);;All files (*)"
+                                                                )
+            if file_name:
+                try:
+                    with open(file_name, "w") as f_out:
+                        f_out.write(out.decode("utf-8"))
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Error saving the file")
+                    return
+
+                self.svg_display.load(out)
 
 
     def clear_script(self):
@@ -544,12 +546,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         save diagram
         """
+
         if self.pte_gv.toPlainText():
-            file_name, filter_ = QFileDialog().getSaveFileName(self,
-                                                               "Select the file and format to save the flow diagram", "",
-                                                               "PNG files (*.png);;All files (*)" if image_format == "png" else
-                                                               "SVG files (*.svg);;All files (*)"
-                                                               )
+            file_name, _ = QFileDialog().getSaveFileName(self,
+                                                        "Select the file and format to save the flow diagram", "",
+                                                        "PNG files (*.png);;All files (*)" if image_format == "png" else
+                                                        "SVG files (*.svg);;All files (*)"
+                                                        )
             diagram_tmp_file_path = self.flow_diagram(image_format=image_format)
             if diagram_tmp_file_path and file_name:
                 copyfile(diagram_tmp_file_path, file_name)

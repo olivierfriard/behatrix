@@ -5,7 +5,7 @@ Behavioral Sequences Analysis (BSA).
 Behavioral sequences analysis with permutations test
 
 
-Copyright 2017-2021 Olivier Friard
+Copyright 2017-2022 Olivier Friard
 
 This file is part of Behatrix.
 

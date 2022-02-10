@@ -2,7 +2,7 @@
 Behatrix
 Behavioral sequences analysis with permutations test
 
-Copyright 2017-2021 Olivier Friard
+Copyright 2017-2022 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -275,7 +275,7 @@ def draw_diagram(cutoff_all,
                  include_first=True,
                  decimals_number=3,
                  significativity=None,
-                 behaviors=[]):
+                 behaviors=[]) -> str:
 
         """
         create code for GraphViz
@@ -314,9 +314,9 @@ def draw_diagram(cutoff_all,
                 int: pen width to be used in graphviz script
             """
 
-            if p <= 0.001:
+            if p <= 0.01:
                 return 6
-            elif p <= 0.005:
+            elif p <= 0.05:
                 return 3
             else:
                 return 1
