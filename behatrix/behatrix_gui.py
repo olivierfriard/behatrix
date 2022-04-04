@@ -2,7 +2,7 @@
 Behatrix
 Behavioral sequences analysis with permutations test
 
-Copyright 2017-2021 Olivier Friard
+Copyright 2017-2022 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -22,6 +22,7 @@ This file is part of Behatrix.
 """
 
 import concurrent.futures
+import math
 import multiprocessing
 import os
 import pathlib
@@ -37,7 +38,9 @@ from PyQt5.QtCore import QSettings, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 
-from behatrix import behatrix_functions, behatrix_qrc, version
+from . import behatrix_functions
+from . import behatrix_qrc
+from . import version
 from behatrix.behatrix_ui import Ui_MainWindow
 
 
@@ -81,8 +84,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # behavioral sequences
         self.pb_select_behav_strings_file.clicked.connect(self.pbSelectStringsFilename)
         self.pb_statistics.clicked.connect(self.behav_strings_statistics)
-        self.pb_save_stats_results.clicked.connect(self.save_stats_results)
-        self.pb_save_observed_matrix.clicked.connect(self.observed_matrix)
+        self.pb_save_results.clicked.connect(self.save_stats_results)
+        self.pb_save_results.setVisible(False)
+        self.pb_transition_matrix.clicked.connect(self.observed_matrix)
         self.pte_behav_strings.textChanged.connect(self.behavioral_sequences_changed)
 
         # tab flow diagram
@@ -128,7 +132,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.permutations_finished_signal.connect(self.get_permutations_results)
 
-
     def about(self):
 
         about_dialog = QMessageBox()
@@ -139,24 +142,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         about_dialog.setEscapeButton(QMessageBox.Ok)
 
         about_dialog.setInformativeText(
-            (f"<b>Behatrix</b> {version.__version__} - {version.__version_date__}"
-             "<p>Copyright &copy; 2017-2021 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
-             "Department of Life Sciences and Systems Biology<br>"
-             "University of Torino - Italy<br>"
-             "<br>"
-             'BORIS is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>'
-             'See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>'
-             "<hr>"))
+            (
+                f"<b>Behatrix</b> {version.__version__} - {version.__version_date__}"
+                "<p>Copyright &copy; 2017-2021 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
+                "Department of Life Sciences and Systems Biology<br>"
+                "University of Torino - Italy<br>"
+                "<br>"
+                'BORIS is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>'
+                'See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>'
+                "<hr>"
+            )
+        )
         _ = about_dialog.exec_()
 
-
-
     def closeEvent(self, event):
-        settings = QSettings(str(pathlib.Path(os.path.expanduser("~")) / ".behatrix"),
-                             QSettings.IniFormat)
+        settings = QSettings(str(pathlib.Path(os.path.expanduser("~")) / ".behatrix"), QSettings.IniFormat)
 
         settings.setValue("dot_prog_path", self.le_dot_path.text())
-
 
     def behavioral_sequences_changed(self):
         """
@@ -174,17 +176,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if "|" in self.pte_behav_strings.toPlainText():
             self.le_behaviors_separator.setText("|")
 
-
     def browse_dot_path(self):
         """
         browse for dot path
         """
-        filename = QFileDialog(self).getOpenFileName(self, "Select the dot program from GraphViz package", "",
-                                                     "All files (*)")[0]
+        filename = QFileDialog(self).getOpenFileName(
+            self, "Select the dot program from GraphViz package", "", "All files (*)"
+        )[0]
         if filename:
 
-            p = subprocess.Popen('"{}" -V'.format(filename),
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            p = subprocess.Popen('"{}" -V'.format(filename), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
 
             if b"graphviz version" in error:
@@ -192,11 +193,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 QMessageBox.critical(self, "Behatrix", "The selected <b>dot</b> program is not working.<br>")
 
-
     def pbSelectStringsFilename(self):
 
-        filename = QFileDialog().getOpenFileName(self, "Select the file containing the behavioral sequences", "",
-                                                 "All files (*)")[0]
+        filename = QFileDialog().getOpenFileName(
+            self, "Select the file containing the behavioral sequences", "", "All files (*)"
+        )[0]
 
         if filename:
             self.leStringsFileName.setText(filename)
@@ -206,7 +207,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.pte_behav_strings.setPlainText(behav_str)
 
-
     def behav_strings_statistics(self):
         """
         statistics about behavioral sequences
@@ -214,51 +214,54 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.pte_behav_strings.toPlainText():
 
-            (return_code, sequences,
-             d, nodes, starting_nodes, tot_nodes,
-             tot_trans, tot_trans_after_node,
-             behaviours, ngrams_freq) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
-                                                            behaviors_separator=self.le_behaviors_separator.text(),
-                                                            chunk=0,
-                                                            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
-                                                            ngram=self.sb_ngram.value())
+            return_code, results = behatrix_functions.behavioral_sequence_analysis(
+                self.pte_behav_strings.toPlainText(),
+                behaviors_separator=self.le_behaviors_separator.text(),
+                chunk=0,
+                flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+                ngram=self.sb_ngram.value(),
+            )
 
             output = ""
-            output += ("Number of sequences:\n================\n{}\n".format(len(sequences)))
-            output += ("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
-            output += ("\nStatistics\n==========\n")
-            output += ('Number of different behaviours: {}\n'.format(len(behaviours)))
-            output += ('Total number of behaviours: {}\n'.format(tot_nodes))
-            output += ('Number of different transitions: {}\n'.format(len(d)))
-            output += ('Total number of transitions: {}\n'.format(tot_trans))
-            output += ('\nBehaviours frequencies:\n=======================\n')
+            output += f"Number of sequences: {len(results['sequences'])}\n\n"
+            output += "Behaviours list:\n================\n{}\n".format("\n".join(results["behaviours"]))
+            output += "\nStatistics\n==========\n"
+            output += "Number of different behaviours: {}\n".format(len(results["behaviours"]))
+            output += "Total number of behaviours: {}\n".format(results["tot_nodes"])
+            output += "Number of different transitions: {}\n".format(len(results["transitions"]))
+            output += "Total number of transitions: {}\n".format(results["tot_trans"])
+            output += "\nBehaviours frequencies:\n=======================\n"
 
-            for behaviour in sorted(behaviours):
+            for behaviour in sorted(results["behaviours"]):
                 countBehaviour = 0
-                for seq in sequences:
+                for seq in results["sequences"]:
                     countBehaviour += seq.count(behaviour)
 
-                output += "{behaviour}\t{freq:.3f}\t{countBehaviour} / {tot_nodes}\n".format(behaviour=behaviour,
-                                                                                             freq=countBehaviour / tot_nodes,
-                                                                                             countBehaviour=countBehaviour,
-                                                                                             tot_nodes=tot_nodes)
+                output += "{behaviour}\t{freq:.3f}\t{countBehaviour} / {tot_nodes}\n".format(
+                    behaviour=behaviour,
+                    freq=countBehaviour / results["tot_nodes"],
+                    countBehaviour=countBehaviour,
+                    tot_nodes=results["tot_nodes"],
+                )
 
             # n-grams
             if self.sb_ngram.value() > 1:
                 output += f"\nFrequencies of {self.sb_ngram.value()}-grams:\n=======================\n"
-                output += ngrams_freq
+                output += results["ngrams_freq"]
 
             self.pte_statistics.setPlainText(output)
+
+            self.pb_save_results.setText("Save statistics")
+            self.pb_save_results.setVisible(True)
 
         else:
             QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
 
-
     def save_stats_results(self):
         if self.pte_statistics.toPlainText():
-            file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the matrix",
-                                                          "",
-                                                          "All files (*)")[0]
+            file_name = QFileDialog(self).getSaveFileName(
+                self, "Select the file to save the matrix", "", "All files (*)"
+            )[0]
             if file_name:
                 try:
                     with open(file_name, "w") as f_out:
@@ -268,37 +271,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             QMessageBox.warning(self, "Behatrix", "No results to save!")
 
-
     def observed_matrix(self):
         """
         matrix of observed transitions
         """
 
-        (return_code, sequences,
-         d, nodes, starting_nodes, tot_nodes,
-         tot_trans, tot_trans_after_node,
-         behaviours, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
-                                                        behaviors_separator=self.le_behaviors_separator.text(),
-                                                        chunk=0,
-                                                        flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked())
+        return_code, results = behatrix_functions.behavioral_sequence_analysis(
+            self.pte_behav_strings.toPlainText(),
+            behaviors_separator=self.le_behaviors_separator.text(),
+            chunk=0,
+            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+        )
 
-        if sequences:
+        if results["sequences"]:
 
-            observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, behaviours)
+            observed_matrix = behatrix_functions.create_observed_transition_matrix(
+                results["sequences"], results["behaviours"]
+            )
 
             # display results
             # header
-            out = "\t{}\n".format("\t".join(list(behaviours)))
+            out = "\t{}\n".format("\t".join(list(results["behaviours"])))
 
             for r in range(observed_matrix.shape[0]):
-                out += "{}\t".format(behaviours[r])
+                out += f"{results['behaviours'][r]}\t"
                 out += "\t".join([str(int(x)) for x in observed_matrix[r, :]]) + "\n"
 
             self.pte_statistics.setPlainText(out)
 
+            self.pb_save_results.setText("Save transition matrix")
+            self.pb_save_results.setVisible(True)
+
         else:
             QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
-
 
     def graphviz_script(self):
         """
@@ -309,14 +314,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "Behatrix", 'The double quotes (") are not allowed in behaviors')
             return
 
-        (return_code, sequences,
-         unique_transitions, nodes, starting_nodes, tot_nodes,
-         tot_trans, tot_trans_after_node,
-         behaviors, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
-                                                       behaviors_separator=self.le_behaviors_separator.text(),
-                                                       chunk=0,
-                                                       flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
-                                                       )
+        return_code, results = behatrix_functions.behavioral_sequence_analysis(
+            self.pte_behav_strings.toPlainText(),
+            behaviors_separator=self.le_behaviors_separator.text(),
+            chunk=0,
+            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+        )
 
         # type of labels
         edge_label = "percent_node"
@@ -324,37 +327,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             edge_label = "percent_node"
         if self.rb_percent_total_transitions.isChecked():
             edge_label = "percent_total"
-        '''
+        """
         if self.rb_fraction_after_behav.isChecked():
             edge_label = "fraction_node"
-        '''
+        """
 
         # check significativity
         if self.cb_plot_significativity.isChecked() and self.permutations_test_matrix is None:
-            QMessageBox.critical(self, "Behatrix",
-                                 "Adding significativity to graph requires p values from permutations test")
+            QMessageBox.critical(
+                self, "Behatrix", "Adding significativity to graph requires p values from permutations test"
+            )
             return
 
-
-        gv_script = behatrix_functions.draw_diagram(cutoff_all=self.sb_cutoff_total_transition.value(),
-                                              cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
-                                              unique_transitions=unique_transitions,
-                                              nodes=nodes,
-                                              starting_nodes=[],
-                                              tot_nodes=tot_nodes,
-                                              tot_trans=tot_trans,
-                                              tot_trans_after_node=tot_trans_after_node,
-                                              edge_label=edge_label,
-                                              decimals_number=self.sb_decimals.value(),
-                                              significativity=self.permutations_test_matrix
-                                                              if (self.permutations_test_matrix is not None)
-                                                                 and (self.cb_plot_significativity.isChecked())
-                                                              else None,
-                                              behaviors=behaviors)
-
+        gv_script = behatrix_functions.draw_diagram2(
+            cutoff_all=self.sb_cutoff_total_transition.value(),
+            cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
+            unique_transitions=results["transitions"],
+            nodes=results["nodes"],
+            starting_nodes=[],
+            tot_nodes=results["tot_nodes"],
+            tot_trans=results["tot_trans"],
+            tot_trans_after_node=results["tot_trans_after_node"],
+            edge_label=edge_label,
+            decimals_number=self.sb_decimals.value(),
+            significativity=self.permutations_test_matrix
+            if (self.permutations_test_matrix is not None) and (self.cb_plot_significativity.isChecked())
+            else None,
+            behaviors=results["behaviors"],
+        )
 
         self.pte_gv.setPlainText(gv_script)
-
 
     def save_gv(self):
         """
@@ -362,8 +364,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if self.pte_gv.toPlainText():
 
-            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the GraphViz script", "",
-                                                               "GV files (*.gv);;TXT files (*.txt);;All files (*)")
+            file_name, filter_ = QFileDialog().getSaveFileName(
+                self,
+                "Select the file to save the GraphViz script",
+                "",
+                "GV files (*.gv);;TXT files (*.txt);;All files (*)",
+            )
 
             if file_name:
                 try:
@@ -372,8 +378,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 except Exception:
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
-
-    def flow_diagram(self, action: str="show") -> str:
+    def flow_diagram(self, action: str = "show") -> str:
         """
         generate flow diagram from pte_gv content in SVG format
         with:
@@ -394,9 +399,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # check dot path
                 if self.le_dot_path.text():
                     if not os.path.isfile(self.le_dot_path.text()):
-                        QMessageBox.critical(self, "Behatrix",
-                                             ("The path for <b>dot</b> program is wrong.<br>"
-                                              "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"))
+                        QMessageBox.critical(
+                            self,
+                            "Behatrix",
+                            (
+                                "The path for <b>dot</b> program is wrong.<br>"
+                                "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"
+                            ),
+                        )
                         return ""
                     dot_path = self.le_dot_path.text()
                 else:
@@ -413,10 +423,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
                     if sys.platform == "win32":
                         gv_script = gv_script.replace(">", "^^^>")
-                        cmd = f'''echo {gv_script} | "{dot_path}" -Tsvg '''
+                        cmd = f"""echo {gv_script} | "{dot_path}" -Tsvg """
 
                     else:
-                        cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
+                        cmd = f"""echo '{gv_script}' | "{dot_path}" -Tsvg """
 
                     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     out, error = p.communicate()
@@ -457,33 +467,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 if sys.argv[0].endswith("start_behatrix.py"):
                     if sys.platform == "win32":
-                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node.exe"))
+                        node_cmd_list.append(
+                            str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node.exe")
+                        )
                     if sys.platform in ["darwin", "linux"]:
-                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node"))
+                        node_cmd_list.append(
+                            str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node")
+                        )
 
                 # global installation of nodeJS
                 node_cmd_list.extend(["node", "/usr/local/bin/node"])
                 node_cmd_verified = ""
                 for node_cmd in node_cmd_list:
-                    p = subprocess.Popen(f"{node_cmd} -v",
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
-                                        shell=True)
+                    p = subprocess.Popen(f"{node_cmd} -v", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     out, error = p.communicate()
                     if not error and out.decode("utf-8") and out.decode("utf-8")[0] == "v":
                         node_cmd_verified = node_cmd
                         break
-                
+
                 if not node_cmd_verified:
-                    QMessageBox.critical(self, "Behatrix",
-                                            ("The Node.js JavaScript runtime was not found!\n"
-                                            "Please install it or switch to the Graphviz package"))
+                    QMessageBox.critical(
+                        self,
+                        "Behatrix",
+                        (
+                            "The Node.js JavaScript runtime was not found!\n"
+                            "Please install it or switch to the Graphviz package"
+                        ),
+                    )
                     return
 
                 print(f"node_cmd_verified {node_cmd_verified}")
 
                 # escape for echo and nodejs
-                gv_script_escaped = self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
+                gv_script_escaped = (
+                    self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
+                )
 
                 js = f'var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);'
 
@@ -508,10 +526,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.svg_display.load(out)
 
             if action == "save":
-                file_name, filter_ = QFileDialog().getSaveFileName(self,
-                                                                   "Select the file and format to save the flow diagram", "",
-                                                                   "SVG files (*.svg);;All files (*)"
-                                                                   )
+                file_name, filter_ = QFileDialog().getSaveFileName(
+                    self, "Select the file and format to save the flow diagram", "", "SVG files (*.svg);;All files (*)"
+                )
                 if file_name:
                     try:
                         with open(file_name, "w") as f_out:
@@ -522,7 +539,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                     self.svg_display.load(out)
 
-
     def clear_script(self):
         """
         clear script window
@@ -531,7 +547,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pte_gv.clear()
         self.svg_display.load(b"")
 
-
     def clear_diagram(self):
         """
         clear diagram
@@ -539,37 +554,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.svg_display.load(b"")
 
-
     def save_diagram(self, image_format):
         """
         save diagram
         """
         if self.pte_gv.toPlainText():
-            file_name, filter_ = QFileDialog().getSaveFileName(self,
-                                                               "Select the file and format to save the flow diagram", "",
-                                                               "PNG files (*.png);;All files (*)" if image_format == "png" else
-                                                               "SVG files (*.svg);;All files (*)"
-                                                               )
+            file_name, filter_ = QFileDialog().getSaveFileName(
+                self,
+                "Select the file and format to save the flow diagram",
+                "",
+                "PNG files (*.png);;All files (*)" if image_format == "png" else "SVG files (*.svg);;All files (*)",
+            )
             diagram_tmp_file_path = self.flow_diagram(image_format=image_format)
             if diagram_tmp_file_path and file_name:
                 copyfile(diagram_tmp_file_path, file_name)
         else:
             QMessageBox.warning(self, "Behatrix", "No GV script found. Generate the GraphViz script first.")
 
-
     def exclude_behavior_repetitions(self):
         """
         insert repetition of same behavior in exclusions list
         """
-        (return_code, _,
-         _, _, _, _,
-         _, _, behaviors, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
-                                                             behaviors_separator=self.le_behaviors_separator.text(),
-                                                             chunk=0)
+        return_code, results = behatrix_functions.behavioral_sequence_analysis(
+            self.pte_behav_strings.toPlainText(), behaviors_separator=self.le_behaviors_separator.text(), chunk=0
+        )
         self.pte_excluded_transitions.insertPlainText("\n")
-        for behavior in behaviors:
+        for behavior in results["behaviors"]:
             self.pte_excluded_transitions.insertPlainText(f"{behavior}:{behavior}\n")
-
 
     def get_permutations_results(self, results):
         """
@@ -580,10 +591,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         nb_randomization_done = 0
         permutation_results = np.zeros((len(self.behaviours), len(self.behaviours)))
         for n_permut, result in results:
-             nb_randomization_done += n_permut
-             permutation_results += result
+            nb_randomization_done += n_permut
+            permutation_results += result
 
-        out = "\t{}\n".format('\t'.join(list(self.behaviours)))
+        out = "\t{}\n".format("\t".join(list(self.behaviours)))
 
         self.permutations_test_matrix = permutation_results / nb_randomization_done
 
@@ -597,10 +608,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.cb_plot_significativity.setEnabled(True)
 
-        QMessageBox.information(self, "Behatrix",
-                                ("Permutations test finished<br>"
-                                 f"{nb_randomization_done} permutations done<br><br>"))
-
+        QMessageBox.information(
+            self, "Behatrix", ("Permutations test finished<br>" f"{nb_randomization_done} permutations done<br><br>")
+        )
 
     def permutations_test_finished(self, results):
         """
@@ -608,24 +618,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.permutations_finished_signal.emit(results)
 
-
     def permutation_test(self):
 
         if self.pte_behav_strings.toPlainText():
             self.pte_random.clear()
 
-            (return_code, sequences,
-             d, nodes, starting_nodes, tot_nodes,
-             tot_trans, tot_trans_after_node,
-             self.behaviours, _) = behatrix_functions.behav_strings_stats(self.pte_behav_strings.toPlainText(),
-                                                            behaviors_separator=self.le_behaviors_separator.text(),
-                                                            chunk=0,
-                                                            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked()
-                                                            )
+            return_code, results = behatrix_functions.behavioral_sequence_analysis(
+                self.pte_behav_strings.toPlainText(),
+                behaviors_separator=self.le_behaviors_separator.text(),
+                chunk=0,
+                flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+            )
+
+            self.behaviours = results["behaviours"]
 
             # check exclusion list
             if self.pte_excluded_transitions.toPlainText():
-                result = behatrix_functions.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), sequences)
+                result = behatrix_functions.check_exclusion_list(
+                    self.pte_excluded_transitions.toPlainText(), results["sequences"]
+                )
 
                 if not result["error_code"]:
                     exclusion_list = result["exclusion_list"]
@@ -652,23 +663,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if num_proc > self.nrandom:
                     num_proc = self.nrandom
 
-                observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, self.behaviours)
+                observed_matrix = behatrix_functions.create_observed_transition_matrix(
+                    results["sequences"], self.behaviours
+                )
 
                 self.pb_run_permutations_test.setEnabled(False)
                 self.nb_randomization_done = 0
-                pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
+                pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
                 n_random_by_proc = round(self.nrandom / num_proc + 1)
 
-                pool.starmap_async(behatrix_functions.permutations_test,
-                                    [(n_random_by_proc,
-                                    sequences, self.behaviours,
-                                    exclusion_list,
-                                    self.cb_block_first_behavior.isChecked(),
-                                    self.cb_block_last_behavior.isChecked(),
-                                    observed_matrix)
-                                    ] * num_proc,
-                                    callback=self.permutations_test_finished)
+                pool.starmap_async(
+                    behatrix_functions.permutations_test,
+                    [
+                        (
+                            n_random_by_proc,
+                            results["sequences"],
+                            self.behaviours,
+                            exclusion_list,
+                            self.cb_block_first_behavior.isChecked(),
+                            self.cb_block_last_behavior.isChecked(),
+                            observed_matrix,
+                        )
+                    ]
+                    * num_proc,
+                    callback=self.permutations_test_finished,
+                )
 
             else:
                 QMessageBox.warning(self, "Behatrix", "Select the number of permutations to execute")
@@ -676,15 +696,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
 
-
     def save_permutations_test_results(self):
         """
         Save permutations test matrix
         """
         if self.pte_random.toPlainText():
 
-            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the results", "",
-                                                               "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
+            file_name, filter_ = QFileDialog().getSaveFileName(
+                self, "Select the file to save the results", "", "TSV files (*.tsv);;TXT files (*.txt);;All files (*)"
+            )
 
             if file_name:
                 try:
@@ -693,13 +713,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 except Exception:
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
-
     def levenshtein_distance(self):
         """
         Levenshtein distances between behavioral sequences
         """
 
         seq_list = [x.strip() for x in self.pte_behav_strings.toPlainText().split("\n") if x.strip()]
+        n_pad = int(math.log10(len(seq_list))) + 1
 
         if self.le_behaviors_separator.text():
             seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]
@@ -709,13 +729,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # display results
         out = "Levenshtein distances:\n"
         # header
-        out += "\t{}\n".format("\t".join([f"seq #{x + 1}" for x, _ in enumerate(seq_list)]))
+        out += "\t{}\n".format("\t".join([f"seq{x + 1:0{n_pad}}" for x, _ in enumerate(seq_list)]))
         for r in range(results.shape[0]):
-            out += f"seq #{r + 1}\t"
+            out += f"seq{r + 1:0{n_pad}}\t"
             out += "\t".join([f"{int(x)}" for x in results[r, :]]) + "\n"
 
         self.pte_distances_results.setPlainText(out)
-
 
     def needleman_wunsch_identity(self):
         """
@@ -723,6 +742,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         seq_list = [x.strip() for x in self.pte_behav_strings.toPlainText().split("\n") if x.strip()]
+        n_pad = int(math.log10(len(seq_list))) + 1
 
         if self.le_behaviors_separator.text():
             seq_list = [x.split(self.le_behaviors_separator.text()) for x in seq_list]
@@ -732,13 +752,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # display results
         out = "Needleman-Wunsch identities:\n"
         # header
-        out += "\t{}\n".format("\t".join([f"seq #{x + 1}" for x, _ in enumerate(seq_list)]))
+        out += "\t{}\n".format("\t".join([f"seq{x + 1:0{n_pad}}" for x, _ in enumerate(seq_list)]))
         for r in range(results.shape[0]):
-            out += f"seq #{r + 1}\t"
+            out += f"seq{r + 1:0{n_pad}}\t"
             out += "\t".join([f"{x:.2f}" for x in results[r, :]]) + "\n"
 
         self.pte_distances_results.setPlainText(out)
-
 
     def save_distances_results(self):
         """
@@ -746,8 +765,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if self.pte_distances_results.toPlainText():
 
-            file_name, filter_ = QFileDialog().getSaveFileName(self, "Select the file to save the results", "",
-                                                               "TSV files (*.tsv);;TXT files (*.txt);;All files (*)")
+            file_name, filter_ = QFileDialog().getSaveFileName(
+                self, "Select the file to save the results", "", "TSV files (*.tsv);;TXT files (*.txt);;All files (*)"
+            )
 
             if file_name:
                 try:
@@ -771,23 +791,43 @@ def main():
 def cli():
 
     import argparse
-    parser = argparse.ArgumentParser(prog="Behatrix",
-                                     usage="\npython3 -m behatrix [options]",
-                                     description="Behatrix command line utility",
-                                     epilog="See http://www.boris.unito.it/pages/behatrix for details :-)")
+
+    parser = argparse.ArgumentParser(
+        prog="Behatrix",
+        usage="\npython3 -m behatrix [options]",
+        description="Behatrix command line utility",
+        epilog="See http://www.boris.unito.it/pages/behatrix for details :-)",
+    )
     parser.add_argument("-v", "--version", action="store_true", dest="version", help="Behatrix version")
-    parser.add_argument("-s", "--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences")
+    parser.add_argument(
+        "-s", "--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences"
+    )
     parser.add_argument("--separator", action="store", dest="separator", default="", help="Separator of behaviors")
     parser.add_argument("-o", "--output", action="store", dest="output", help="Path of output files")
     parser.add_argument("--exclusions", action="store", dest="exclusions", help="Path of file containing exclusions")
-    parser.add_argument("--n-random", action="store", dest='nrandom', help="Number of permutations", type=int, default=0)
-    parser.add_argument("--n-cpu", action="store", dest='n_cpu', help="Number of CPU to use for permutations test", type=int, default=0)
-    parser.add_argument("--block-first", action="store_true", dest='block_first', help="block first behavior during permutations test")
-    parser.add_argument("--block-last", action="store_true", dest="block_last", help="block last behavior during permutations test")
-    parser.add_argument("--no-repetition", action="store_true", dest="no_repetition", help="exclude repetitions during permutations test")
+    parser.add_argument(
+        "--n-random", action="store", dest="nrandom", help="Number of permutations", type=int, default=0
+    )
+    parser.add_argument(
+        "--n-cpu", action="store", dest="n_cpu", help="Number of CPU to use for permutations test", type=int, default=0
+    )
+    parser.add_argument(
+        "--block-first", action="store_true", dest="block_first", help="block first behavior during permutations test"
+    )
+    parser.add_argument(
+        "--block-last", action="store_true", dest="block_last", help="block last behavior during permutations test"
+    )
+    parser.add_argument(
+        "--no-repetition",
+        action="store_true",
+        dest="no_repetition",
+        help="exclude repetitions during permutations test",
+    )
     parser.add_argument("--n-gram", action="store", default=1, dest="ngram", help="n-gram value", type=int)
 
-    parser.add_argument("-q", "--quiet", action="store_true", dest="quiet", default=False, help="Do not print results on terminal")
+    parser.add_argument(
+        "-q", "--quiet", action="store_true", dest="quiet", default=False, help="Do not print results on terminal"
+    )
 
     args = parser.parse_args()
 
@@ -806,13 +846,12 @@ def cli():
             print(f"{args.sequences} is not a file\n")
             sys.exit()
 
-
     with open(args.sequences) as f_in:
         behav_str = f_in.read()
 
-    (return_code, sequences, unique_transitions, nodes, starting_nodes, tot_nodes, tot_trans,
-     tot_trans_after_node, behaviours, ngrams_freq) = behatrix_functions.behav_strings_stats(
-         behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram)
+        return_code, results = behatrix_functions.behavioral_sequence_analysis(
+            behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram
+        )
 
     if args.nrandom:
         nrandom = args.nrandom
@@ -831,7 +870,7 @@ def cli():
         else:
             exclusion_str = ""
 
-        result = behatrix_functions.check_exclusion_list(exclusion_str, sequences)
+        result = behatrix_functions.check_exclusion_list(exclusion_str, results["sequences"])
         if not result["error_code"]:
             exclusion_list = result["exclusion_list"]
         else:
@@ -841,53 +880,54 @@ def cli():
         block_first = 1 if args.block_first else 0
         block_last = 1 if args.block_last else 0
 
-
     if not args.quiet:
         sep = "\n"
-        print(f"\nNumber of sequences: {len(sequences)}")
+        print(f"\nNumber of sequences: {len(results['sequences'])}")
 
-        print(f"\nBehaviours list:\n================\n{sep.join(behaviours)}\n")
+        print(f"\nBehaviours list:\n================\n{sep.join(results['behaviours'])}\n")
 
         print("Statistics\n==========")
-        print(f'Number of different behaviours: {len(behaviours)}')
-        print(f'Total number of behaviours: {tot_nodes}')
-        print(f'Number of different transitions: {len(unique_transitions)}')
-        print(f'Total number of transitions: {tot_trans}')
+        print(f"Number of different behaviours: {len(results['behaviours'])}")
+        print(f"Total number of behaviours: {results['tot_nodes']}")
+        print(f"Number of different transitions: {len(results['transitions'])}")
+        print(f"Total number of transitions: {results['tot_trans']}")
 
-        print('\nFrequencies of behaviors:\n=======================')
+        print("\nFrequencies of behaviors:\n=======================")
 
-        for behaviour in sorted(behaviours):
+        for behaviour in sorted(results["behaviours"]):
             countBehaviour = 0
-            for seq in sequences:
+            for seq in results["sequences"]:
                 countBehaviour += seq.count(behaviour)
 
-            print(f"{behaviour}\t{countBehaviour / tot_nodes:.3f}\t{countBehaviour} / {tot_nodes}")
+            print(
+                f"{behaviour}\t{countBehaviour / results['tot_nodes']:.3f}\t{countBehaviour} / {results['tot_nodes']}"
+            )
 
         # n-grams
         if args.ngram > 1:
             print(f"\nFrequencies of {args.ngram}-grams:\n=======================")
-            print(ngrams_freq)
+            print(results["ngrams_freq"])
 
-    observed_matrix = behatrix_functions.create_observed_transition_matrix(sequences, behaviours)
+    observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], results["behaviours"])
 
     if not args.quiet:
         print("\nObserved transition matrix:\n===========================\n{}".format(observed_matrix))
 
     if args.output:
-        file_name = f'{args.output}.observed_transitions.tsv'
+        file_name = f"{args.output}.observed_transitions.tsv"
     else:
-        file_name = f'{args.sequences}.observed_transitions.tsv'
+        file_name = f"{args.sequences}.observed_transitions.tsv"
 
-    np.savetxt(file_name, observed_matrix, fmt='%d', delimiter='\t')
+    np.savetxt(file_name, observed_matrix, fmt="%d", delimiter="\t")
 
     with open(file_name, mode="r", encoding="utf-8") as f_in:
         rows = f_in.readlines()
 
     with open(file_name, mode="w", encoding="utf-8") as f_out:
-        f_out.write('\t' + '\t'.join(behaviours) + '\n')
+        f_out.write("\t" + "\t".join(results["behaviours"]) + "\n")
         c = 0
         for row in rows:
-            f_out.write((behaviours)[c] + '\t' + row)
+            f_out.write((results["behaviours"])[c] + "\t" + row)
             c += 1
 
     # check if permutations test required
@@ -902,7 +942,7 @@ def cli():
             else:
                 num_proc = num_available_proc - 1
 
-        results = np.zeros((len(behaviours), len(behaviours)))
+        results = np.zeros((len(results["behaviours"]), len(results["behaviours"])))
         with concurrent.futures.ProcessPoolExecutor() as executor:
             lst = []
             n_required_randomizations = 0
@@ -913,14 +953,19 @@ def cli():
                 else:
                     n_random_by_proc = nrandom - n_required_randomizations
 
-                lst.append(executor.submit(behatrix_functions.permutations_test,
-                                           n_random_by_proc,
-                                           sequences, behaviours,
-                                           exclusion_list,
-                                           block_first,
-                                           block_last,
-                                           observed_matrix,
-                                           args.no_repetition))
+                lst.append(
+                    executor.submit(
+                        behatrix_functions.permutations_test,
+                        n_random_by_proc,
+                        results["sequences"],
+                        results["behaviours"],
+                        exclusion_list,
+                        block_first,
+                        block_last,
+                        observed_matrix,
+                        args.no_repetition,
+                    )
+                )
 
                 n_required_randomizations += n_random_by_proc
 
@@ -942,16 +987,16 @@ def cli():
         else:
             file_name = f"{args.sequences}.p-values.{nrandom}.tsv"
 
-        np.savetxt(file_name, results / nrandom, fmt='%f', delimiter='\t')
+        np.savetxt(file_name, results / nrandom, fmt="%f", delimiter="\t")
 
         try:
             with open(file_name, mode="r", encoding="utf-8") as f:
                 rows = f.readlines()
-            with open(file_name, mode='w', encoding="utf-8") as f:
-                f.write("\t" + "\t".join(list(behaviours)) + "\n")
+            with open(file_name, mode="w", encoding="utf-8") as f:
+                f.write("\t" + "\t".join(list(results["behaviours"])) + "\n")
                 c = 0
                 for row in rows:
-                    f.write((behaviours)[c] + "\t" + row)
+                    f.write((results["behaviours"])[c] + "\t" + row)
                     c += 1
         except Exception:
             print(f"Error during creation of file: {file_name}")

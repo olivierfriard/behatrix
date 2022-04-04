@@ -2,7 +2,7 @@
 Behatrix
 Behavioral sequences analysis with permutations test
 
-Copyright 2017-2021 Olivier Friard
+Copyright 2017-2022 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -29,7 +29,7 @@ import random
 import sys
 import numpy as np
 
-from behatrix import version
+from . import version
 
 SEPARATOR = "@%&£$"
 
@@ -53,11 +53,187 @@ def remove_comments(s: str) -> str:
     return "\n".join(strings_list)
 
 
-def behav_strings_stats(string: str,
-                        behaviors_separator: str="",
-                        chunk: int=0,
-                        flag_remove_repetitions: bool=False,
-                        ngram: int=1) -> (bool, list):
+def behavioral_sequence_analysis(
+    string: str, behaviors_separator: str = "", chunk: int = 0, flag_remove_repetitions: bool = False, ngram: int = 1
+):
+    """
+    Extract some information from behavioral sequences
+
+    Args:
+        string (str): behavioral sequences
+        separator (str): string to use to split sequences in behaviors
+        chunk (int): limit analysis to the chunk first characters
+        flag_remove_repetitions (bool): if true remove behaviors repetions
+        ngram (int): number of behaviors to group
+
+    Returns:
+        bool: 0 -> OK
+        dict: results
+
+    return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
+    """
+
+    # remove lines starting with #
+    string = remove_comments(string)
+
+    # check if behaviors are unique char
+    if behaviors_separator:
+        flag_one = False
+        seq_list = []
+        for seq in string.split("\n"):
+            # skip empty line
+            if not seq:
+                continue
+            seq_list.append(seq.strip().split(behaviors_separator))
+
+    else:
+        flag_one = True
+        seq_list = []
+        for seq in string.replace(" ", "").split():
+            # skip empty line
+            if not seq:
+                continue
+            seq_list.append(list(seq.strip()))
+
+    print(f"{seq_list=}")
+
+    sequences = []
+
+    d = {}
+    transitions = {}
+    nodes = {}
+    starting_nodes = {}
+
+    min_chunk_length = 1e6
+
+    not_alnum = []
+    pos_not_alnum = 0
+    line_count = 0
+
+    for seq in seq_list:
+
+        # r = list(row.strip()) if flag_one else row.strip().split(behaviors_separator)
+        r = seq
+
+        # check if repetitions
+        if flag_remove_repetitions:
+            r = [k for k, _ in itertools.groupby(r)]
+
+        if chunk:
+            r = r[0:chunk]
+
+        sequences.append(r)
+
+        line_count += 1
+
+        min_chunk_length = min(min_chunk_length, len(r))
+
+        for node in r:
+            if node in nodes:
+                nodes[node] += 1
+            else:
+                nodes[node] = 1
+
+        for i in range(len(r) - 1):
+
+            # starting node
+            if i == 0:
+                if r[i] in starting_nodes:
+                    starting_nodes[r[i]] += 1
+                else:
+                    starting_nodes[r[i]] = 1
+
+            """
+            if r[i] + SEPARATOR + r[i + 1] in d:
+                d[r[i] + SEPARATOR + r[i + 1]] += 1
+            else:
+                d[r[i] + SEPARATOR + r[i + 1]] = 1
+            """
+
+            if (r[i], r[i + 1]) in transitions:
+                transitions[(r[i], r[i + 1])] += 1
+            else:
+                transitions[(r[i], r[i + 1])] = 1
+
+    # total number of transitions
+    tot_trans = 0
+    for transition in transitions:
+        tot_trans += transitions[transition]
+
+    # number of transitions after behavior
+    tot_trans_after_node = {}
+
+    for transition in transitions:
+
+        if transition[0] in tot_trans_after_node:
+            tot_trans_after_node[transition[0]] += transitions[transition]
+        else:
+            tot_trans_after_node[transition[0]] = transitions[transition]
+
+    tot_nodes = 0
+    for node in nodes:
+        tot_nodes += nodes[node]
+
+    behaviours = []
+
+    # extract unique behaviors
+    for seq in sequences:
+        for c in seq:
+            if c not in behaviours:
+                behaviours.append(c)
+
+    behaviours.sort()
+
+    out_ngrams = ""
+
+    if ngram > 1:
+        tot_ngrams, uniq_ngrams = [], []
+        for sequence in sequences:
+            tot_ngrams.extend(
+                [
+                    tuple(sequence[i : i + ngram])
+                    for i, _ in enumerate(sequence)
+                    if len(sequence[i : i + ngram]) == ngram
+                ]
+            )
+
+        uniq_ngrams = list(dict.fromkeys(tot_ngrams))
+
+        for element in sorted(uniq_ngrams):
+
+            ngram_count = sum(
+                [
+                    [
+                        tuple(sequence[i : i + ngram])
+                        for i, _ in enumerate(sequence)
+                        if len(sequence[i : i + ngram]) == ngram
+                    ].count(element)
+                    for sequence in sequences
+                ]
+            )
+
+            out_ngrams += (
+                f"{behaviors_separator.join(element)}\t"
+                f"{ngram_count / len(tot_ngrams):.3f}\t"
+                f"{ngram_count} / {len(tot_ngrams)}\n"
+            )
+
+    return 0, {
+        "sequences": sequences,
+        "transitions": transitions,
+        "nodes": nodes,
+        "starting_nodes": starting_nodes,
+        "tot_nodes": tot_nodes,
+        "tot_trans": tot_trans,
+        "tot_trans_after_node": tot_trans_after_node,
+        "behaviours": behaviours,
+        "out_ngrams": out_ngrams,
+    }
+
+
+def behav_strings_stats(
+    string: str, behaviors_separator: str = "", chunk: int = 0, flag_remove_repetitions: bool = False, ngram: int = 1
+):
     """
     extract some information from behavioral sequences
 
@@ -80,7 +256,7 @@ def behav_strings_stats(string: str,
 
     # check if behaviors are unique char
     if behaviors_separator:
-        rows = string.split("\n")   # split text in list
+        rows = string.split("\n")  # split text in list
         flagOne = False
     else:
         rows = string.replace(" ", "").split()
@@ -176,16 +352,20 @@ def behav_strings_stats(string: str,
 
     out_ngrams = ""
 
-    print(sequences)
-
     if ngram > 1:
         tot_ngrams, uniq_ngrams = [], []
         for sequence in sequences:
-            tot_ngrams.extend([tuple(sequence[i:i + ngram]) for i, _ in enumerate(sequence) if len(sequence[i:i + ngram]) == ngram])
+            tot_ngrams.extend(
+                [
+                    tuple(sequence[i : i + ngram])
+                    for i, _ in enumerate(sequence)
+                    if len(sequence[i : i + ngram]) == ngram
+                ]
+            )
 
         uniq_ngrams = list(dict.fromkeys(tot_ngrams))
 
-        '''
+        """
         tot_ngrams, uniq_ngrams = [], []
         for sequence in sequences:
             for idx, behavior in enumerate(sequence):
@@ -198,21 +378,27 @@ def behav_strings_stats(string: str,
                         uniq_ngrams.append(n)
                 except Exception:
                     pass
-        '''
-
-        print("tot_ngrams", tot_ngrams)
-        print("uniq_ngrams", uniq_ngrams)
+        """
 
         for element in sorted(uniq_ngrams):
 
-            #ngram_count = sum([behaviors_separator.join(sequence).count(behaviors_separator.join(element)) for sequence in sequences])
-            print(element, [tuple(sequence[i:i + ngram]) for i, _ in enumerate(sequence) if len(sequence[i:i + ngram]) == ngram])
-            ngram_count = sum([[tuple(sequence[i:i + ngram]) for i, _ in enumerate(sequence) if len(sequence[i:i + ngram]) == ngram].count(element) for sequence in sequences])
+            # ngram_count = sum([behaviors_separator.join(sequence).count(behaviors_separator.join(element)) for sequence in sequences])
+            ngram_count = sum(
+                [
+                    [
+                        tuple(sequence[i : i + ngram])
+                        for i, _ in enumerate(sequence)
+                        if len(sequence[i : i + ngram]) == ngram
+                    ].count(element)
+                    for sequence in sequences
+                ]
+            )
 
-            out_ngrams += (f"{behaviors_separator.join(element)}\t"
-                           f"{ngram_count / len(tot_ngrams):.3f}\t"
-                           f"{ngram_count} / {len(tot_ngrams)}\n"
-                          )
+            out_ngrams += (
+                f"{behaviors_separator.join(element)}\t"
+                f"{ngram_count / len(tot_ngrams):.3f}\t"
+                f"{ngram_count} / {len(tot_ngrams)}\n"
+            )
 
     return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours, out_ngrams
 
@@ -255,134 +441,85 @@ def check_exclusion_list(exclusion_str, sequences, behaviors_separator=""):
         for seq in sequences:
             for i in range(len(seq) - 1):
                 if seq[i] in exclusion_list and seq[i + 1] in exclusion_list[seq[i]]:
-                    return {"error_code": 1,
-                            "message": f"The behavioral strings contain an excluded transition: {seq[i]} -> {seq[i + 1]}",
-                            "exclusion_list": {}}
+                    return {
+                        "error_code": 1,
+                        "message": f"The behavioral sequences contain an excluded transition: {seq[i]} -> {seq[i + 1]}",
+                        "exclusion_list": {},
+                    }
 
     return {"error_code": 0, "exclusion_list": exclusion_list}
 
 
-def draw_diagram(cutoff_all,
-                 cutoff_behavior,
-                 unique_transitions,
-                 nodes,
-                 tot_nodes,
-                 tot_trans,
-                 tot_trans_after_node,
-                 starting_nodes=[],
-                 edge_label="percent_node",   # fraction_node/percent_node/percent_total
-                 transparent_background=False,
-                 include_first=True,
-                 decimals_number=3,
-                 significativity=None,
-                 behaviors=[]):
+def draw_diagram(
+    cutoff_all,
+    cutoff_behavior,
+    unique_transitions,
+    nodes,
+    tot_nodes,
+    tot_trans,
+    tot_trans_after_node,
+    starting_nodes=[],
+    edge_label="percent_node",  # fraction_node/percent_node/percent_total
+    transparent_background=False,
+    include_first=True,
+    decimals_number=3,
+    significativity=None,
+    behaviors=[],
+) -> str:
 
+    """
+    create code for GraphViz
+    return string containing graphviz code
+    """
+
+    def f_edge_label(edge_label, node1, node2, di, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1):
+
+        if edge_label == "fraction_node":
+            return f'"{node1}" -> "{node2}" [label = "  {di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
+
+        elif edge_label == "percent_node":
+            percent = (
+                round(di / tot_trans_after_node[i0] * 100, decimals_number)
+                if decimals_number
+                else round(di / tot_trans_after_node[i0] * 100)
+            )
+            return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
+
+        elif edge_label == "percent_total":
+            percent = (
+                round(di / tot_trans * 100.0, decimals_number) if decimals_number else round(di / tot_trans * 100.0)
+            )
+            return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
+
+    def width(p):
         """
-        create code for GraphViz
-        return string containing graphviz code
+        return pen width for graphviz script according the significativity
+
+        Args:
+           p (float): significativity
+
+        Returns:
+            int: pen width to be used in graphviz script
         """
 
-
-        def f_edge_label(edge_label,
-                         node1,
-                         node2,
-                         di,
-                         tot_trans_after_node_i0,
-                         tot_trans,
-                         decimals_number,
-                         pen_width=1):
-
-            if edge_label == "fraction_node":
-                return f'"{node1}" -> "{node2}" [label = "  {di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
-
-            elif edge_label == "percent_node":
-                percent = round(di / tot_trans_after_node[i0] * 100, decimals_number) if decimals_number else round(di / tot_trans_after_node[i0] * 100)
-                return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
-
-            elif edge_label == "percent_total":
-                percent = round(di / tot_trans * 100.0, decimals_number) if decimals_number else round(di / tot_trans * 100.0)
-                return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
-
-        def width(p):
-            """
-            return pen width for graphviz script according the significativity
-
-            Args:
-               p (float): significativity
-
-            Returns:
-                int: pen width to be used in graphviz script
-            """
-
-            if p <= 0.001:
-                return 6
-            elif p <= 0.005:
-                return 3
-            else:
-                return 1
-
-        if significativity is not None:
-            print(significativity)
-
-        out = 'digraph G {\n'
-
-        # make png transparent
-        if transparent_background:
-            out += 'graph [bgcolor="#ffffff00"]\n'
-
-        if cutoff_all:
-
-            for i in unique_transitions:
-
-                if unique_transitions[i] / tot_trans * 100.0 >= cutoff_all:
-
-                    i0, i1 = i.split(SEPARATOR)
-
-                    if i0 in starting_nodes:
-                        node1 = f"{i0} ({starting_nodes[i0]})"
-                    else:
-                        node1 = f"{i0}"
-
-                    if i1 in starting_nodes:
-                        node2 = f"{i1} ({starting_nodes[i1]})"
-
-                    else:
-                        node2 = f"{i1}"
-
-                    pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
-
-                    out += f_edge_label(edge_label, node1, node2, unique_transitions[i],
-                                        tot_trans_after_node[i0], tot_trans, decimals_number,
-                                        pen_width)
-
-        elif cutoff_behavior:
-
-            for i in unique_transitions:
-
-                i0, i1 = i.split(SEPARATOR)
-
-                if unique_transitions[i] / tot_trans_after_node[i0] * 100 >= cutoff_behavior:
-
-                    if i0 in starting_nodes and include_first:
-                        node1 = f"{i0} ({starting_nodes[i0]})"
-                    else:
-                        node1 = f"{i0}"
-
-                    if i1 in starting_nodes and include_first:
-                        node2 = f"{i1} ({starting_nodes[i1]})"
-
-                    else:
-                        node2 = f"{i1}"
-
-                    pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
-
-                    out += f_edge_label(edge_label, node1, node2, unique_transitions[i],
-                                        tot_trans_after_node[i0], tot_trans, decimals_number,
-                                        pen_width)
-
+        if p <= 0.001:
+            return 6
+        elif p <= 0.005:
+            return 3
         else:
+            return 1
 
-            for i in unique_transitions:
+    out = "digraph G {\n"
+
+    # make png transparent
+    if transparent_background:
+        out += 'graph [bgcolor="#ffffff00"]\n'
+
+    if cutoff_all:
+
+        for i in unique_transitions:
+
+            if unique_transitions[i] / tot_trans * 100.0 >= cutoff_all:
 
                 i0, i1 = i.split(SEPARATOR)
 
@@ -397,21 +534,277 @@ def draw_diagram(cutoff_all,
                 else:
                     node2 = f"{i1}"
 
-                pen_width = width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
+                pen_width = (
+                    width(significativity[behaviors.index(i0), behaviors.index(i1)])
+                    if significativity is not None
+                    else 1
+                )
 
-                out += f_edge_label(edge_label,
-                                    node1,
-                                    node2,
-                                    unique_transitions[i],
-                                    tot_trans_after_node[i0],
-                                    tot_trans,
-                                    decimals_number,
-                                    pen_width)
+                out += f_edge_label(
+                    edge_label,
+                    node1,
+                    node2,
+                    unique_transitions[i],
+                    tot_trans_after_node[i0],
+                    tot_trans,
+                    decimals_number,
+                    pen_width,
+                )
 
-        out += '}\n'
+    elif cutoff_behavior:
 
-        print(out)
-        return out
+        for i in unique_transitions:
+
+            i0, i1 = i.split(SEPARATOR)
+
+            if unique_transitions[i] / tot_trans_after_node[i0] * 100 >= cutoff_behavior:
+
+                if i0 in starting_nodes and include_first:
+                    node1 = f"{i0} ({starting_nodes[i0]})"
+                else:
+                    node1 = f"{i0}"
+
+                if i1 in starting_nodes and include_first:
+                    node2 = f"{i1} ({starting_nodes[i1]})"
+
+                else:
+                    node2 = f"{i1}"
+
+                pen_width = (
+                    width(significativity[behaviors.index(i0), behaviors.index(i1)])
+                    if significativity is not None
+                    else 1
+                )
+
+                out += f_edge_label(
+                    edge_label,
+                    node1,
+                    node2,
+                    unique_transitions[i],
+                    tot_trans_after_node[i0],
+                    tot_trans,
+                    decimals_number,
+                    pen_width,
+                )
+
+    else:
+
+        for i in unique_transitions:
+
+            i0, i1 = i.split(SEPARATOR)
+
+            if i0 in starting_nodes:
+                node1 = f"{i0} ({starting_nodes[i0]})"
+            else:
+                node1 = f"{i0}"
+
+            if i1 in starting_nodes:
+                node2 = f"{i1} ({starting_nodes[i1]})"
+
+            else:
+                node2 = f"{i1}"
+
+            pen_width = (
+                width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
+            )
+
+            out += f_edge_label(
+                edge_label,
+                node1,
+                node2,
+                unique_transitions[i],
+                tot_trans_after_node[i0],
+                tot_trans,
+                decimals_number,
+                pen_width,
+            )
+
+    out += "}\n"
+
+    return out
+
+
+def draw_diagram2(
+    cutoff_all,
+    cutoff_behavior,
+    unique_transitions,
+    nodes,
+    tot_nodes,
+    tot_trans,
+    tot_trans_after_node,
+    starting_nodes=[],
+    edge_label="percent_node",  # fraction_node/percent_node/percent_total
+    transparent_background=False,
+    include_first=True,
+    decimals_number=3,
+    significativity=None,
+    behaviors=[],
+) -> str:
+
+    """
+    create code for GraphViz
+    return string containing graphviz code
+    """
+
+    def f_edge_label(edge_label, node1, node2, di, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1):
+
+        if edge_label == "fraction_node":
+            return f'"{node1}" -> "{node2}" [label = "  {di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
+
+        elif edge_label == "percent_node":
+            percent = (
+                round(di / tot_trans_after_node[i0] * 100, decimals_number)
+                if decimals_number
+                else round(di / tot_trans_after_node[i0] * 100)
+            )
+            return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
+
+        elif edge_label == "percent_total":
+            percent = (
+                round(di / tot_trans * 100.0, decimals_number) if decimals_number else round(di / tot_trans * 100.0)
+            )
+            return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
+
+    def width(p: float) -> int:
+        """
+        return pen width for graphviz script according the significativity
+
+        Args:
+           p (float): significativity
+
+        Returns:
+            int: pen width to be used in graphviz script
+        """
+
+        if p <= 0.001:
+            return 6
+        elif p <= 0.005:
+            return 3
+        else:
+            return 1
+
+    out = "digraph G {\n"
+
+    # make png transparent
+    if transparent_background:
+        out += 'graph [bgcolor="#ffffff00"]\n'
+
+    out += "# node properties\n"
+    out += "\nnode []\n"
+    for node in nodes:
+        out += f'"{node}"\n'
+
+    out += "\n# edges\n"
+    if cutoff_all:
+
+        for i in unique_transitions:
+
+            if unique_transitions[i] / tot_trans * 100.0 >= cutoff_all:
+
+                i0, i1 = i.split(SEPARATOR)
+
+                if i0 in starting_nodes:
+                    node1 = f"{i0} ({starting_nodes[i0]})"
+                else:
+                    node1 = f"{i0}"
+
+                if i1 in starting_nodes:
+                    node2 = f"{i1} ({starting_nodes[i1]})"
+
+                else:
+                    node2 = f"{i1}"
+
+                pen_width = (
+                    width(significativity[behaviors.index(i0), behaviors.index(i1)])
+                    if significativity is not None
+                    else 1
+                )
+
+                out += f_edge_label(
+                    edge_label,
+                    node1,
+                    node2,
+                    unique_transitions[i],
+                    tot_trans_after_node[i0],
+                    tot_trans,
+                    decimals_number,
+                    pen_width,
+                )
+
+    elif cutoff_behavior:
+
+        for i in unique_transitions:
+
+            i0, i1 = i.split(SEPARATOR)
+
+            if unique_transitions[i] / tot_trans_after_node[i0] * 100 >= cutoff_behavior:
+
+                if i0 in starting_nodes and include_first:
+                    node1 = f"{i0} ({starting_nodes[i0]})"
+                else:
+                    node1 = f"{i0}"
+
+                if i1 in starting_nodes and include_first:
+                    node2 = f"{i1} ({starting_nodes[i1]})"
+
+                else:
+                    node2 = f"{i1}"
+
+                pen_width = (
+                    width(significativity[behaviors.index(i0), behaviors.index(i1)])
+                    if significativity is not None
+                    else 1
+                )
+
+                out += f_edge_label(
+                    edge_label,
+                    node1,
+                    node2,
+                    unique_transitions[i],
+                    tot_trans_after_node[i0],
+                    tot_trans,
+                    decimals_number,
+                    pen_width,
+                )
+
+    else:
+
+        for i in unique_transitions:
+
+            i0, i1 = i.split(SEPARATOR)
+
+            if i0 in starting_nodes:
+                node1 = f"{i0} ({starting_nodes[i0]})"
+            else:
+                node1 = f"{i0}"
+
+            if i1 in starting_nodes:
+                node2 = f"{i1} ({starting_nodes[i1]})"
+
+            else:
+                node2 = f"{i1}"
+
+            pen_width = (
+                width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
+            )
+
+            out += f_edge_label(
+                edge_label,
+                node1,
+                node2,
+                unique_transitions[i],
+                tot_trans_after_node[i0],
+                tot_trans,
+                decimals_number,
+                pen_width,
+            )
+
+    out += "\n# graph statement\n"
+    out += "graph []\n"
+
+    out += "}\n"
+
+    return out
 
 
 def create_observed_transition_matrix(sequences, behaviours):
@@ -428,14 +821,16 @@ def create_observed_transition_matrix(sequences, behaviours):
     return observed_matrix
 
 
-def permutations_test(nrandom: int,
-                      sequences,
-                      behaviours,
-                      exclusion_list,
-                      block_first,
-                      block_last,
-                      observed_matrix: np.array,
-                      no_repetition: bool=False):
+def permutations_test(
+    nrandom: int,
+    sequences,
+    behaviours,
+    exclusion_list,
+    block_first,
+    block_last,
+    observed_matrix: np.array,
+    no_repetition: bool = False,
+):
     """
     permutations test
 
@@ -452,12 +847,14 @@ def permutations_test(nrandom: int,
         risu (numpy array)
     """
 
-    def strings_permutation(space: list,
-                            sequences: list,
-                            exclusion_list: list,
-                            block_first: bool,
-                            block_last: bool,
-                            no_repetition: bool=False) -> list:
+    def strings_permutation(
+        space: list,
+        sequences: list,
+        exclusion_list: list,
+        block_first: bool,
+        block_last: bool,
+        no_repetition: bool = False,
+    ) -> list:
         """
         create permutations of sequences following exclusions list, block first/last behavior
 
@@ -468,7 +865,7 @@ def permutations_test(nrandom: int,
             block_first (bool):
 
         Returns:
-        
+
             list: permuted sequences
         """
 
@@ -484,7 +881,7 @@ def permutations_test(nrandom: int,
                 newseq = []
                 element = ""
 
-            for c in seq[int(block_first):len(seq) - int(block_last)]:
+            for c in seq[int(block_first) : len(seq) - int(block_last)]:
 
                 if element in exclusion_list:
                     lspazio3 = list(space)
@@ -507,7 +904,7 @@ def permutations_test(nrandom: int,
                     return []
 
                 # check penultimate element
-                if block_last and len(newseq) == len(seq) - 2:   # DO NOT REPEAT LAST BEHAVIOUR
+                if block_last and len(newseq) == len(seq) - 2:  # DO NOT REPEAT LAST BEHAVIOUR
 
                     while (new_element in exclusion_list) and (seq[-1] in exclusion_list[new_element]):
                         if lspazio2:
@@ -534,10 +931,9 @@ def permutations_test(nrandom: int,
 
         return perm_sequences
 
-
     space = []
     for sequence in sequences:
-        space += sequence[int(block_first):len(sequence) - int(block_last)]
+        space += sequence[int(block_first) : len(sequence) - int(block_last)]
 
     # modify exclusions list to avoid repetitions
     if no_repetition:
@@ -593,17 +989,9 @@ def levenshtein_distance(seq1: list, seq2: list) -> int:
     for x in range(1, size_x):
         for y in range(1, size_y):
             if seq1[x - 1] == seq2[y - 1]:
-                matrix[x, y] = min(
-                    matrix[x - 1, y] + 1,
-                    matrix[x - 1, y - 1],
-                    matrix[x, y - 1] + 1
-                )
+                matrix[x, y] = min(matrix[x - 1, y] + 1, matrix[x - 1, y - 1], matrix[x, y - 1] + 1)
             else:
-                matrix[x, y] = min(
-                    matrix[x - 1, y] + 1,
-                    matrix[x - 1, y - 1] + 1,
-                    matrix[x, y - 1] + 1
-                )
+                matrix[x, y] = min(matrix[x - 1, y] + 1, matrix[x - 1, y - 1] + 1, matrix[x, y - 1] + 1)
     return matrix[matrix.shape[0] - 1, matrix.shape[1] - 1]
 
 
@@ -637,14 +1025,14 @@ def needleman_wunsch_identity(seq1: list, seq2: list) -> dict:
     def match_score(alpha, beta):
         if alpha == beta:
             return match_award
-        elif alpha == '-' or beta == '-':
+        elif alpha == "-" or beta == "-":
             return gap_penalty
         else:
             return mismatch_penalty
 
     def finalize(align1, align2):
-        align1 = align1[::-1]    # reverse sequence 1
-        align2 = align2[::-1]    # reverse sequence 2
+        align1 = align1[::-1]  # reverse sequence 1
+        align2 = align2[::-1]  # reverse sequence 2
 
         i, j = 0, 0
 
@@ -659,23 +1047,18 @@ def needleman_wunsch_identity(seq1: list, seq2: list) -> dict:
                 identity = identity + 1
                 score += match_score(align1[i], align2[i])
 
-            elif align1[i] != align2[i] and align1[i] != '-' and align2[i] != '-':
+            elif align1[i] != align2[i] and align1[i] != "-" and align2[i] != "-":
                 score += match_score(align1[i], align2[i])
                 symbol.append(" ")
                 found = 0
 
-            elif align1[i] == '-' or align2[i] == '-':
+            elif align1[i] == "-" or align2[i] == "-":
                 symbol.append(" ")
                 score += gap_penalty
 
         identity = float(identity) / len(align1) * 100
 
-        return {'identity': identity,
-                'score': score,
-                "align1": align1,
-                "align2": align2,
-                "symbol": symbol}
-
+        return {"identity": identity, "score": score, "align1": align1, "align2": align2, "symbol": symbol}
 
     m, n = len(seq1), len(seq2)  # length of two sequences
 
@@ -750,19 +1133,36 @@ def needleman_wunsch_identity_seq_list(seq_list: list):
 def main():
 
     parser = argparse.ArgumentParser(description="Behatrix command line utility")
-    parser.add_argument("-v", action="store_true", dest='version', help='Behatrix version')
-    parser.add_argument("--sequences", action="store", dest='sequences', help='Path of file containing behavioral sequences')
-    parser.add_argument("--separator", action="store", dest='separator', help='Behaviors separator')
-    parser.add_argument("--output", action="store", dest='output', help='Path of output files')
-    parser.add_argument("--exclusions", action="store", dest='exclusions', help='Path of file containing exclusions')
-    parser.add_argument("--n_random", action="store", dest='nrandom', help='Number of permutations', type=int, default=0)
-    parser.add_argument("--n_cpu", action="store", dest='n_cpu', help='Number of CPU to use for permutations test', type=int, default=0)
-    parser.add_argument("--block_first", action="store_true", dest='block_first', help='block first behavior during permutations test')
-    parser.add_argument("--block_last", action="store_true", dest='block_last', help='block last behavior during permutations test')
-    parser.add_argument("--no_repetition", action="store_true", dest='no_repetition', help='exclude repetitions during permutations test')
-    parser.add_argument("--n-gram", action="store", default=1, dest='ngram', help='n-gram value', type=int)
+    parser.add_argument("-v", action="store_true", dest="version", help="Behatrix version")
+    parser.add_argument(
+        "--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences"
+    )
+    parser.add_argument("--separator", action="store", dest="separator", help="Behaviors separator")
+    parser.add_argument("--output", action="store", dest="output", help="Path of output files")
+    parser.add_argument("--exclusions", action="store", dest="exclusions", help="Path of file containing exclusions")
+    parser.add_argument(
+        "--n_random", action="store", dest="nrandom", help="Number of permutations", type=int, default=0
+    )
+    parser.add_argument(
+        "--n_cpu", action="store", dest="n_cpu", help="Number of CPU to use for permutations test", type=int, default=0
+    )
+    parser.add_argument(
+        "--block_first", action="store_true", dest="block_first", help="block first behavior during permutations test"
+    )
+    parser.add_argument(
+        "--block_last", action="store_true", dest="block_last", help="block last behavior during permutations test"
+    )
+    parser.add_argument(
+        "--no_repetition",
+        action="store_true",
+        dest="no_repetition",
+        help="exclude repetitions during permutations test",
+    )
+    parser.add_argument("--n-gram", action="store", default=1, dest="ngram", help="n-gram value", type=int)
 
-    parser.add_argument("--quiet", action="store_true", dest='quiet', default=False, help='Do not print results on terminal')
+    parser.add_argument(
+        "--quiet", action="store_true", dest="quiet", default=False, help="Do not print results on terminal"
+    )
 
     args = parser.parse_args()
 
@@ -783,13 +1183,18 @@ def main():
     with open(args.sequences) as f_in:
         behav_str = f_in.read()
 
-    (return_code, sequences,
-     unique_transitions, nodes, starting_nodes, tot_nodes,
-     tot_trans, tot_trans_after_node, behaviours, ngrams_freq) = behav_strings_stats(behav_str,
-                                                                                     behaviors_separator=args.separator,
-                                                                                     chunk=0,
-                                                                                     ngram=args.ngram)
-
+    (
+        return_code,
+        sequences,
+        unique_transitions,
+        nodes,
+        starting_nodes,
+        tot_nodes,
+        tot_trans,
+        tot_trans_after_node,
+        behaviours,
+        ngrams_freq,
+    ) = behav_strings_stats(behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram)
 
     if args.nrandom:
         nrandom = args.nrandom
@@ -818,18 +1223,17 @@ def main():
         block_first = 1 if args.block_first else 0
         block_last = 1 if args.block_last else 0
 
-
     if not args.quiet:
 
         print("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
 
         print("Statistics\n==========")
-        print(f'Number of different behaviours: {len(behaviours)}')
-        print(f'Total number of behaviours: {tot_nodes}')
-        print(f'Number of different transitions: {len(unique_transitions)}')
-        print(f'Total number of transitions: {tot_trans}')
+        print(f"Number of different behaviours: {len(behaviours)}")
+        print(f"Total number of behaviours: {tot_nodes}")
+        print(f"Number of different transitions: {len(unique_transitions)}")
+        print(f"Total number of transitions: {tot_trans}")
 
-        print('\nBehaviours frequencies:\n=======================')
+        print("\nBehaviours frequencies:\n=======================")
 
         for behaviour in sorted(behaviours):
             countBehaviour = 0
@@ -849,22 +1253,21 @@ def main():
         print("\nObserved transition matrix:\n===========================\n{}".format(observed_matrix))
 
     if args.output:
-        file_name = f'{args.output}.observed_transitions.tsv'
+        file_name = f"{args.output}.observed_transitions.tsv"
     else:
-        file_name = f'{args.sequences}.observed_transitions.tsv'
+        file_name = f"{args.sequences}.observed_transitions.tsv"
 
-    np.savetxt(file_name, observed_matrix, fmt='%d', delimiter='\t')
+    np.savetxt(file_name, observed_matrix, fmt="%d", delimiter="\t")
 
     with open(file_name, mode="r", encoding="utf-8") as f_in:
         rows = f_in.readlines()
 
     with open(file_name, mode="w", encoding="utf-8") as f_out:
-        f_out.write('\t' + '\t'.join(behaviours) + '\n')
+        f_out.write("\t" + "\t".join(behaviours) + "\n")
         c = 0
         for row in rows:
-            f_out.write((behaviours)[c] + '\t' + row)
+            f_out.write((behaviours)[c] + "\t" + row)
             c += 1
-
 
     if nrandom:
 
@@ -888,14 +1291,19 @@ def main():
                 else:
                     n_random_by_proc = nrandom - n_required_randomizations
 
-                lst.append(executor.submit(permutations_test,
-                                           n_random_by_proc,
-                                           sequences, behaviours,
-                                           exclusion_list,
-                                           block_first,
-                                           block_last,
-                                           observed_matrix,
-                                           args.no_repetition))
+                lst.append(
+                    executor.submit(
+                        permutations_test,
+                        n_random_by_proc,
+                        sequences,
+                        behaviours,
+                        exclusion_list,
+                        block_first,
+                        block_last,
+                        observed_matrix,
+                        args.no_repetition,
+                    )
+                )
 
                 n_required_randomizations += n_random_by_proc
 
@@ -907,29 +1315,28 @@ def main():
                 nb_randomization_done += l.result()[0]
                 results += l.result()[1]
 
-
         print(f"Number of permutations done: {nb_randomization_done}")
 
         if not args.quiet:
             print("\nP-values matrix:\n===========================\n{}".format(results / nrandom))
 
         if args.output:
-            file_name = '{fileName}.p-values.{nrandom}.tsv'.format(fileName=args.output, nrandom=nrandom)
+            file_name = "{fileName}.p-values.{nrandom}.tsv".format(fileName=args.output, nrandom=nrandom)
         else:
-            file_name = '{fileName}.p-values.{nrandom}.tsv'.format(fileName=args.sequences, nrandom=nrandom)
+            file_name = "{fileName}.p-values.{nrandom}.tsv".format(fileName=args.sequences, nrandom=nrandom)
 
-        np.savetxt(file_name, results / nrandom, fmt='%f', delimiter='\t')
+        np.savetxt(file_name, results / nrandom, fmt="%f", delimiter="\t")
 
-        with open(file_name, mode='r', encoding='utf-8') as f:
+        with open(file_name, mode="r", encoding="utf-8") as f:
             rows = f.readlines()
 
-        with open(file_name, mode='w', encoding='utf-8') as f:
-            f.write('\t' + '\t'.join(list(behaviours)) + '\n')
+        with open(file_name, mode="w", encoding="utf-8") as f:
+            f.write("\t" + "\t".join(list(behaviours)) + "\n")
             c = 0
             for row in rows:
                 f.write((behaviours)[c] + "\t" + row)
                 c += 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
