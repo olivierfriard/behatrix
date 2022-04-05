@@ -131,6 +131,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.permutations_finished_signal.connect(self.get_permutations_results)
 
+        self.mem_behaviours = ""
+
     def about(self):
 
         about_dialog = QMessageBox()
@@ -327,6 +329,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             chunk=0,
             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
         )
+        
 
         # type of labels
         edge_label = "percent_node"
@@ -346,7 +349,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
             return
 
-        gv_script = behatrix_functions.draw_diagram(
+        (header_out, nodes_out, edges_out, graph_out, footer_out) = behatrix_functions.draw_diagram(
             cutoff_all=self.sb_cutoff_total_transition.value(),
             cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
             unique_transitions=results["transitions"],
@@ -363,7 +366,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             behaviors=results["behaviours"],
         )
 
-        self.pte_gv_edges.setPlainText(gv_script)
+        if results["behaviours"] != self.mem_behaviours:
+            self.pte_gv_nodes.setPlainText(nodes_out)
+
+        self.pte_gv_edges.setPlainText(edges_out)
+
+        if self.pte_gv_graph.toPlainText() == "":
+            self.pte_gv_graph.setPlainText(graph_out)
+
+        self.mem_behaviours = results["behaviours"]
+
 
     def save_gv(self):
         """
@@ -427,7 +439,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if b"graphviz version" in error:
 
-                gv_script = self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                gv_script = "digraph G {\n" + \
+                    self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''") + \
+                            self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''") + \
+                                self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''") + \
+                                "}"
 
                 # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
                 if sys.platform == "win32":
@@ -440,8 +456,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()
 
+                print(cmd)
+
                 if error:
-                    print(cmd)
+
                     QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
                     return
 

@@ -270,7 +270,7 @@ def draw_diagram(
     decimals_number=3,
     significativity=None,
     behaviors=[],
-) -> str:
+) -> tuple:
 
     """
     create code for GraphViz
@@ -287,20 +287,12 @@ def draw_diagram(
             )
 
         elif edge_label == "percent_node":
-            percent = (
-                round(n_transition / tot_trans_after_node_i0 * 100, decimals_number)
-                if decimals_number
-                else round(n_transition / tot_trans_after_node_i0 * 100)
-            )
-            return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
+            percent = n_transition / tot_trans_after_node_i0 * 100
+            return f'"{node1}" -> "{node2}" [label = "  {percent:.{decimals_number}f} %" penwidth={pen_width}];\n'
 
         elif edge_label == "percent_total":
-            percent = (
-                round(n_transition / tot_trans * 100.0, decimals_number)
-                if decimals_number
-                else round(n_transition / tot_trans * 100.0)
-            )
-            return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
+            percent = n_transition / tot_trans * 100.0
+            return f'"{node1}" -> "{node2}" [label = "  {percent:.{decimals_number}f} %" penwidth={pen_width}];\n'
 
     def width(p: float) -> int:
         """
@@ -320,18 +312,14 @@ def draw_diagram(
         else:
             return 1
 
-    out = "digraph G {\n"
+    header_out = "digraph G {\n"
 
-    # make png transparent
-    if transparent_background:
-        out += 'graph [bgcolor="#ffffff00"]\n'
-
-    out += "# node properties\n"
-    out += "\nnode []\n"
+    nodes_out = "/* node properties */\n"
+    nodes_out += "\nnode []\n"
     for node in nodes:
-        out += f'"{node}"\n'
+        nodes_out += f'"{node}"\n'
 
-    out += "\n# edges\n"
+    edges_out = "\n/* edges */\n"
     if cutoff_all:
 
         for i in unique_transitions:
@@ -350,12 +338,12 @@ def draw_diagram(
                     node2 = f"{i[1]}"
 
                 pen_width = (
-                    width(significativity[behaviors.index(i0), behaviors.index(i[1])])
+                    width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
                     if significativity is not None
                     else 1
                 )
 
-                out += f_edge_label(
+                edges_out += f_edge_label(
                     edge_label,
                     node1,
                     node2,
@@ -389,7 +377,7 @@ def draw_diagram(
                     else 1
                 )
 
-                out += f_edge_label(
+                edges_out += f_edge_label(
                     edge_label,
                     node1,
                     node2,
@@ -421,7 +409,7 @@ def draw_diagram(
                 else 1
             )
 
-            out += f_edge_label(
+            edges_out += f_edge_label(
                 edge_label,
                 node1,
                 node2,
@@ -432,12 +420,17 @@ def draw_diagram(
                 pen_width,
             )
 
-    out += "\n# graph statement\n"
-    out += "graph []\n"
+    graph_out = "\n/* graph statement */\n"
 
-    out += "}\n"
+    # make png transparent
+    if transparent_background:
+        graph_out += 'graph [bgcolor="#ffffff00"]\n'
+    else:
+        graph_out += "graph []\n"
 
-    return out
+    footer_out = "}\n"
+
+    return (header_out, nodes_out, edges_out, graph_out, footer_out)
 
 
 def create_observed_transition_matrix(sequences, behaviours):

@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
@@ -493,6 +493,9 @@
                 </font>
                </property>
               </widget>
+             </item>
+             <item>
+              <widget class="QPlainTextEdit" name="pte_gv_graph"/>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_13">
