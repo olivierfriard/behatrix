@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 from . import behatrix_functions
 from . import behatrix_qrc
 from . import version
-from behatrix.behatrix_ui import Ui_MainWindow
+from .behatrix_ui import Ui_MainWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -59,8 +59,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.svg_display = QtSvg.QSvgWidget()
         self.horizontal_splitter.insertWidget(2, self.svg_display)
 
-        # self.horizontal_splitter.removeWidget(self.lb_flow_chart)
-
         self.lb_flow_chart.deleteLater()
         self.lb_flow_chart = None
 
@@ -68,26 +66,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.horizontal_splitter.setStretchFactor(1, 1)
 
         self.pte_statistics.setLineWrapMode(False)
-        self.pte_gv.setLineWrapMode(False)
+        self.pte_gv_edges.setLineWrapMode(False)
         self.pte_random.setLineWrapMode(False)
 
-        self.pb_clear_behavioral_strings.clicked.connect(self.pte_behav_strings.clear)
+        self.pb_clear_behavioral_strings.clicked.connect(self.pte_behav_seq.clear)
 
         # set to behavioral sequences tab
         self.tabWidget.setCurrentIndex(0)
 
         # connections
-        self.actionLoad_behavioral_sequences.triggered.connect(self.pbSelectStringsFilename)
+
+        self.actionLoad_behavioral_sequences.triggered.connect(self.load_file_content)
         self.actionQuit.triggered.connect(QApplication.quit)
         self.actionAbout.triggered.connect(self.about)
 
         # behavioral sequences
-        self.pb_select_behav_strings_file.clicked.connect(self.pbSelectStringsFilename)
-        self.pb_statistics.clicked.connect(self.behav_seq_statistics)
         self.pb_save_results.clicked.connect(self.save_results)
         self.pb_save_results.setVisible(False)
-        self.pb_transition_matrix.clicked.connect(self.observed_matrix)
-        self.pte_behav_strings.textChanged.connect(self.behavioral_sequences_changed)
+        self.pte_behav_seq.textChanged.connect(self.behavioral_sequences_changed)
+        self.sb_ngram.valueChanged.connect(self.behavioral_sequences_changed)
+        self.le_behaviors_separator.textChanged.connect(self.behavioral_sequences_changed)
+        self.cb_remove_repeated_behaviors.stateChanged.connect(self.behavioral_sequences_changed)
 
         # tab flow diagram
         self.pb_graphviz_script.clicked.connect(self.graphviz_script)
@@ -106,7 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_clear_excluded_transitions.clicked.connect(self.pte_excluded_transitions.clear)
         self.pb_run_permutations_test.clicked.connect(self.permutation_test)
         self.pb_save_random.clicked.connect(self.save_permutations_test_results)
-        self.pte_behav_strings.setLineWrapMode(0)
+        self.pte_behav_seq.setLineWrapMode(0)
         num_available_proc = os.cpu_count()
         self.sb_nb_cores.setMinimum(1)
         self.sb_nb_cores.setMaximum(num_available_proc)
@@ -167,18 +166,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.permutations_test_matrix = None
         self.cb_plot_significativity.setEnabled(False)
-        for w in [self.pte_statistics, self.pte_gv, self.pte_random, self.pte_distances_results]:
+        for w in [self.pte_statistics, self.pte_gv_edges, self.pte_random, self.pte_distances_results]:
             w.clear()
         # plot significativity
         self.cb_plot_significativity.setEnabled(False)
         self.cb_plot_significativity.setChecked(False)
         # test if | separator present
-        if "|" in self.pte_behav_strings.toPlainText():
+
+        """
+        if "|" in self.pte_behav_seq.toPlainText():
             self.le_behaviors_separator.setText("|")
+        """
+
+        self.behav_seq_statistics()
+
+        self.observed_matrix()
 
     def browse_dot_path(self):
         """
-        browse for dot path
+        browse for dot program path
         """
         filename = QFileDialog(self).getOpenFileName(
             self, "Select the dot program from GraphViz package", "", "All files (*)"
@@ -193,7 +199,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 QMessageBox.critical(self, "Behatrix", "The selected <b>dot</b> program is not working.<br>")
 
-    def pbSelectStringsFilename(self):
+    def load_file_content(self):
         """
         Load file content as sequences
         """
@@ -208,17 +214,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             with open(filename) as f_in:
                 behav_str = f_in.read()
 
-            self.pte_behav_strings.setPlainText(behav_str)
+            self.pte_behav_seq.setPlainText(behav_str)
 
     def behav_seq_statistics(self):
         """
         statistics about behavioral sequences
         """
 
-        if self.pte_behav_strings.toPlainText():
+        if self.pte_behav_seq.toPlainText():
 
-            return_code, results = behatrix_functions.behavioral_sequence_analysis(
-                self.pte_behav_strings.toPlainText(),
+            results = behatrix_functions.behavioral_sequence_analysis(
+                self.pte_behav_seq.toPlainText(),
                 behaviors_separator=self.le_behaviors_separator.text(),
                 chunk=0,
                 flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
@@ -227,12 +233,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             output = ""
             output += f"Number of sequences: {len(results['sequences'])}\n\n"
-            output += "Behaviours list:\n================\n{}\n".format("\n".join(results["behaviours"]))
+
             output += "\nStatistics\n==========\n"
-            output += "Number of different behaviours: {}\n".format(len(results["behaviours"]))
-            output += "Total number of behaviours: {}\n".format(results["tot_nodes"])
-            output += "Number of different transitions: {}\n".format(len(results["transitions"]))
-            output += "Total number of transitions: {}\n".format(results["tot_trans"])
+            output += f"Number of different behaviours: {len(results['behaviours'])}\n"
+            output += f"Total number of behaviours: {results['tot_nodes']}\n"
+            output += f"Number of different transitions: {len(results['transitions'])}\n"
+            output += f"Total number of transitions: {results['tot_trans']}\n"
+            output += "\nBehaviours list:\n================\n{}\n".format("\n".join(results["behaviours"]))
             output += "\nBehaviours frequencies:\n=======================\n"
 
             for behaviour in sorted(results["behaviours"]):
@@ -240,56 +247,52 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 for seq in results["sequences"]:
                     countBehaviour += seq.count(behaviour)
 
-                output += "{behaviour}\t{freq:.3f}\t{countBehaviour} / {tot_nodes}\n".format(
-                    behaviour=behaviour,
-                    freq=countBehaviour / results["tot_nodes"],
-                    countBehaviour=countBehaviour,
-                    tot_nodes=results["tot_nodes"],
-                )
+                output += f"{behaviour}\t{countBehaviour / results['tot_nodes']:.3f}\t{countBehaviour} / {results['tot_nodes']}\n"
 
             # n-grams
             if self.sb_ngram.value() > 1:
                 output += f"\nFrequencies of {self.sb_ngram.value()}-grams:\n=======================\n"
-                output += results["ngrams_freq"]
+                output += results["out_ngrams"]
 
             self.pte_statistics.setPlainText(output)
 
-            self.pb_save_results.setText("Save statistics")
+            # self.pb_save_results.setText("Save statistics")
             self.pb_save_results.setVisible(True)
-
-        else:
-            QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
 
     def save_results(self):
         """
-        save results on file (statistic or observed transitiom matrix)
+        save results on file (statistic and observed transitions matrix)
         """
-        if self.pte_statistics.toPlainText():
-            file_name = QFileDialog(self).getSaveFileName(
-                self, "Select the file to save the matrix", "", "All files (*)"
-            )[0]
-            if file_name:
-                try:
-                    with open(file_name, "w") as f_out:
-                        f_out.write(self.pte_statistics.toPlainText())
-                except Exception:
-                    QMessageBox.critical(self, "Behatrix", "Results not saved!")
-        else:
+        if self.pte_statistics.toPlainText() == "" and self.pte_observed_transitions.toPlainText() == "":
             QMessageBox.warning(self, "Behatrix", "No results to save!")
+            return
+
+        file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the matrix", "", "All files (*)")[
+            0
+        ]
+        if file_name:
+            try:
+                with open(file_name, "w") as f_out:
+                    f_out.write(self.pte_statistics.toPlainText())
+                    f_out.write("\nObserved transitions matrix\n")
+                    f_out.write("===========================\n")
+                    f_out.write("The behavior on the first column precedes the behavior on the first row\n\n")
+                    f_out.write(self.pte_observed_transitions.toPlainText())
+            except Exception:
+                QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
     def observed_matrix(self):
         """
         matrix of observed transitions
         """
 
-        return_code, results = behatrix_functions.behavioral_sequence_analysis(
-            self.pte_behav_strings.toPlainText(),
-            behaviors_separator=self.le_behaviors_separator.text(),
-            chunk=0,
-            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
-        )
-
-        if results["sequences"]:
+        if self.pte_behav_seq.toPlainText():
+            results = behatrix_functions.behavioral_sequence_analysis(
+                self.pte_behav_seq.toPlainText(),
+                behaviors_separator=self.le_behaviors_separator.text(),
+                chunk=0,
+                flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+            )
 
             observed_matrix = behatrix_functions.create_observed_transition_matrix(
                 results["sequences"], results["behaviours"]
@@ -304,25 +307,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 out += f"{results['behaviours'][r]}\t"
                 out += "\t".join([str(int(x)) for x in observed_matrix[r, :]]) + "\n"
 
-            self.pte_statistics.setPlainText(out)
+            self.pte_observed_transitions.setPlainText(out)
 
-            self.pb_save_results.setText("Save transition matrix")
+            # self.pb_save_results.setText("Save transition matrix")
             self.pb_save_results.setVisible(True)
-
-        else:
-            QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
 
     def graphviz_script(self):
         """
         generate GraphViz script
         """
 
-        if '"' in self.pte_behav_strings.toPlainText():
+        if '"' in self.pte_behav_seq.toPlainText():
             QMessageBox.critical(self, "Behatrix", 'The double quotes (") are not allowed in behaviors')
             return
 
-        return_code, results = behatrix_functions.behavioral_sequence_analysis(
-            self.pte_behav_strings.toPlainText(),
+        results = behatrix_functions.behavioral_sequence_analysis(
+            self.pte_behav_seq.toPlainText(),
             behaviors_separator=self.le_behaviors_separator.text(),
             chunk=0,
             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
@@ -346,7 +346,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
             return
 
-        gv_script = behatrix_functions.draw_diagram2(
+        gv_script = behatrix_functions.draw_diagram(
             cutoff_all=self.sb_cutoff_total_transition.value(),
             cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
             unique_transitions=results["transitions"],
@@ -360,16 +360,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             significativity=self.permutations_test_matrix
             if (self.permutations_test_matrix is not None) and (self.cb_plot_significativity.isChecked())
             else None,
-            behaviors=results["behaviors"],
+            behaviors=results["behaviours"],
         )
 
-        self.pte_gv.setPlainText(gv_script)
+        self.pte_gv_edges.setPlainText(gv_script)
 
     def save_gv(self):
         """
         save GV script to file
         """
-        if self.pte_gv.toPlainText():
+        if self.pte_gv_edges.toPlainText():
 
             file_name, filter_ = QFileDialog().getSaveFileName(
                 self,
@@ -381,13 +381,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if file_name:
                 try:
                     with open(file_name, "w") as f_out:
-                        f_out.write(self.pte_gv.toPlainText())
+                        f_out.write(self.pte_gv_edges.toPlainText())
                 except Exception:
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
     def flow_diagram(self, action: str = "show") -> str:
         """
-        generate flow diagram from pte_gv content in SVG format
+        generate flow diagram from pte_gv_edges content in SVG format
         with:
             dot program from graphviz package
             or
@@ -400,7 +400,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             str: path of diagram temp file path or "" in case of error
         """
 
-        if not self.pte_gv.toPlainText():
+        if not self.pte_gv_edges.toPlainText():
             QMessageBox.warning(self, "Behatrix", "You have to generate the GraphViz script before")
             return ""
 
@@ -421,139 +421,138 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 dot_path = "dot"
 
-                # test dot program
-                p = subprocess.Popen(f"{dot_path} -V", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                out, error = p.communicate()
+            # test dot program
+            p = subprocess.Popen(f"{dot_path} -V", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out, error = p.communicate()
 
-                if b"graphviz version" in error:
+            if b"graphviz version" in error:
 
-                    gv_script = self.pte_gv.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                gv_script = self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
 
-                    # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
-                    if sys.platform == "win32":
-                        gv_script = gv_script.replace(">", "^^^>")
-                        cmd = f"""echo {gv_script} | "{dot_path}" -Tsvg """
+                # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
+                if sys.platform == "win32":
+                    gv_script = gv_script.replace(">", "^^^>")
+                    cmd = f"""echo {gv_script} | "{dot_path}" -Tsvg """
 
-                    else:
-                        cmd = f"""echo '{gv_script}' | "{dot_path}" -Tsvg """
-
-                    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                    out, error = p.communicate()
-
-                    if error:
-                        QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
-                        return
-
-            if self.rb_vizjs.isChecked():
-
-                # test if viz.js and nodejs found
-                # script directory
-                print("sys.argv[0]", sys.argv[0])
-                print("sys.argv[0].resolve()", pathlib.Path(sys.argv[0]).resolve())
-                # print("sys.path", sys.path)
-
-                viz_path = pathlib.Path("")
-                if sys.argv[0].endswith("start_behatrix.py"):
-                    viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "viz.js"
-
-                if sys.argv[0].endswith("__main__.py"):
-                    viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "misc" / "viz.js"
-
-                print(f"viz.js path: {viz_path}")
-                if not viz_path.is_file():
-                    QMessageBox.critical(self, "Behatrix", "The viz.js file was not found!")
-                    return
-                viz_path = str(viz_path).replace("\\", "/")
-
-                # node (nodejs)
-                node_cmd_list = []
-                # embedded nodejs version (packages)
-                if sys.argv[0].endswith("__main__.py"):
-                    if sys.platform == "win32":
-                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node.exe"))
-                    if sys.platform in ["darwin", "linux"]:
-                        node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node"))
-
-                if sys.argv[0].endswith("start_behatrix.py"):
-                    if sys.platform == "win32":
-                        node_cmd_list.append(
-                            str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node.exe")
-                        )
-                    if sys.platform in ["darwin", "linux"]:
-                        node_cmd_list.append(
-                            str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node")
-                        )
-
-                # global installation of nodeJS
-                node_cmd_list.extend(["node", "/usr/local/bin/node"])
-                node_cmd_verified = ""
-                for node_cmd in node_cmd_list:
-                    p = subprocess.Popen(f"{node_cmd} -v", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                    out, error = p.communicate()
-                    if not error and out.decode("utf-8") and out.decode("utf-8")[0] == "v":
-                        node_cmd_verified = node_cmd
-                        break
-
-                if not node_cmd_verified:
-                    QMessageBox.critical(
-                        self,
-                        "Behatrix",
-                        (
-                            "The Node.js JavaScript runtime was not found!\n"
-                            "Please install it or switch to the Graphviz package"
-                        ),
-                    )
-                    return
-
-                print(f"node_cmd_verified {node_cmd_verified}")
-
-                # escape for echo and nodejs
-                gv_script_escaped = (
-                    self.pte_gv.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
-                )
-
-                js = f'var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);'
-
-                print(tempfile.gettempdir())
-                js_script_path = pathlib.Path(tempfile.gettempdir()) / pathlib.Path("behatrix_flow_diagram_script.js")
-                open(js_script_path, "w").write(js)
-
-                cmd = f"{node_cmd_verified} {js_script_path}"
-                print(f"cmd: {cmd}")
+                else:
+                    cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
                 out, error = p.communicate()
 
                 if error:
+                    print(cmd)
                     QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
                     return
-                else:
-                    self.svg_display.load(out)
 
-            if action == "show":
+        if self.rb_vizjs.isChecked():
+
+            # test if viz.js and nodejs found
+            # script directory
+            print("sys.argv[0]", sys.argv[0])
+            print("sys.argv[0].resolve()", pathlib.Path(sys.argv[0]).resolve())
+            # print("sys.path", sys.path)
+
+            viz_path = pathlib.Path("")
+            if sys.argv[0].endswith("start_behatrix.py"):
+                viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "viz.js"
+
+            if sys.argv[0].endswith("__main__.py"):
+                viz_path = pathlib.Path(sys.argv[0]).resolve().parent / "misc" / "viz.js"
+
+            print(f"viz.js path: {viz_path}")
+            if not viz_path.is_file():
+                QMessageBox.critical(self, "Behatrix", "The viz.js file was not found!")
+                return
+            viz_path = str(viz_path).replace("\\", "/")
+
+            # node (nodejs)
+            node_cmd_list = []
+            # embedded nodejs version (packages)
+            if sys.argv[0].endswith("__main__.py"):
+                if sys.platform == "win32":
+                    node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node.exe"))
+                if sys.platform in ["darwin", "linux"]:
+                    node_cmd_list.append(str(pathlib.Path(sys.argv[0]).parent / "misc" / "node"))
+
+            if sys.argv[0].endswith("start_behatrix.py"):
+                if sys.platform == "win32":
+                    node_cmd_list.append(
+                        str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node.exe")
+                    )
+                if sys.platform in ["darwin", "linux"]:
+                    node_cmd_list.append(str(pathlib.Path(sys.argv[0]).resolve().parent / "behatrix" / "misc" / "node"))
+
+            # global installation of nodeJS
+            node_cmd_list.extend(["node", "/usr/local/bin/node"])
+            node_cmd_verified = ""
+            for node_cmd in node_cmd_list:
+                p = subprocess.Popen(f"{node_cmd} -v", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                out, error = p.communicate()
+                if not error and out.decode("utf-8") and out.decode("utf-8")[0] == "v":
+                    node_cmd_verified = node_cmd
+                    break
+
+            if not node_cmd_verified:
+                QMessageBox.critical(
+                    self,
+                    "Behatrix",
+                    (
+                        "The Node.js JavaScript runtime was not found!\n"
+                        "Please install it or switch to the Graphviz package"
+                    ),
+                )
+                return
+
+            print(f"node_cmd_verified {node_cmd_verified}")
+
+            # escape for echo and nodejs
+            gv_script_escaped = (
+                self.pte_gv_edges.toPlainText().replace("\n", " ").replace('"', '\\"').replace("'", "'\\''")
+            )
+
+            js = f'var data = "{gv_script_escaped}"; var viz = require("{viz_path}"); var svg = viz.Viz(data, "svg"); console.log(svg);'
+
+            print(tempfile.gettempdir())
+            js_script_path = pathlib.Path(tempfile.gettempdir()) / pathlib.Path("behatrix_flow_diagram_script.js")
+            open(js_script_path, "w").write(js)
+
+            cmd = f"{node_cmd_verified} {js_script_path}"
+            print(f"cmd: {cmd}")
+
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+            out, error = p.communicate()
+
+            if error:
+                QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                return
+            else:
                 self.svg_display.load(out)
 
-            if action == "save":
-                file_name, filter_ = QFileDialog().getSaveFileName(
-                    self, "Select the file and format to save the flow diagram", "", "SVG files (*.svg);;All files (*)"
-                )
-                if file_name:
-                    try:
-                        with open(file_name, "w") as f_out:
-                            f_out.write(out.decode("utf-8"))
-                    except Exception:
-                        QMessageBox.critical(self, "Behatrix", "Error saving the file")
-                        return
+        if action == "show":
+            self.svg_display.load(out)
 
-                    self.svg_display.load(out)
+        if action == "save":
+            file_name, filter_ = QFileDialog().getSaveFileName(
+                self, "Select the file and format to save the flow diagram", "", "SVG files (*.svg);;All files (*)"
+            )
+            if file_name:
+                try:
+                    with open(file_name, "w") as f_out:
+                        f_out.write(out.decode("utf-8"))
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Error saving the file")
+                    return
+
+                self.svg_display.load(out)
 
     def clear_script(self):
         """
         clear script window
         """
 
-        self.pte_gv.clear()
+        self.pte_gv_edges.clear()
         self.svg_display.load(b"")
 
     def clear_diagram(self):
@@ -567,7 +566,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         save diagram
         """
-        if self.pte_gv.toPlainText():
+        if self.pte_gv_edges.toPlainText():
             file_name, filter_ = QFileDialog().getSaveFileName(
                 self,
                 "Select the file and format to save the flow diagram",
@@ -584,11 +583,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         insert repetition of same behavior in exclusions list
         """
-        return_code, results = behatrix_functions.behavioral_sequence_analysis(
-            self.pte_behav_strings.toPlainText(), behaviors_separator=self.le_behaviors_separator.text(), chunk=0
+        results = behatrix_functions.behavioral_sequence_analysis(
+            self.pte_behav_seq.toPlainText(), behaviors_separator=self.le_behaviors_separator.text(), chunk=0
         )
         self.pte_excluded_transitions.insertPlainText("\n")
-        for behavior in results["behaviors"]:
+        for behavior in results["behaviours"]:
             self.pte_excluded_transitions.insertPlainText(f"{behavior}:{behavior}\n")
 
     def get_permutations_results(self, results):
@@ -628,12 +627,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.permutations_finished_signal.emit(results)
 
     def permutation_test(self):
+        """
+        execute permutations test
+        """
 
-        if self.pte_behav_strings.toPlainText():
+        if self.pte_behav_seq.toPlainText():
             self.pte_random.clear()
 
-            return_code, results = behatrix_functions.behavioral_sequence_analysis(
-                self.pte_behav_strings.toPlainText(),
+            results = behatrix_functions.behavioral_sequence_analysis(
+                self.pte_behav_seq.toPlainText(),
                 behaviors_separator=self.le_behaviors_separator.text(),
                 chunk=0,
                 flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
@@ -727,7 +729,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Levenshtein distances between behavioral sequences
         """
 
-        seq_list = [x.strip() for x in self.pte_behav_strings.toPlainText().split("\n") if x.strip()]
+        seq_list = [x.strip() for x in self.pte_behav_seq.toPlainText().split("\n") if x.strip()]
         n_pad = int(math.log10(len(seq_list))) + 1
 
         if self.le_behaviors_separator.text():
@@ -750,7 +752,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Needleman-Wunsch identities between behavioral sequences
         """
 
-        seq_list = [x.strip() for x in self.pte_behav_strings.toPlainText().split("\n") if x.strip()]
+        seq_list = [x.strip() for x in self.pte_behav_seq.toPlainText().split("\n") if x.strip()]
         n_pad = int(math.log10(len(seq_list))) + 1
 
         if self.le_behaviors_separator.text():
@@ -791,7 +793,6 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Behatrix")
     mainWindow = MainWindow()
-
     mainWindow.show()
     mainWindow.raise_()
     sys.exit(app.exec_())
@@ -858,7 +859,7 @@ def cli():
     with open(args.sequences) as f_in:
         behav_str = f_in.read()
 
-        return_code, results = behatrix_functions.behavioral_sequence_analysis(
+        results = behatrix_functions.behavioral_sequence_analysis(
             behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram
         )
 
@@ -880,11 +881,11 @@ def cli():
             exclusion_str = ""
 
         result = behatrix_functions.check_exclusion_list(exclusion_str, results["sequences"])
-        if not result["error_code"]:
-            exclusion_list = result["exclusion_list"]
-        else:
+        if result["error_code"]:
             print(result["message"])
             return
+
+        exclusion_list = result["exclusion_list"]
 
         block_first = 1 if args.block_first else 0
         block_last = 1 if args.block_last else 0
@@ -1010,7 +1011,8 @@ def cli():
         matrix = permutations_results / nrandom
 
         if not args.quiet:
-            print("\nP-value matrix\n-----------------\n")
+            print("\nP-value matrix")
+            print("--------------\n")
             behaviours_str = "\t".join(list(results["behaviours"]))
             out = f"\t{behaviours_str}\n"
             for r in range(matrix.shape[0]):

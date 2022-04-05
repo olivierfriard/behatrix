@@ -65,10 +65,8 @@ def behavioral_sequence_analysis(
         ngram (int): number of behaviors to group
 
     Returns:
-        bool: 0 -> OK
         dict: results
 
-    return 0, sequences, d, nodes, starting_nodes, tot_nodes, tot_trans, tot_trans_after_node, behaviours
     """
 
     # remove lines starting with #
@@ -197,7 +195,7 @@ def behavioral_sequence_analysis(
                 f"{ngram_count} / {len(tot_ngrams)}\n"
             )
 
-    return 0, {
+    return {
         "sequences": sequences,
         "transitions": transitions,
         "nodes": nodes,
@@ -257,7 +255,7 @@ def check_exclusion_list(exclusion_str, sequences, behaviors_separator=""):
     return {"error_code": 0, "exclusion_list": exclusion_list}
 
 
-def draw_diagram2(
+def draw_diagram(
     cutoff_all,
     cutoff_behavior,
     unique_transitions,
@@ -279,22 +277,28 @@ def draw_diagram2(
     return string containing graphviz code
     """
 
-    def f_edge_label(edge_label, node1, node2, di, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1):
+    def f_edge_label(
+        edge_label, node1, node2, n_transition, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1
+    ):
 
         if edge_label == "fraction_node":
-            return f'"{node1}" -> "{node2}" [label = "  {di}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
+            return (
+                f'"{node1}" -> "{node2}" [label = "  {n_transition}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
+            )
 
         elif edge_label == "percent_node":
             percent = (
-                round(di / tot_trans_after_node[i0] * 100, decimals_number)
+                round(n_transition / tot_trans_after_node_i0 * 100, decimals_number)
                 if decimals_number
-                else round(di / tot_trans_after_node[i0] * 100)
+                else round(n_transition / tot_trans_after_node_i0 * 100)
             )
             return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
 
         elif edge_label == "percent_total":
             percent = (
-                round(di / tot_trans * 100.0, decimals_number) if decimals_number else round(di / tot_trans * 100.0)
+                round(n_transition / tot_trans * 100.0, decimals_number)
+                if decimals_number
+                else round(n_transition / tot_trans * 100.0)
             )
             return f'"{node1}" -> "{node2}" [label = "  {percent} %" penwidth={pen_width}];\n'
 
