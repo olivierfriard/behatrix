@@ -31,8 +31,6 @@ import numpy as np
 
 from . import version
 
-SEPARATOR = "@%&£$"
-
 
 def remove_comments(s: str) -> str:
     """
@@ -78,7 +76,6 @@ def behavioral_sequence_analysis(
 
     # check if behaviors are unique char
     if behaviors_separator:
-        flag_one = False
         seq_list = []
         for seq in string.split("\n"):
             # skip empty line
@@ -87,7 +84,6 @@ def behavioral_sequence_analysis(
             seq_list.append(seq.strip().split(behaviors_separator))
 
     else:
-        flag_one = True
         seq_list = []
         for seq in string.replace(" ", "").split():
             # skip empty line
@@ -95,26 +91,16 @@ def behavioral_sequence_analysis(
                 continue
             seq_list.append(list(seq.strip()))
 
-    print(f"{seq_list=}")
-
     sequences = []
-
-    d = {}
     transitions = {}
     nodes = {}
     starting_nodes = {}
-
     min_chunk_length = 1e6
-
-    not_alnum = []
-    pos_not_alnum = 0
     line_count = 0
 
     for seq in seq_list:
 
-        # r = list(row.strip()) if flag_one else row.strip().split(behaviors_separator)
         r = seq
-
         # check if repetitions
         if flag_remove_repetitions:
             r = [k for k, _ in itertools.groupby(r)]
@@ -142,13 +128,6 @@ def behavioral_sequence_analysis(
                     starting_nodes[r[i]] += 1
                 else:
                     starting_nodes[r[i]] = 1
-
-            """
-            if r[i] + SEPARATOR + r[i + 1] in d:
-                d[r[i] + SEPARATOR + r[i + 1]] += 1
-            else:
-                d[r[i] + SEPARATOR + r[i + 1]] = 1
-            """
 
             if (r[i], r[i + 1]) in transitions:
                 transitions[(r[i], r[i + 1])] += 1
@@ -265,7 +244,7 @@ def check_exclusion_list(exclusion_str, sequences, behaviors_separator=""):
                     else:
                         exclusion_list[s1] += list(s2)
 
-        # test if behavioral strings do not contain an excluded transition
+        # test if behavioral sequences do not contain an excluded transition
         for seq in sequences:
             for i in range(len(seq) - 1):
                 if seq[i] in exclusion_list and seq[i + 1] in exclusion_list[seq[i]]:
@@ -355,21 +334,19 @@ def draw_diagram2(
 
             if unique_transitions[i] / tot_trans * 100.0 >= cutoff_all:
 
-                i0, i1 = i.split(SEPARATOR)
-
-                if i0 in starting_nodes:
-                    node1 = f"{i0} ({starting_nodes[i0]})"
+                if i[0] in starting_nodes:
+                    node1 = f"{i[0]} ({starting_nodes[i[0]]})"
                 else:
-                    node1 = f"{i0}"
+                    node1 = f"{i[0]}"
 
-                if i1 in starting_nodes:
-                    node2 = f"{i1} ({starting_nodes[i1]})"
+                if i[1] in starting_nodes:
+                    node2 = f"{i[1]} ({starting_nodes[i[1]]})"
 
                 else:
-                    node2 = f"{i1}"
+                    node2 = f"{i[1]}"
 
                 pen_width = (
-                    width(significativity[behaviors.index(i0), behaviors.index(i1)])
+                    width(significativity[behaviors.index(i0), behaviors.index(i[1])])
                     if significativity is not None
                     else 1
                 )
@@ -379,7 +356,7 @@ def draw_diagram2(
                     node1,
                     node2,
                     unique_transitions[i],
-                    tot_trans_after_node[i0],
+                    tot_trans_after_node[i[0]],
                     tot_trans,
                     decimals_number,
                     pen_width,
@@ -389,23 +366,21 @@ def draw_diagram2(
 
         for i in unique_transitions:
 
-            i0, i1 = i.split(SEPARATOR)
+            if unique_transitions[i] / tot_trans_after_node[i[0]] * 100 >= cutoff_behavior:
 
-            if unique_transitions[i] / tot_trans_after_node[i0] * 100 >= cutoff_behavior:
-
-                if i0 in starting_nodes and include_first:
-                    node1 = f"{i0} ({starting_nodes[i0]})"
+                if i[0] in starting_nodes and include_first:
+                    node1 = f"{i[0]} ({starting_nodes[i[0]]})"
                 else:
-                    node1 = f"{i0}"
+                    node1 = f"{i[0]}"
 
-                if i1 in starting_nodes and include_first:
-                    node2 = f"{i1} ({starting_nodes[i1]})"
+                if i[1] in starting_nodes and include_first:
+                    node2 = f"{i[1]} ({starting_nodes[i[1]]})"
 
                 else:
-                    node2 = f"{i1}"
+                    node2 = f"{i[1]}"
 
                 pen_width = (
-                    width(significativity[behaviors.index(i0), behaviors.index(i1)])
+                    width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
                     if significativity is not None
                     else 1
                 )
@@ -415,7 +390,7 @@ def draw_diagram2(
                     node1,
                     node2,
                     unique_transitions[i],
-                    tot_trans_after_node[i0],
+                    tot_trans_after_node[i[0]],
                     tot_trans,
                     decimals_number,
                     pen_width,
@@ -425,21 +400,21 @@ def draw_diagram2(
 
         for i in unique_transitions:
 
-            i0, i1 = i.split(SEPARATOR)
-
-            if i0 in starting_nodes:
-                node1 = f"{i0} ({starting_nodes[i0]})"
+            if i[0] in starting_nodes:
+                node1 = f"{i[0]} ({starting_nodes[i[0]]})"
             else:
-                node1 = f"{i0}"
+                node1 = f"{i[0]}"
 
-            if i1 in starting_nodes:
-                node2 = f"{i1} ({starting_nodes[i1]})"
+            if i[1] in starting_nodes:
+                node2 = f"{i[1]} ({starting_nodes[i[1]]})"
 
             else:
-                node2 = f"{i1}"
+                node2 = f"{i[1]}"
 
             pen_width = (
-                width(significativity[behaviors.index(i0), behaviors.index(i1)]) if significativity is not None else 1
+                width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
+                if significativity is not None
+                else 1
             )
 
             out += f_edge_label(
@@ -447,7 +422,7 @@ def draw_diagram2(
                 node1,
                 node2,
                 unique_transitions[i],
-                tot_trans_after_node[i0],
+                tot_trans_after_node[i[0]],
                 tot_trans,
                 decimals_number,
                 pen_width,
@@ -784,6 +759,7 @@ def needleman_wunsch_identity_seq_list(seq_list: list):
     return results
 
 
+"""
 def main():
 
     parser = argparse.ArgumentParser(description="Behatrix command line utility")
@@ -870,7 +846,7 @@ def main():
 
     if not args.quiet:
 
-        print("\nBehaviours list:\n================\n{}\n".format("\n".join(behaviours)))
+        print("\nBehaviours list:\n================\n{}\n".format("\n".join(results["behaviours"])))
 
         print("Statistics\n==========")
         print(f"Number of different behaviours: {len(behaviours)}")
@@ -882,7 +858,7 @@ def main():
 
         for behaviour in sorted(behaviours):
             countBehaviour = 0
-            for seq in sequences:
+            for seq in results["sequences"]:
                 countBehaviour += seq.count(behaviour)
 
             print(f"{behaviour}\t{countBehaviour / tot_nodes:.3f}\t{countBehaviour} / {tot_nodes}")
@@ -981,7 +957,9 @@ def main():
             for row in rows:
                 f.write((behaviours)[c] + "\t" + row)
                 c += 1
+"""
 
-
+"""
 if __name__ == "__main__":
     main()
+"""
