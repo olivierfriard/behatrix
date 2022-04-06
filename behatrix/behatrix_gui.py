@@ -69,7 +69,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pte_gv_edges.setLineWrapMode(False)
         self.pte_random.setLineWrapMode(False)
 
-        self.pb_clear_behavioral_strings.clicked.connect(self.pte_behav_seq.clear)
+        self.pb_clear_behavioral_strings.clicked.connect(self.clear_sequences)
 
         # set to behavioral sequences tab
         self.tabWidget.setCurrentIndex(0)
@@ -160,6 +160,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         settings = QSettings(str(pathlib.Path(os.path.expanduser("~")) / ".behatrix"), QSettings.IniFormat)
 
         settings.setValue("dot_prog_path", self.le_dot_path.text())
+
+    def clear_sequences(self):
+        """
+        delete behavioral sequences
+        """
+        self.pte_behav_seq.clear()
+        self.pte_statistics.clear()
+        self.pte_observed_transitions.clear()
 
     def behavioral_sequences_changed(self):
         """
@@ -329,7 +337,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             chunk=0,
             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
         )
-        
 
         # type of labels
         edge_label = "percent_node"
@@ -375,7 +382,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pte_gv_graph.setPlainText(graph_out)
 
         self.mem_behaviours = results["behaviours"]
-
 
     def save_gv(self):
         """
@@ -439,11 +445,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if b"graphviz version" in error:
 
-                gv_script = "digraph G {\n" + \
-                    self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''") + \
-                            self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''") + \
-                                self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''") + \
-                                "}"
+                gv_script = (
+                    "digraph G {\n"
+                    + self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                    + self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                    + self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                    + "}"
+                )
 
                 # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
                 if sys.platform == "win32":
@@ -451,7 +459,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     cmd = f"""echo {gv_script} | "{dot_path}" -Tsvg """
 
                 else:
-                    cmd = f'''echo '{gv_script}' | "{dot_path}" -Tsvg '''
+                    cmd = f"""echo '{gv_script}' | "{dot_path}" -Tsvg """
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()
