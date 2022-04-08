@@ -57,13 +57,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("Behatrix - Behavioral Sequences Analysis")
 
         self.svg_display = QtSvg.QSvgWidget()
-        self.horizontal_splitter.insertWidget(2, self.svg_display)
+        self.script_diagram_splitter.insertWidget(2, self.svg_display)
 
         self.lb_flow_chart.deleteLater()
         self.lb_flow_chart = None
 
-        self.vertical_splitter.setStretchFactor(1, 10)
-        self.horizontal_splitter.setStretchFactor(1, 1)
+        # self.vertical_splitter.setStretchFactor(1, 10)
+        self.script_diagram_splitter.setStretchFactor(1, 1)
 
         self.pte_statistics.setLineWrapMode(False)
         self.pte_gv_edges.setLineWrapMode(False)
@@ -89,7 +89,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cb_remove_repeated_behaviors.stateChanged.connect(self.behavioral_sequences_changed)
 
         # tab flow diagram
-        self.pb_graphviz_script.clicked.connect(self.graphviz_script)
+        self.rb_percent_after_behav.toggled.connect(self.flow_diagram_parameters_changed)
+        self.sb_cutoff_transition_after_behav.valueChanged.connect(self.flow_diagram_parameters_changed)
+        self.rb_percent_total_transitions.toggled.connect(self.flow_diagram_parameters_changed)
+        self.sb_cutoff_total_transition.valueChanged.connect(self.flow_diagram_parameters_changed)
+        self.sb_decimals.valueChanged.connect(self.flow_diagram_parameters_changed)
+        self.pb_graphviz_script.clicked.connect(self.flow_diagram_parameters_changed)
         self.pb_save_gv.clicked.connect(self.save_gv)
         self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram(action="show"))
         self.pb_clear_script.clicked.connect(self.clear_script)
@@ -133,7 +138,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.mem_behaviours = ""
 
+        self.check_dot_path()
+
     def about(self):
+        """
+        Display the about dialog
+        """
 
         about_dialog = QMessageBox()
         about_dialog.setIconPixmap(QPixmap(":/logo"))
@@ -156,14 +166,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         _ = about_dialog.exec_()
 
+    def check_dot_path(self):
+        """
+        check if dot program is available on path
+        """
+        if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
+            process = subprocess.Popen("which dot", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        elif sys.platform.startswith("win"):
+            process = subprocess.Popen("where dot", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        else:
+            self.le_dot_path.setText(f"Platform {sys.platform} NOT found")
+            return
+        output, _ = process.communicate()
+
+        if output.decode("utf-8").strip():
+            self.le_dot_path.setText(output.decode("utf-8").strip())
+        else:
+            self.le_dot_path.setText("dot program NOT found on the path")
+
     def closeEvent(self, event):
         settings = QSettings(str(pathlib.Path(os.path.expanduser("~")) / ".behatrix"), QSettings.IniFormat)
-
         settings.setValue("dot_prog_path", self.le_dot_path.text())
 
     def clear_sequences(self):
         """
-        delete behavioral sequences
+        delete all behavioral sequences
         """
         self.pte_behav_seq.clear()
         self.pte_statistics.clear()
@@ -172,8 +199,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def behavioral_sequences_changed(self):
         """
         behavioral sequences changed by user
-        test separator for behaviors
+
+        update statistic, onserved matrix, graphviz script and flow diagram
         """
+
         self.permutations_test_matrix = None
         self.cb_plot_significativity.setEnabled(False)
         for w in [self.pte_statistics, self.pte_gv_edges, self.pte_random, self.pte_distances_results]:
@@ -192,6 +221,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.observed_matrix()
 
+        self.graphviz_script()
+
+        self.flow_diagram()
+
+    def flow_diagram_parameters_changed(self):
+        """
+        update flow diagram
+        """
+
+        self.graphviz_script()
+
+        self.flow_diagram()
+
     def browse_dot_path(self):
         """
         browse for dot program path
@@ -201,7 +243,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )[0]
         if filename:
 
-            p = subprocess.Popen('"{}" -V'.format(filename), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            p = subprocess.Popen(f'"{filename}" -V', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             _, error = p.communicate()
 
             if b"graphviz version" in error:
@@ -327,6 +369,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         generate GraphViz script
         """
 
+        if not self.pte_behav_seq.toPlainText():
+            return
+
         if '"' in self.pte_behav_seq.toPlainText():
             QMessageBox.critical(self, "Behatrix", 'The double quotes (") are not allowed in behaviors')
             return
@@ -405,7 +450,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def flow_diagram(self, action: str = "show") -> str:
         """
-        generate flow diagram from pte_gv_edges content in SVG format
+        generate flow diagram from pte_gv_nodes, pte_gv_edges and pte_gv_graph contents in SVG format
         with:
             dot program from graphviz package
             or
@@ -418,9 +463,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             str: path of diagram temp file path or "" in case of error
         """
 
-        if not self.pte_gv_edges.toPlainText():
-            QMessageBox.warning(self, "Behatrix", "You have to generate the GraphViz script before")
-            return ""
+        if not self.pte_gv_edges.toPlainText() and not self.pte_gv_nodes.toPlainText():
+            return
 
         if self.rb_graphviz.isChecked():
             # check dot path
@@ -454,7 +498,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 )
 
                 # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
-                if sys.platform == "win32":
+                if sys.platform.startswith("win"):
                     gv_script = gv_script.replace(">", "^^^>")
                     cmd = f"""echo {gv_script} | "{dot_path}" -Tsvg """
 
@@ -467,7 +511,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print(cmd)
 
                 if error:
-
                     QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
                     return
 
