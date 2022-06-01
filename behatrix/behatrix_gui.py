@@ -524,13 +524,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 dot_path = "dot"
 
             # test dot program
-            p = subprocess.Popen(f"{dot_path} -V", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            p = subprocess.Popen(f'"{dot_path}" -V', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
 
             if b"graphviz version" in error:
 
                 gv_script = (
-                    "digraph G {\n"
+                    "digraph G {"
                     + self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''")
                     + self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
                     + self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''")
