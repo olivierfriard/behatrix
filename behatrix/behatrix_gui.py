@@ -506,54 +506,58 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.pte_gv_edges.toPlainText() and not self.pte_gv_nodes.toPlainText():
             return
 
-        if self.rb_graphviz.isChecked():
-            # check dot path
-            if self.le_dot_path.text():
-                if not os.path.isfile(self.le_dot_path.text()):
-                    QMessageBox.critical(
-                        self,
-                        "Behatrix",
-                        (
-                            "The path for <b>dot</b> program is wrong.<br>"
-                            "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"
-                        ),
-                    )
-                    return ""
-                dot_path = self.le_dot_path.text()
-            else:
-                dot_path = "dot"
+        # check dot path
+        if self.le_dot_path.text():
+            if not os.path.isfile(self.le_dot_path.text()):
+                QMessageBox.critical(
+                    self,
+                    "Behatrix",
+                    (
+                        "The path for <b>dot</b> program is wrong.<br>"
+                        "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"
+                    ),
+                )
+                return ""
+            dot_path = self.le_dot_path.text()
+        else:
+            dot_path = "dot"
 
-            # test dot program
-            p = subprocess.Popen(f'"{dot_path}" -V', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        # test dot program
+        p = subprocess.Popen(f'"{dot_path}" -V', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out, error = p.communicate()
+
+        if b"graphviz version" in error:
+
+            gv_script = (
+                "digraph G {"
+                + self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                + self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                + self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                + "}"
+            )
+
+            # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
+            if sys.platform.startswith("win"):
+                gv_script = gv_script.replace(">", "^^^>")
+                cmd = f"""echo {gv_script} | "{dot_path}" -Tsvg """
+
+            else:
+                cmd = f"""echo '{gv_script}' | "{dot_path}" -Tsvg """
+
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, error = p.communicate()
 
-            if b"graphviz version" in error:
+            # print(cmd)
 
-                gv_script = (
-                    "digraph G {"
-                    + self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                    + self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                    + self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                    + "}"
-                )
+            if error:
+                QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                return
 
-                # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
-                if sys.platform.startswith("win"):
-                    gv_script = gv_script.replace(">", "^^^>")
-                    cmd = f"""echo {gv_script} | "{dot_path}" -Tsvg """
+        else:
+            QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+            return
 
-                else:
-                    cmd = f"""echo '{gv_script}' | "{dot_path}" -Tsvg """
-
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                out, error = p.communicate()
-
-                print(cmd)
-
-                if error:
-                    QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
-                    return
-
+        '''
         if self.rb_vizjs.isChecked():
 
             # test if viz.js and nodejs found
@@ -638,6 +642,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             else:
                 self.svg_display.load(out)
+        '''
 
         if action == "show":
             self.svg_display.load(out)

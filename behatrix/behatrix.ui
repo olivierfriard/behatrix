@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1336</width>
+    <width>1969</width>
     <height>1017</height>
    </rect>
   </property>
@@ -237,7 +237,7 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -373,14 +373,14 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
              <widget class="QSplitter" name="script_diagram_splitter">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
-              <widget class="QWidget" name="">
+              <widget class="QWidget" name="layoutWidget">
                <layout class="QVBoxLayout" name="verticalLayout_4">
                 <item>
                  <widget class="QLabel" name="label_14">
@@ -483,19 +483,6 @@
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_14">
                 <item>
-                 <widget class="QRadioButton" name="rb_graphviz">
-                  <property name="text">
-                   <string>Use the Graphviz package</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
                  <widget class="QLabel" name="label_16">
                   <property name="text">
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path to the &lt;span style=&quot; font-weight:600;&quot;&gt;dot&lt;/span&gt; program (leave empty if dot is on the path)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -514,19 +501,6 @@
                   <property name="text">
                    <string>Browse</string>
                   </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="rb_vizjs">
-                  <property name="text">
-                   <string>Use Viz.js (with Node.js)</string>
-                  </property>
-                  <property name="checked">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
-                  </attribute>
                  </widget>
                 </item>
                </layout>
@@ -839,8 +813,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1336</width>
-     <height>22</height>
+     <width>1969</width>
+     <height>35</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -884,7 +858,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
