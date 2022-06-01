@@ -36,7 +36,7 @@ import numpy as np
 from PyQt5 import QtSvg
 from PyQt5.QtCore import QSettings, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QMenu
 
 from . import behatrix_functions
 from . import behatrix_qrc
@@ -81,7 +81,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionAbout.triggered.connect(self.about)
 
         # behavioral sequences
-        self.pb_save_results.clicked.connect(self.save_results)
+
+        # add menu to save results button
+        save_results_menu_items = [
+            "Save the descriptive statistics|Descriptive statistics",
+            "Save the observed transitions|Observed transitions",
+        ]
+
+        menu_data = QMenu()
+        menu_data.triggered.connect(lambda x: self.save_results(mode=x.statusTip()))
+        self.add_button_menu(save_results_menu_items, menu_data)
+        self.pb_save_results.setMenu(menu_data)
+
+        # self.pb_save_results.clicked.connect(self.save_results)
         self.pb_save_results.setVisible(False)
         self.pte_behav_seq.textChanged.connect(self.behavioral_sequences_changed)
         self.sb_ngram.valueChanged.connect(self.behavioral_sequences_changed)
@@ -140,6 +152,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.check_dot_path()
 
+    def add_button_menu(self, data, menu_obj):
+        """
+        add menu option from dictionary
+        """
+        if isinstance(data, dict):
+            for k, v in data.items():
+                sub_menu = QMenu(k, menu_obj)
+                menu_obj.addMenu(sub_menu)
+                self.add_button_menu(v, sub_menu)
+        elif isinstance(data, list):
+            for element in data:
+                self.add_button_menu(element, menu_obj)
+        else:
+            action = menu_obj.addAction(data.split("|")[1])
+            # tips are used to discriminate the menu option
+            action.setStatusTip(data.split("|")[0])
+            action.setIconVisibleInMenu(False)
+
     def about(self):
         """
         Display the about dialog
@@ -195,6 +225,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pte_behav_seq.clear()
         self.pte_statistics.clear()
         self.pte_observed_transitions.clear()
+        self.pb_save_results.setVisible(False)
 
     def behavioral_sequences_changed(self):
         """
@@ -261,10 +292,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )[0]
 
         if filename:
-            self.leStringsFileName.setText(filename)
-
-            with open(filename) as f_in:
-                behav_str = f_in.read()
+            try:
+                with open(filename) as f_in:
+                    behav_str = f_in.read()
+            except Exception:
+                QMessageBox.critical(self, "Behatrix", "The selected file is not available.<br>")
+                return
 
             self.pte_behav_seq.setPlainText(behav_str)
 
@@ -311,27 +344,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # self.pb_save_results.setText("Save statistics")
             self.pb_save_results.setVisible(True)
 
-    def save_results(self):
+    def save_results(self, mode):
         """
         save results on file (statistic and observed transitions matrix)
         """
+        print(mode)
         if self.pte_statistics.toPlainText() == "" and self.pte_observed_transitions.toPlainText() == "":
             QMessageBox.warning(self, "Behatrix", "No results to save!")
             return
 
-        file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the matrix", "", "All files (*)")[
+        file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the results", "", "All files (*)")[
             0
         ]
         if file_name:
-            try:
-                with open(file_name, "w") as f_out:
-                    f_out.write(self.pte_statistics.toPlainText())
-                    f_out.write("\nObserved transitions matrix\n")
-                    f_out.write("===========================\n")
-                    f_out.write("The behavior on the first column precedes the behavior on the first row\n\n")
-                    f_out.write(self.pte_observed_transitions.toPlainText())
-            except Exception:
-                QMessageBox.critical(self, "Behatrix", "Results not saved!")
+            if mode == "Save the descriptive statistics":
+                try:
+                    with open(file_name, "w") as f_out:
+                        f_out.write(self.pte_statistics.toPlainText())
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Descriptive statistics not saved!")
+
+            if mode == "Save the observed transitions":
+                try:
+                    with open(file_name, "w") as f_out:
+                        f_out.write(self.pte_observed_transitions.toPlainText())
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Observed transitions not saved!")
+
+
 
     def observed_matrix(self):
         """
