@@ -261,8 +261,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )[0]
 
         if filename:
-            self.leStringsFileName.setText(filename)
-
             with open(filename) as f_in:
                 behav_str = f_in.read()
 
