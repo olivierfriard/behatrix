@@ -19,6 +19,8 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Visualization",
@@ -26,8 +28,8 @@ setup(
     packages=['behatrix'],  #same as name
 
     install_requires=[
-          "pyqt5==5.15.2",
-          "numpy==1.19.5",
+          "pyqt5==5.15.6",
+          "numpy==1.22.4",
       ],
 
     # load in behatrix dir
