@@ -99,40 +99,15 @@ Flow diagram
 ========================================================================================================================
 
 
-If you want to generate some flow diagrams you have 2 possibilities: **Node.js** or the **Graphviz** package.
-
-
-
-Use of Node.js
-------------------------------------------------------------------
-
-From the v. 0.9.11 the Node JS executable is embedded into the packages (MacOS, GNU/Linux and Windows).
-You do not have to install a third party package.
-
-
-..
-   Go to the `Node.js web site <https://nodejs.org/>`_ and download the LTS version (the current version should also work).
-
-   IMPORTANT: During the installation choose to add **node** to the path of your system.
-
-   See this short `video tutorial for installation on Windows <https://www.youtube.com/watch?v=Tucg8yt6Yic>`_.
-
-   The embedded **viz.js** script will be used to generate the flow diagrams.
-   See https://github.com/mdaines/viz.js for details.
-
+For flow diagrams generation you must install the **Graphviz** package.
 
 
 Installation of the Graphviz package
 ------------------------------------------------------------------
 
-In alternative to Node JS you can generate the flow diagrama with the **GraphViz** package.
-
 Go to the `Graphviz web site <https://graphviz.org/download/>`_ and download the version corresponding to your system.
 
 If the **dot** program is not on the path you will have to indicate the complete path to the dot program.
-
-IMPORTANT: The installation of Graphviz on a MacOS can be VERY long and is not recommended. Use Node.js and viz.js instead.
-
 
 
 Usage of Behatrix
@@ -395,10 +370,6 @@ to be finished...
 
 
 
-
-
-
-
 Usage of command line utility
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -443,7 +414,7 @@ Example of use
 
 
 
-Example of behavioral strings file
+Example of behavioral sequences file
 ........................................
 
 Behaviors are separated by the pipe character (|) otherwise each character will be interpreted as a behavior
@@ -485,9 +456,9 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
 
 
 Legal
-=====
+========================
 
-Copyright 2017-2020 Olivier Friard
+Copyright 2017-2022 Olivier Friard
 
 **Behatrix** is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
