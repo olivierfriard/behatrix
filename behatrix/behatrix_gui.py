@@ -25,12 +25,15 @@ import concurrent.futures
 import math
 import multiprocessing
 import os
-import pathlib
+import pathlib as pl
 import platform
 import subprocess
 import sys
 import tempfile
 from shutil import copyfile
+import traceback
+import logging
+import datetime as dt
 
 import numpy as np
 from PyQt5 import QtSvg
@@ -43,6 +46,13 @@ from . import behatrix_qrc
 from . import version
 from .behatrix_ui import Ui_MainWindow
 
+# set logging
+logging.basicConfig(
+    format="%(asctime)s,%(msecs)d  %(message)s",
+    datefmt="%H:%M:%S",
+    level=logging.INFO,
+)
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -52,6 +62,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+
+        sys.excepthook = self.excepthook
+
         self.setWindowIcon(QIcon(":/logo"))
 
         self.setWindowTitle("Behatrix - Behavioral Sequences Analysis")
@@ -141,7 +154,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.cb_plot_significativity.setEnabled(False)
 
-        config_file_path = str(pathlib.Path(os.path.expanduser("~")) / ".behatrix")
+        config_file_path = str(pl.Path(os.path.expanduser("~")) / ".behatrix")
         if os.path.isfile(config_file_path):
             settings = QSettings(config_file_path, QSettings.IniFormat)
             self.le_dot_path.setText(settings.value("dot_prog_path"))
@@ -151,6 +164,58 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mem_behaviours = ""
 
         self.check_dot_path()
+
+    def excepthook(self, exception_type, exception_value, traceback_object):
+        """
+        global error management
+        """
+
+        error_text: str = (
+            f"Behatrix version: {version.__version__}\n"
+            f"OS: {platform.uname().system} {platform.uname().release} {platform.uname().version}\n"
+            f"CPU: {platform.uname().machine} {platform.uname().processor}\n"
+            f"Python {platform.python_version()} ({'64-bit' if sys.maxsize > 2**32 else '32-bit'})\n"
+            # f"Qt {QT_VERSION_STR} - PyQt {PYQT_VERSION_STR}\n"
+            f"{dt.datetime.now():%Y-%m-%d %H:%M}\n\n"
+        )
+        error_text += "".join(traceback.format_exception(exception_type, exception_value, traceback_object))
+
+        logging.critical(error_text)
+
+        # append to behatrix.log file
+        with open(pl.Path("~").expanduser() / "behatrix.log", "a") as f_out:
+            f_out.write(error_text + "\n")
+            f_out.write("-" * 80 + "\n")
+
+        # copy to clipboard
+        cb = QApplication.clipboard()
+        cb.clear(mode=cb.Clipboard)
+        cb.setText(error_text, mode=cb.Clipboard)
+
+        error_text: str = error_text.replace("\r\n", "\n").replace("\n", "<br>")
+
+        text: str = (
+            f"<b>An error has occured</b>:<br><br>"
+            f"{error_text}<br>"
+            "to improve the software please report this problem at:<br>"
+            '<a href="https://github.com/olivierfriard/behatrix/issues">'
+            "https://github.com/olivierfriard/behatrix/issues</a><br>"
+            "Please no screenshot (the error message was copied to the clipboard).<br><br>"
+            "Thank you for your collaboration!"
+        )
+
+        errorbox = QMessageBox()
+        errorbox.setWindowTitle("Behatrix error occured")
+        errorbox.setText(text)
+        errorbox.setTextFormat(Qt.RichText)
+        errorbox.setStandardButtons(QMessageBox.Abort)
+
+        _ = errorbox.addButton("Ignore and try to continue", QMessageBox.RejectRole)
+
+        ret = errorbox.exec_()
+
+        if ret == QMessageBox.Abort:
+            sys.exit(1)
 
     def add_button_menu(self, data, menu_obj):
         """
@@ -189,7 +254,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 "Department of Life Sciences and Systems Biology<br>"
                 "University of Torino - Italy<br>"
                 "<br>"
-                'BORIS is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>'
+                'Behatrix is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>'
                 'See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>'
                 "<hr>"
             )
@@ -215,7 +280,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.le_dot_path.setText("dot program NOT found on the path")
 
     def closeEvent(self, event):
-        settings = QSettings(str(pathlib.Path(os.path.expanduser("~")) / ".behatrix"), QSettings.IniFormat)
+        settings = QSettings(str(pl.Path(os.path.expanduser("~")) / ".behatrix"), QSettings.IniFormat)
         settings.setValue("dot_prog_path", self.le_dot_path.text())
 
     def clear_sequences(self):
