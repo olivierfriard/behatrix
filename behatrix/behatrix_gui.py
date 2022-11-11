@@ -636,8 +636,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()
 
-                print(out)
-
                 if error:
                     QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
                     return
