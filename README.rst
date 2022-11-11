@@ -410,12 +410,12 @@ Example of use
 
 .. code-block:: text
 
-    python3 -m behatrix --strings behav_strings.txt --output behav_strings_results --n_cpu 6 --n_random 10000
+    python3 -m behatrix --sequences behav_sequences.txt --output behav_sequences_results --n_cpu 6 --n_random 10000
 
 
 
 Example of behavioral sequences file
-........................................
+...................................................
 
 Behaviors are separated by the pipe character (|) otherwise each character will be interpreted as a behavior
 
