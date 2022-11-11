@@ -223,13 +223,13 @@ Example of observed transition matrix:
 .. code-block:: text
 
                          Alert   Locomotion   Manipulate  Play in the water Play on the ground  Roll objects   Swim
-   Alert                   0            1         1                0                 0           5      0
-   Locomotion             0            0         0                0                 0           0      0
-   Manipulate             2            1         0                0                 0           1      0
-   Play in the water       0            0         0                0                 0           0    1
-   Play on the ground    0            0         1                0                 0           0    0
-   Roll objects          4            0         1                0                 0          0   0
-   Swim                   1          0         0                1                 0           0    0 
+   Alert                     0            1            1                  0                  0             5      0
+   Locomotion                0            0            0                  0                  0             0      0
+   Manipulate                2            1            0                  0                  0             1      0
+   Play in the water         0            0            0                  0                  0             0      1
+   Play on the ground        0            0            1                  0                  0             0      0
+   Roll objects              4            0            1                  0                  0             0      0
+   Swim                      1            0            0                  1                  0             0      0 
 
 
 
