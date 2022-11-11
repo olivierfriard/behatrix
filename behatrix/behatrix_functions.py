@@ -587,10 +587,7 @@ def permutations_test(
 
             for seq in permuted_sequences:
                 for i in range(len(seq) - 1):
-                    try:
-                        permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
-                    except Exception:
-                        print(str(sys.exc_info()[1]))
+                    permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
 
             results = results + (permuted_transitions_matrix >= observed_matrix)
 
