@@ -591,13 +591,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if b"graphviz version" in error:
 
-            # > must be escaped for windows (https://ss64.com/nt/syntax-esc.html#escape)
             if sys.platform.startswith("win"):
 
-                '''
-                gv_script = gv_script.replace(">", "^^^>")
-                cmd = f"""echo {gv_script} | "{dot_path}" -Tsvg """
-                '''
                 gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("gv_script.gv")
                 output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
                 try:
