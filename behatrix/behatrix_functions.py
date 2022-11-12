@@ -21,15 +21,9 @@ This file is part of Behatrix.
 
 """
 
-import argparse
-import concurrent.futures
 import itertools
-import os
 import random
-import sys
 import numpy as np
-
-from . import version
 
 
 def remove_comments(s: str) -> str:
