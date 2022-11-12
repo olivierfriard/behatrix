@@ -203,7 +203,7 @@ def behavioral_sequence_analysis(
     }
 
 
-def check_exclusion_list(exclusion_str, sequences, behaviors_separator=""):
+def check_exclusion_list(exclusion_str: str, sequences: list, behaviors_separator: str = "") -> dict:
     """
     check the transition exclusion strings
     format must be like:
