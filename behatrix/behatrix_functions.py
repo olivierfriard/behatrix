@@ -24,6 +24,7 @@ This file is part of Behatrix.
 import itertools
 import random
 import numpy as np
+from typing import Tuple
 
 
 def remove_comments(s: str) -> str:
@@ -47,7 +48,7 @@ def remove_comments(s: str) -> str:
 
 def behavioral_sequence_analysis(
     string: str, behaviors_separator: str = "", chunk: int = 0, flag_remove_repetitions: bool = False, ngram: int = 1
-):
+) -> dict:
     """
     Extract some information from behavioral sequences
 
@@ -427,7 +428,7 @@ def draw_diagram(
     return (header_out, nodes_out, edges_out, graph_out, footer_out)
 
 
-def create_observed_transition_matrix(sequences, behaviours):
+def create_observed_transition_matrix(sequences: list, behaviours: list) -> np.ndarray:
     """
     create the matrix of observed transitions
     """
@@ -450,7 +451,7 @@ def permutations_test(
     block_last,
     observed_matrix: np.array,
     no_repetition: bool = False,
-):
+) -> Tuple[int, np.ndarray]:
     """
     permutations test
 
@@ -612,7 +613,7 @@ def levenshtein_distance(seq1: list, seq2: list) -> int:
     return matrix[matrix.shape[0] - 1, matrix.shape[1] - 1]
 
 
-def levenshtein_distance_seq_list(seq_list: list):
+def levenshtein_distance_seq_list(seq_list: list) -> np.ndarray:
     """
     calculate Levenshtein distances for all combinations of 2 sequences in list
 
@@ -729,7 +730,7 @@ def needleman_wunsch_identity(seq1: list, seq2: list) -> dict:
     return finalize(align1, align2)
 
 
-def needleman_wunsch_identity_seq_list(seq_list: list):
+def needleman_wunsch_identity_seq_list(seq_list: list) -> np.ndarray:
     """
     calculate the Needleman-Wunsch identities for all combinations of 2 sequences in list
 
@@ -745,209 +746,3 @@ def needleman_wunsch_identity_seq_list(seq_list: list):
         results[p[0][0], p[1][0]] = needleman_wunsch_identity(p[0][1], p[1][1])["identity"]
         results[p[1][0], p[0][0]] = results[p[0][0], p[1][0]]
     return results
-
-
-"""
-def main():
-
-    parser = argparse.ArgumentParser(description="Behatrix command line utility")
-    parser.add_argument("-v", action="store_true", dest="version", help="Behatrix version")
-    parser.add_argument(
-        "--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences"
-    )
-    parser.add_argument("--separator", action="store", dest="separator", help="Behaviors separator")
-    parser.add_argument("--output", action="store", dest="output", help="Path of output files")
-    parser.add_argument("--exclusions", action="store", dest="exclusions", help="Path of file containing exclusions")
-    parser.add_argument(
-        "--n_random", action="store", dest="nrandom", help="Number of permutations", type=int, default=0
-    )
-    parser.add_argument(
-        "--n_cpu", action="store", dest="n_cpu", help="Number of CPU to use for permutations test", type=int, default=0
-    )
-    parser.add_argument(
-        "--block_first", action="store_true", dest="block_first", help="block first behavior during permutations test"
-    )
-    parser.add_argument(
-        "--block_last", action="store_true", dest="block_last", help="block last behavior during permutations test"
-    )
-    parser.add_argument(
-        "--no_repetition",
-        action="store_true",
-        dest="no_repetition",
-        help="exclude repetitions during permutations test",
-    )
-    parser.add_argument("--n-gram", action="store", default=1, dest="ngram", help="n-gram value", type=int)
-
-    parser.add_argument(
-        "--quiet", action="store_true", dest="quiet", default=False, help="Do not print results on terminal"
-    )
-
-    args = parser.parse_args()
-
-    if args.version:
-        print(f"version {version.__version__} - {version.__version_date__}")
-        sys.exit()
-
-    if not args.sequences:
-        print("The 'sequences' argument is required\n")
-        parser.print_usage()
-        print()
-        sys.exit()
-    else:
-        if not os.path.isfile(args.sequences):
-            print(f"{args.sequences} is not a file\n")
-            sys.exit()
-
-    with open(args.sequences) as f_in:
-        behav_str = f_in.read()
-
-    return_code, results = behavioral_sequence_analysis(
-        behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram
-    )
-
-    if args.nrandom:
-        nrandom = args.nrandom
-    else:
-        nrandom = 0
-
-    if nrandom:
-
-        if args.exclusions:
-            if not os.path.isfile(args.exclusions):
-                print(f"{args.exclusions} is not a file\n")
-                sys.exit()
-            else:
-                with open(args.exclusions) as f_in:
-                    exclusion_str = f_in.read()
-        else:
-            exclusion_str = ""
-
-        result = check_exclusion_list(exclusion_str, results["sequences"])
-        if not result["error_code"]:
-            exclusion_list = result["exclusion_list"]
-        else:
-            print(result["message"])
-            return
-
-        block_first = 1 if args.block_first else 0
-        block_last = 1 if args.block_last else 0
-
-    if not args.quiet:
-
-        print("\nBehaviours list:\n================\n{}\n".format("\n".join(results["behaviours"])))
-
-        print("Statistics\n==========")
-        print(f"Number of different behaviours: {len(behaviours)}")
-        print(f"Total number of behaviours: {tot_nodes}")
-        print(f"Number of different transitions: {len(unique_transitions)}")
-        print(f"Total number of transitions: {tot_trans}")
-
-        print("\nBehaviours frequencies:\n=======================")
-
-        for behaviour in sorted(behaviours):
-            countBehaviour = 0
-            for seq in results["sequences"]:
-                countBehaviour += seq.count(behaviour)
-
-            print(f"{behaviour}\t{countBehaviour / tot_nodes:.3f}\t{countBehaviour} / {tot_nodes}")
-
-        # n-grams
-        if args.ngram > 1:
-            print(f"\nFrequencies of {args.ngram}-grams:\n=======================")
-            print(ngrams_freq)
-
-    observed_matrix = create_observed_transition_matrix(sequences, behaviours)
-
-    if not args.quiet:
-        print("\nObserved transition matrix:\n===========================\n{}".format(observed_matrix))
-
-    if args.output:
-        file_name = f"{args.output}.observed_transitions.tsv"
-    else:
-        file_name = f"{args.sequences}.observed_transitions.tsv"
-
-    np.savetxt(file_name, observed_matrix, fmt="%d", delimiter="\t")
-
-    with open(file_name, mode="r", encoding="utf-8") as f_in:
-        rows = f_in.readlines()
-
-    with open(file_name, mode="w", encoding="utf-8") as f_out:
-        f_out.write("\t" + "\t".join(behaviours) + "\n")
-        c = 0
-        for row in rows:
-            f_out.write((behaviours)[c] + "\t" + row)
-            c += 1
-
-    if nrandom:
-
-        if args.n_cpu:
-            num_proc = args.n_cpu
-        else:
-            num_available_proc = os.cpu_count()
-            if num_available_proc <= 2:
-                num_proc = 1
-            else:
-                num_proc = num_available_proc - 1
-
-        results = np.zeros((len(behaviours), len(behaviours)))
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            lst = []
-            n_required_randomizations = 0
-            for i in range(num_proc):
-
-                if i < num_proc - 1:
-                    n_random_by_proc = nrandom // num_proc
-                else:
-                    n_random_by_proc = nrandom - n_required_randomizations
-
-                lst.append(
-                    executor.submit(
-                        permutations_test,
-                        n_random_by_proc,
-                        sequences,
-                        behaviours,
-                        exclusion_list,
-                        block_first,
-                        block_last,
-                        observed_matrix,
-                        args.no_repetition,
-                    )
-                )
-
-                n_required_randomizations += n_random_by_proc
-
-            print("\nnumber of required permutations: ", n_required_randomizations)
-
-            nb_randomization_done = 0
-
-            for l in lst:
-                nb_randomization_done += l.result()[0]
-                results += l.result()[1]
-
-        print(f"Number of permutations done: {nb_randomization_done}")
-
-        if not args.quiet:
-            print("\nP-values matrix:\n===========================\n{}".format(results / nrandom))
-
-        if args.output:
-            file_name = "{fileName}.p-values.{nrandom}.tsv".format(fileName=args.output, nrandom=nrandom)
-        else:
-            file_name = "{fileName}.p-values.{nrandom}.tsv".format(fileName=args.sequences, nrandom=nrandom)
-
-        np.savetxt(file_name, results / nrandom, fmt="%f", delimiter="\t")
-
-        with open(file_name, mode="r", encoding="utf-8") as f:
-            rows = f.readlines()
-
-        with open(file_name, mode="w", encoding="utf-8") as f:
-            f.write("\t" + "\t".join(list(behaviours)) + "\n")
-            c = 0
-            for row in rows:
-                f.write((behaviours)[c] + "\t" + row)
-                c += 1
-"""
-
-"""
-if __name__ == "__main__":
-    main()
-"""
