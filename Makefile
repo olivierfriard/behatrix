@@ -1,13 +1,13 @@
 create_wheel:
-	rm -rf *.egg-info build dist; python3 setup.py sdist bdist_wheel
+	git commit -am "new wheel"; git push; rm -rf *.egg-info build dist; python3 setup.py sdist bdist_wheel; twine check/dist/*
 
 
 upload_pip_test:
-	python3 -m twine upload --config-file /home/olivier/.pypirc --repository testpypi dist/*
+	python3 -m twine upload --verbose --repository testpypi dist/*
 
 
 upload_pip:
-	python3 -m twine upload --config-file /home/olivier/.pypirc --repository pypi dist/*
+	python3 -m twine upload --verbose --repository pypi dist/*
 
 
 
