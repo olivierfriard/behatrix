@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
 <file alias="logo">icons/behatrix_128px.png</file>
+<file alias="behatrix_unito_logo">icons/behatrix_unito_296x160.png</file>
 </qresource>
 </RCC>

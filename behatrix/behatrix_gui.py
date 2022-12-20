@@ -241,7 +241,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         about_dialog = QMessageBox()
-        about_dialog.setIconPixmap(QPixmap(":/logo"))
+        about_dialog.setIconPixmap(QPixmap(":/behatrix_unito_logo"))
         about_dialog.setWindowTitle("About Behatrix")
         about_dialog.setStandardButtons(QMessageBox.Ok)
         about_dialog.setDefaultButton(QMessageBox.Ok)
