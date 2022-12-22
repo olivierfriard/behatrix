@@ -311,10 +311,16 @@ def draw_diagram(
 
     nodes_out = "/* node properties */\n"
     nodes_out += "\nnode []\n"
+
+    nodes_list = []
+
+    '''
     for node in nodes:
         nodes_out += f'"{node}"\n'
+    '''
 
     edges_out = "\n/* edges */\n"
+
     if cutoff_all:
 
         for i in unique_transitions:
@@ -332,6 +338,9 @@ def draw_diagram(
                 else:
                     node2 = f"{i[1]}"
 
+                nodes_list.append(node1)
+                nodes_list.append(node2)
+
                 pen_width = (
                     width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
                     if significativity is not None
@@ -348,6 +357,7 @@ def draw_diagram(
                     decimals_number,
                     pen_width,
                 )
+       
 
     elif cutoff_behavior:
 
@@ -365,6 +375,9 @@ def draw_diagram(
 
                 else:
                     node2 = f"{i[1]}"
+
+                nodes_list.append(node1)
+                nodes_list.append(node2)
 
                 pen_width = (
                     width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
@@ -398,6 +411,10 @@ def draw_diagram(
             else:
                 node2 = f"{i[1]}"
 
+            nodes_list.append(node1)
+            nodes_list.append(node2)
+
+
             pen_width = (
                 width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
                 if significativity is not None
@@ -415,6 +432,9 @@ def draw_diagram(
                 pen_width,
             )
 
+    for node in set(nodes_list):
+        nodes_out += f'"{node}"\n'
+
     graph_out = "\n/* graph statement */\n"
 
     # make png transparent
@@ -425,7 +445,7 @@ def draw_diagram(
 
     footer_out = "}\n"
 
-    return (header_out, nodes_out, edges_out, graph_out, footer_out)
+    return (header_out, nodes_out, edges_out, graph_out, footer_out, sorted(set(nodes_list)))
 
 
 def create_observed_transition_matrix(sequences: list, behaviours: list) -> np.ndarray:

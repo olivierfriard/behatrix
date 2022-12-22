@@ -329,6 +329,32 @@
                    </widget>
                   </item>
                   <item>
+                   <widget class="QLabel" name="label_8">
+                    <property name="text">
+                     <string>Engine</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comb_graphviz_engine">
+                    <item>
+                     <property name="text">
+                      <string>dot</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>circo</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>fdp</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item>
                    <spacer name="horizontalSpacer_13">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
@@ -814,7 +840,7 @@
      <x>0</x>
      <y>0</y>
      <width>1969</width>
-     <height>35</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -859,6 +885,5 @@
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

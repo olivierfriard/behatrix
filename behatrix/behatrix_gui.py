@@ -119,6 +119,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.rb_percent_total_transitions.toggled.connect(self.flow_diagram_parameters_changed)
         self.sb_cutoff_total_transition.valueChanged.connect(self.flow_diagram_parameters_changed)
         self.sb_decimals.valueChanged.connect(self.flow_diagram_parameters_changed)
+        self.comb_graphviz_engine.currentIndexChanged.connect(self.flow_diagram_parameters_changed)
         self.pb_graphviz_script.clicked.connect(self.flow_diagram_parameters_changed)
         self.pb_save_gv.clicked.connect(self.save_gv)
         self.pb_flow_diagram.clicked.connect(lambda: self.flow_diagram(action="show"))
@@ -176,6 +177,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.permutations_finished_signal.connect(self.get_permutations_results)
         self.mem_behaviours = ""
+
+        self.sb_cutoff_transition_after_behav.setEnabled(self.rb_percent_after_behav.isChecked())
+        self.sb_cutoff_total_transition.setEnabled(self.rb_percent_total_transitions.isChecked())
+
 
     def excepthook(self, exception_type, exception_value, traceback_object):
         """
@@ -351,6 +356,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         update flow diagram
         """
+
+        self.sb_cutoff_transition_after_behav.setEnabled(self.rb_percent_after_behav.isChecked())
+        self.sb_cutoff_total_transition.setEnabled(self.rb_percent_total_transitions.isChecked())
 
         self.graphviz_script()
 
@@ -541,7 +549,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
             return
 
-        (header_out, nodes_out, edges_out, graph_out, footer_out) = behatrix_functions.draw_diagram(
+        (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = behatrix_functions.draw_diagram(
             cutoff_all=self.sb_cutoff_total_transition.value() if self.rb_percent_total_transitions.isChecked() else None,
             cutoff_behavior=self.sb_cutoff_transition_after_behav.value() if self.rb_percent_after_behav.isChecked() else None,
             unique_transitions=results["transitions"],
@@ -558,7 +566,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             behaviors=results["behaviours"],
         )
 
-        if results["behaviours"] != self.mem_behaviours:
+        if nodes_list != self.mem_behaviours:
             self.pte_gv_nodes.setPlainText(nodes_out)
 
         self.pte_gv_edges.setPlainText(edges_out)
@@ -566,7 +574,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.pte_gv_graph.toPlainText() == "":
             self.pte_gv_graph.setPlainText(graph_out)
 
-        self.mem_behaviours = results["behaviours"]
+        self.mem_behaviours = nodes_list
 
     def save_gv(self):
         """
@@ -584,7 +592,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if file_name:
                 try:
                     with open(file_name, "w") as f_out:
-                        f_out.write(self.pte_gv_edges.toPlainText())
+                        f_out.write('digraph G {\n')
+                        f_out.write(self.pte_gv_nodes.toPlainText() + '\n')
+                        f_out.write(self.pte_gv_edges.toPlainText()+ '\n')
+                        f_out.write(self.pte_gv_graph.toPlainText()+ '\n')
+                        f_out.write('}\n')
                 except Exception:
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
@@ -643,7 +655,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
                     return
 
-                cmd = f'"{dot_path}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
+                graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
+
+                cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 _, error = p.communicate()
                 if error:
@@ -659,7 +673,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     + "}"
                 )
 
-                cmd = f"""echo '{gv_script}' | "{dot_path}" -Tsvg """
+                print(pl.Path(dot_path).parent)
+                if self.comb_graphviz_engine.currentText() == 'dot':
+                    graphviz_engine = dot_path
+                else:
+                    graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
+
+                cmd = f"""echo '{gv_script}' | "{graphviz_engine}" -Tsvg """
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, error = p.communicate()

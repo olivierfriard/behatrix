@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'behatrix/behatrix.ui'
+# Form implementation generated from reading ui file 'behatrix.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -185,6 +185,15 @@ class Ui_MainWindow(object):
         self.cb_plot_significativity = QtWidgets.QCheckBox(self.layoutWidget2)
         self.cb_plot_significativity.setObjectName("cb_plot_significativity")
         self.horizontalLayout_8.addWidget(self.cb_plot_significativity)
+        self.label_8 = QtWidgets.QLabel(self.layoutWidget2)
+        self.label_8.setObjectName("label_8")
+        self.horizontalLayout_8.addWidget(self.label_8)
+        self.comb_graphviz_engine = QtWidgets.QComboBox(self.layoutWidget2)
+        self.comb_graphviz_engine.setObjectName("comb_graphviz_engine")
+        self.comb_graphviz_engine.addItem("")
+        self.comb_graphviz_engine.addItem("")
+        self.comb_graphviz_engine.addItem("")
+        self.horizontalLayout_8.addWidget(self.comb_graphviz_engine)
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem3)
         self.horizontalLayout_18.addLayout(self.horizontalLayout_8)
@@ -398,7 +407,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.tabWidget)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1969, 35))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1969, 23))
         self.menubar.setObjectName("menubar")
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
@@ -445,6 +454,10 @@ class Ui_MainWindow(object):
         self.label_12.setText(_translate("MainWindow", "%"))
         self.label_18.setText(_translate("MainWindow", "Number of decimals in edge labels"))
         self.cb_plot_significativity.setText(_translate("MainWindow", "Add significativity to edges (perform the permutations test before)"))
+        self.label_8.setText(_translate("MainWindow", "Engine"))
+        self.comb_graphviz_engine.setItemText(0, _translate("MainWindow", "dot"))
+        self.comb_graphviz_engine.setItemText(1, _translate("MainWindow", "circo"))
+        self.comb_graphviz_engine.setItemText(2, _translate("MainWindow", "fdp"))
         self.pb_graphviz_script.setText(_translate("MainWindow", "Generate GraphViz script"))
         self.label_14.setText(_translate("MainWindow", "GraphViz script"))
         self.pb_save_gv.setText(_translate("MainWindow", "Save script"))
