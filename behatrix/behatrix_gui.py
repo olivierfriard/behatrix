@@ -154,16 +154,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.cb_plot_significativity.setEnabled(False)
 
+        self.le_dot_path.setReadOnly(True)
+
         config_file_path = str(pl.Path(os.path.expanduser("~")) / ".behatrix")
-        if os.path.isfile(config_file_path):
+        if pl.Path(config_file_path).is_file():
             settings = QSettings(config_file_path, QSettings.IniFormat)
-            self.le_dot_path.setText(settings.value("dot_prog_path"))
+            if settings.value("dot_prog_path"):
+                # test dot program from settings
+                if self.test_dot_program(settings.value("dot_prog_path")):
+                    self.le_dot_path.setText(settings.value("dot_prog_path"))
+                else:
+                    QMessageBox.critical(
+                        self,
+                        "Behatrix",
+                        f"The <b>dot</b> program is not working. Check <b>{settings.value('dot_prog_path')}</b>.<br>",
+                    )
+            else:
+                self.check_dot_path()
+        else:
+            self.check_dot_path()
 
         self.permutations_finished_signal.connect(self.get_permutations_results)
-
         self.mem_behaviours = ""
-
-        self.check_dot_path()
 
     def excepthook(self, exception_type, exception_value, traceback_object):
         """
@@ -241,7 +253,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         about_dialog = QMessageBox()
-        about_dialog.setIconPixmap(QPixmap(":/logo"))
+        about_dialog.setIconPixmap(QPixmap(":/behatrix_unito_logo"))
         about_dialog.setWindowTitle("About Behatrix")
         about_dialog.setStandardButtons(QMessageBox.Ok)
         about_dialog.setDefaultButton(QMessageBox.Ok)
@@ -261,23 +273,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         _ = about_dialog.exec_()
 
-    def check_dot_path(self):
+    def check_dot_path(self) -> bool:
         """
         check if dot program is available on path
+        if available set the self.le_dot_path widget with the path
+
+        Returns:
+            bool: True if dot found on the path
         """
+
         if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
             process = subprocess.Popen("which dot", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         elif sys.platform.startswith("win"):
             process = subprocess.Popen("where dot", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         else:
             self.le_dot_path.setText(f"Platform {sys.platform} NOT found")
-            return
+            return False
         output, _ = process.communicate()
 
         if output.decode("utf-8").strip():
-            self.le_dot_path.setText(output.decode("utf-8").strip())
+            if self.test_dot_program(output.decode("utf-8").strip()):
+                self.le_dot_path.setText(output.decode("utf-8").strip())
+                return True
+            else:
+                self.le_dot_path.setText("")
+                self.le_dot_path.setStyleSheet("background-color: red")
+                return False
         else:
-            self.le_dot_path.setText("dot program NOT found on the path")
+            self.le_dot_path.setText("")
+            self.le_dot_path.setStyleSheet("background-color: red")
+
+            return False
 
     def closeEvent(self, event):
         settings = QSettings(str(pl.Path(os.path.expanduser("~")) / ".behatrix"), QSettings.IniFormat)
@@ -330,6 +356,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.flow_diagram()
 
+    def test_dot_program(self, dot_path: str) -> bool:
+        """
+        test if dot program is working
+        """
+        p = subprocess.Popen(f'"{dot_path}" -V', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        _, error = p.communicate()
+
+        return b"graphviz version" in error
+
     def browse_dot_path(self):
         """
         browse for dot program path
@@ -338,14 +373,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self, "Select the dot program from GraphViz package", "", "All files (*)"
         )[0]
         if filename:
-
-            p = subprocess.Popen(f'"{filename}" -V', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            _, error = p.communicate()
-
-            if b"graphviz version" in error:
+            if self.test_dot_program(filename):
                 self.le_dot_path.setText(filename)
+                self.le_dot_path.setStyleSheet("")
+                self.statusbar.showMessage(f"", 0)
+                self.flow_diagram()
+
             else:
-                QMessageBox.critical(self, "Behatrix", "The selected <b>dot</b> program is not working.<br>")
+                QMessageBox.critical(
+                    self, "Behatrix", f"The selected <b>dot</b> program is not working.<br>Check <b>{filename}</b>"
+                )
 
     def load_file_content(self):
         """
@@ -570,20 +607,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         # check dot path
-        if self.le_dot_path.text():
-            if not os.path.isfile(self.le_dot_path.text()):
-                QMessageBox.critical(
-                    self,
-                    "Behatrix",
-                    (
-                        "The path for <b>dot</b> program is wrong.<br>"
-                        "Indicate the full path where the <b>dot</b> program from the GraphViz package is installed"
-                    ),
-                )
+        # self.check_dot_path()
+        if not self.le_dot_path.text():
+            if not self.check_dot_path():
+                self.statusbar.showMessage(f"dot program not found", 0)
                 return ""
-            dot_path = self.le_dot_path.text()
-        else:
-            dot_path = "dot"
+
+        elif not self.test_dot_program(self.le_dot_path.text()):
+            self.statusbar.showMessage(f"{self.le_dot_path.text()} is not working", 0)
+            return ""
+        dot_path = self.le_dot_path.text()
 
         # test dot program
         p = subprocess.Popen(f'"{dot_path}" -V', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
