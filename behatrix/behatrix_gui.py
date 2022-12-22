@@ -505,8 +505,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         (header_out, nodes_out, edges_out, graph_out, footer_out) = behatrix_functions.draw_diagram(
-            cutoff_all=self.sb_cutoff_total_transition.value(),
-            cutoff_behavior=self.sb_cutoff_transition_after_behav.value(),
+            cutoff_all=self.sb_cutoff_total_transition.value() if self.rb_percent_total_transitions.isChecked() else None,
+            cutoff_behavior=self.sb_cutoff_transition_after_behav.value() if self.rb_percent_after_behav.isChecked() else None,
             unique_transitions=results["transitions"],
             nodes=results["nodes"],
             starting_nodes=[],
