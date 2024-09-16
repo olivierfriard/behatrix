@@ -55,11 +55,9 @@ logging.basicConfig(
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-
     permutations_finished_signal = pyqtSignal(list)
 
     def __init__(self, parent=None):
-
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
@@ -181,7 +179,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sb_cutoff_transition_after_behav.setEnabled(self.rb_percent_after_behav.isChecked())
         self.sb_cutoff_total_transition.setEnabled(self.rb_percent_total_transitions.isChecked())
 
-
     def excepthook(self, exception_type, exception_value, traceback_object):
         """
         global error management
@@ -272,7 +269,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 "University of Torino - Italy<br>"
                 "<br>"
                 'Behatrix is released under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v.3</a><br>'
-                'See <a href="http://www.boris.unito.it/pages/behatrix">www.boris.unito.it/pages/behatrix</a> for more details.<br>'
+                'See <a href="http://www.boris.unito.it/behatrix">www.boris.unito.it/behatrix</a> for more details.<br>'
                 "<hr>"
             )
         )
@@ -377,9 +374,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         browse for dot program path
         """
-        filename = QFileDialog(self).getOpenFileName(
-            self, "Select the dot program from GraphViz package", "", "All files (*)"
-        )[0]
+        filename = QFileDialog(self).getOpenFileName(self, "Select the dot program from GraphViz package", "", "All files (*)")[0]
         if filename:
             if self.test_dot_program(filename):
                 self.le_dot_path.setText(filename)
@@ -388,18 +383,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.flow_diagram()
 
             else:
-                QMessageBox.critical(
-                    self, "Behatrix", f"The selected <b>dot</b> program is not working.<br>Check <b>{filename}</b>"
-                )
+                QMessageBox.critical(self, "Behatrix", f"The selected <b>dot</b> program is not working.<br>Check <b>{filename}</b>")
 
     def load_file_content(self):
         """
         Load file content as sequences
         """
 
-        filename = QFileDialog().getOpenFileName(
-            self, "Select the file containing the behavioral sequences", "", "All files (*)"
-        )[0]
+        filename = QFileDialog().getOpenFileName(self, "Select the file containing the behavioral sequences", "", "All files (*)")[0]
 
         if filename:
             try:
@@ -417,7 +408,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         if self.pte_behav_seq.toPlainText():
-
             results = behatrix_functions.behavioral_sequence_analysis(
                 self.pte_behav_seq.toPlainText(),
                 behaviors_separator=self.le_behaviors_separator.text(),
@@ -425,6 +415,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
                 ngram=self.sb_ngram.value(),
             )
+
+            print(f"{results=}")
 
             output = ""
             output += f"Number of sequences: {len(results['sequences'])}\n\n"
@@ -463,9 +455,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Behatrix", "No results to save!")
             return
 
-        file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the results", "", "All files (*)")[
-            0
-        ]
+        file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the results", "", "All files (*)")[0]
         if file_name:
             if mode == "Save the descriptive statistics":
                 try:
@@ -494,9 +484,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
             )
 
-            observed_matrix = behatrix_functions.create_observed_transition_matrix(
-                results["sequences"], results["behaviours"]
-            )
+            observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], results["behaviours"])
 
             # display results
             # header
@@ -544,9 +532,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # check significativity
         if self.cb_plot_significativity.isChecked() and self.permutations_test_matrix is None:
-            QMessageBox.critical(
-                self, "Behatrix", "Adding significativity to graph requires p values from permutations test"
-            )
+            QMessageBox.critical(self, "Behatrix", "Adding significativity to graph requires p values from permutations test")
             return
 
         (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = behatrix_functions.draw_diagram(
@@ -581,7 +567,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         save GV script to file
         """
         if self.pte_gv_edges.toPlainText():
-
             file_name, filter_ = QFileDialog().getSaveFileName(
                 self,
                 "Select the file to save the GraphViz script",
@@ -592,11 +577,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if file_name:
                 try:
                     with open(file_name, "w") as f_out:
-                        f_out.write('digraph G {\n')
-                        f_out.write(self.pte_gv_nodes.toPlainText() + '\n')
-                        f_out.write(self.pte_gv_edges.toPlainText()+ '\n')
-                        f_out.write(self.pte_gv_graph.toPlainText()+ '\n')
-                        f_out.write('}\n')
+                        f_out.write("digraph G {\n")
+                        f_out.write(self.pte_gv_nodes.toPlainText() + "\n")
+                        f_out.write(self.pte_gv_edges.toPlainText() + "\n")
+                        f_out.write(self.pte_gv_graph.toPlainText() + "\n")
+                        f_out.write("}\n")
                 except Exception:
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
@@ -635,9 +620,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         out, error = p.communicate()
 
         if b"graphviz version" in error:
-
             if sys.platform.startswith("win"):
-
                 gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("gv_script.gv")
                 output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
                 try:
@@ -651,7 +634,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 "}"
                             )
                         )
-                except:
+                except Exception:
                     QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
                     return
 
@@ -674,7 +657,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 )
 
                 print(pl.Path(dot_path).parent)
-                if self.comb_graphviz_engine.currentText() == 'dot':
+                if self.comb_graphviz_engine.currentText() == "dot":
                     graphviz_engine = dot_path
                 else:
                     graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
@@ -865,9 +848,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.cb_plot_significativity.setEnabled(True)
 
-        QMessageBox.information(
-            self, "Behatrix", ("Permutations test finished<br>" f"{nb_randomization_done} permutations done<br><br>")
-        )
+        QMessageBox.information(self, "Behatrix", ("Permutations test finished<br>" f"{nb_randomization_done} permutations done<br><br>"))
 
     def permutations_test_finished(self, results):
         """
@@ -894,9 +875,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # check exclusion list
             if self.pte_excluded_transitions.toPlainText():
-                result = behatrix_functions.check_exclusion_list(
-                    self.pte_excluded_transitions.toPlainText(), results["sequences"]
-                )
+                result = behatrix_functions.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), results["sequences"])
 
                 if not result["error_code"]:
                     exclusion_list = result["exclusion_list"]
@@ -915,7 +894,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
 
             if self.nrandom:
-
                 self.statusbar.showMessage("Permutations test running... Be patient", 0)
 
                 num_proc = self.sb_nb_cores.value()
@@ -923,9 +901,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if num_proc > self.nrandom:
                     num_proc = self.nrandom
 
-                observed_matrix = behatrix_functions.create_observed_transition_matrix(
-                    results["sequences"], self.behaviours
-                )
+                observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], self.behaviours)
 
                 self.pb_run_permutations_test.setEnabled(False)
                 self.nb_randomization_done = 0
@@ -961,7 +937,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Save permutations test matrix
         """
         if self.pte_random.toPlainText():
-
             file_name, filter_ = QFileDialog().getSaveFileName(
                 self, "Select the file to save the results", "", "TSV files (*.tsv);;TXT files (*.txt);;All files (*)"
             )
@@ -1024,7 +999,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Save distances matrix
         """
         if self.pte_distances_results.toPlainText():
-
             file_name, filter_ = QFileDialog().getSaveFileName(
                 self, "Select the file to save the results", "", "TSV files (*.tsv);;TXT files (*.txt);;All files (*)"
             )
@@ -1038,7 +1012,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 def main():
-
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
     app.setApplicationName("Behatrix")
     mainWindow = MainWindow()
@@ -1048,34 +1022,23 @@ def main():
 
 
 def cli():
-
     import argparse
 
     parser = argparse.ArgumentParser(
         prog="Behatrix",
         usage="\npython3 -m behatrix [options]",
         description="Behatrix command line utility",
-        epilog="See http://www.boris.unito.it/pages/behatrix for details :-)",
+        epilog="See http://www.boris.unito.it/behatrix for details :-)",
     )
     parser.add_argument("-v", "--version", action="store_true", dest="version", help="Behatrix version")
-    parser.add_argument(
-        "-s", "--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences"
-    )
+    parser.add_argument("-s", "--sequences", action="store", dest="sequences", help="Path of file containing behavioral sequences")
     parser.add_argument("--separator", action="store", dest="separator", default="", help="Separator of behaviors")
     parser.add_argument("-o", "--output", action="store", dest="output", help="Path of output files")
     parser.add_argument("--exclusions", action="store", dest="exclusions", help="Path of file containing exclusions")
-    parser.add_argument(
-        "--n-random", action="store", dest="nrandom", help="Number of permutations", type=int, default=0
-    )
-    parser.add_argument(
-        "--n-cpu", action="store", dest="n_cpu", help="Number of CPU to use for permutations test", type=int, default=0
-    )
-    parser.add_argument(
-        "--block-first", action="store_true", dest="block_first", help="block first behavior during permutations test"
-    )
-    parser.add_argument(
-        "--block-last", action="store_true", dest="block_last", help="block last behavior during permutations test"
-    )
+    parser.add_argument("--n-random", action="store", dest="nrandom", help="Number of permutations", type=int, default=0)
+    parser.add_argument("--n-cpu", action="store", dest="n_cpu", help="Number of CPU to use for permutations test", type=int, default=0)
+    parser.add_argument("--block-first", action="store_true", dest="block_first", help="block first behavior during permutations test")
+    parser.add_argument("--block-last", action="store_true", dest="block_last", help="block last behavior during permutations test")
     parser.add_argument(
         "--no-repetition",
         action="store_true",
@@ -1084,9 +1047,7 @@ def cli():
     )
     parser.add_argument("--n-gram", action="store", default=1, dest="ngram", help="n-gram value", type=int)
 
-    parser.add_argument(
-        "-q", "--quiet", action="store_true", dest="quiet", default=False, help="Do not print results on terminal"
-    )
+    parser.add_argument("-q", "--quiet", action="store_true", dest="quiet", default=False, help="Do not print results on terminal")
 
     args = parser.parse_args()
 
@@ -1108,9 +1069,7 @@ def cli():
     with open(args.sequences) as f_in:
         behav_str = f_in.read()
 
-        results = behatrix_functions.behavioral_sequence_analysis(
-            behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram
-        )
+        results = behatrix_functions.behavioral_sequence_analysis(behav_str, behaviors_separator=args.separator, chunk=0, ngram=args.ngram)
 
     if args.nrandom:
         nrandom = args.nrandom
@@ -1118,7 +1077,6 @@ def cli():
         nrandom = 0
 
     if nrandom:
-
         if args.exclusions:
             if not os.path.isfile(args.exclusions):
                 print(f"{args.exclusions} is not a file\n")
@@ -1158,9 +1116,7 @@ def cli():
             for seq in results["sequences"]:
                 countBehaviour += seq.count(behaviour)
 
-            print(
-                f"{behaviour}\t{countBehaviour / results['tot_nodes']:.3f}\t{countBehaviour} / {results['tot_nodes']}"
-            )
+            print(f"{behaviour}\t{countBehaviour / results['tot_nodes']:.3f}\t{countBehaviour} / {results['tot_nodes']}")
 
         # n-grams
         if args.ngram > 1:
@@ -1170,7 +1126,6 @@ def cli():
     observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], results["behaviours"])
 
     if not args.quiet:
-
         behaviours_str = "\t".join(list(results["behaviours"]))
         out = f"\t{behaviours_str}\n"
         for r in range(observed_matrix.shape[0]):
@@ -1205,7 +1160,6 @@ def cli():
 
     # check if permutations test required
     if nrandom:
-
         if args.n_cpu:
             num_proc = args.n_cpu
         else:
@@ -1220,7 +1174,6 @@ def cli():
             lst = []
             n_required_randomizations = 0
             for i in range(num_proc):
-
                 if i < num_proc - 1:
                     n_random_by_proc = nrandom // num_proc
                 else:

@@ -4,15 +4,13 @@ from setuptools import setup
 
 setup(
     name="behatrix",
-    version=[x for x in open("behatrix/version.py", "r").read().split("\n") if "__version__" in x][0]
-    .split(" = ")[1]
-    .replace('"', ""),
+    version=[x for x in open("behatrix/version.py", "r").read().split("\n") if "__version__" in x][0].split(" = ")[1].replace('"', ""),
     description="Behatrix - Behavioral Sequences Analysis with permutation test",
     author="Olivier Friard - Marco Gamba",
     author_email="olivier.friard@unito.it",
     long_description=open("README_pip.rst", "r").read(),
     long_description_content_type="text/x-rst",
-    url="http://www.boris.unito.it/pages/behatrix",
+    url="http://www.boris.unito.it/behatrix",
     python_requires=">=3.6",
     classifiers=[
         "Operating System :: OS Independent",

@@ -322,7 +322,7 @@ Usage of command line utility
       --n-gram NGRAM        n-gram value
       -q, --quiet           Do not print results on terminal
 
-    See http://www.boris.unito.it/pages/behatrix for details :-)
+    See http://www.boris.unito.it/behatrix for details :-)
 
 
 

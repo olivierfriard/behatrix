@@ -25,6 +25,7 @@ import itertools
 import random
 import numpy as np
 from typing import Tuple
+import collections
 
 
 def remove_comments(s: str) -> str:
@@ -92,7 +93,6 @@ def behavioral_sequence_analysis(
     line_count = 0
 
     for seq in seq_list:
-
         r = seq
         # check if repetitions
         if flag_remove_repetitions:
@@ -114,7 +114,6 @@ def behavioral_sequence_analysis(
                 nodes[node] = 1
 
         for i in range(len(r) - 1):
-
             # starting node
             if i == 0:
                 if r[i] in starting_nodes:
@@ -136,7 +135,6 @@ def behavioral_sequence_analysis(
     tot_trans_after_node = {}
 
     for transition in transitions:
-
         if transition[0] in tot_trans_after_node:
             tot_trans_after_node[transition[0]] += transitions[transition]
         else:
@@ -156,39 +154,43 @@ def behavioral_sequence_analysis(
 
     behaviours.sort()
 
-    out_ngrams = ""
-
+    # count n-grams
+    out_ngrams: str = ""
+    ngram_transitions: dict = {}
+    tot_ngrams: list = []
+    count_ngram = []
     if ngram > 1:
-        tot_ngrams, uniq_ngrams = [], []
+        tot_ngrams = []
         for sequence in sequences:
-            tot_ngrams.extend(
-                [
-                    tuple(sequence[i : i + ngram])
-                    for i, _ in enumerate(sequence)
-                    if len(sequence[i : i + ngram]) == ngram
-                ]
-            )
+            tot_ngrams.extend([tuple(sequence[i : i + ngram]) for i, _ in enumerate(sequence) if len(sequence[i : i + ngram]) == ngram])
 
-        uniq_ngrams = list(dict.fromkeys(tot_ngrams))
-
-        for element in sorted(uniq_ngrams):
-
-            ngram_count = sum(
-                [
-                    [
-                        tuple(sequence[i : i + ngram])
-                        for i, _ in enumerate(sequence)
-                        if len(sequence[i : i + ngram]) == ngram
-                    ].count(element)
-                    for sequence in sequences
-                ]
-            )
-
+        count_ngram = collections.Counter(tot_ngrams)
+        for group in count_ngram:
             out_ngrams += (
-                f"{behaviors_separator.join(element)}\t"
-                f"{ngram_count / len(tot_ngrams):.3f}\t"
-                f"{ngram_count} / {len(tot_ngrams)}\n"
+                f"{behaviors_separator.join(group)}\t"
+                f"{count_ngram[group] / len(tot_ngrams):.3f}\t"
+                f"{count_ngram[group]} / {len(tot_ngrams)}\n"
             )
+
+        # n-grams transitions
+        for sequence in sequences:
+            for group in count_ngram:
+                count_ngram_transition = collections.Counter(
+                    [
+                        tuple(sequence[i + ngram : i + ngram * 2])
+                        for i in range(len(sequence))
+                        if behaviors_separator.join(sequence).startswith(behaviors_separator.join(group), i)
+                        and len(sequence[i + ngram : i + ngram * 2]) == ngram
+                    ]
+                )
+                print(group, list(count_ngram_transition))
+                for ngram_transition in count_ngram_transition:
+                    if (group, ngram_transition) not in ngram_transitions:
+                        ngram_transitions[(group, ngram_transition)] = 0
+                    ngram_transitions[(group, ngram_transition)] += count_ngram_transition[ngram_transition]
+
+            print()
+            print(f"{ngram_transitions=}")
 
     return {
         "sequences": sequences,
@@ -200,6 +202,10 @@ def behavioral_sequence_analysis(
         "tot_trans_after_node": tot_trans_after_node,
         "behaviours": behaviours,
         "out_ngrams": out_ngrams,
+        "ngrams_total_number": len(tot_ngrams),
+        "uniq_ngrams_number": len(count_ngram),
+        "ngram_list": list(count_ngram),
+        "ngram_transitions": ngram_transitions,
     }
 
 
@@ -266,20 +272,14 @@ def draw_diagram(
     significativity=None,
     behaviors=[],
 ) -> tuple:
-
     """
     create code for GraphViz
     return string containing graphviz code
     """
 
-    def f_edge_label(
-        edge_label, node1, node2, n_transition, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1
-    ):
-
+    def f_edge_label(edge_label, node1, node2, n_transition, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1):
         if edge_label == "fraction_node":
-            return (
-                f'"{node1}" -> "{node2}" [label = "  {n_transition}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
-            )
+            return f'"{node1}" -> "{node2}" [label = "  {n_transition}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
 
         elif edge_label == "percent_node":
             percent = n_transition / tot_trans_after_node_i0 * 100
@@ -314,19 +314,11 @@ def draw_diagram(
 
     nodes_list = []
 
-    '''
-    for node in nodes:
-        nodes_out += f'"{node}"\n'
-    '''
-
     edges_out = "\n/* edges */\n"
 
     if cutoff_all:
-
         for i in unique_transitions:
-
             if unique_transitions[i] / tot_trans * 100.0 >= cutoff_all:
-
                 if i[0] in starting_nodes:
                     node1 = f"{i[0]} ({starting_nodes[i[0]]})"
                 else:
@@ -341,11 +333,7 @@ def draw_diagram(
                 nodes_list.append(node1)
                 nodes_list.append(node2)
 
-                pen_width = (
-                    width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
-                    if significativity is not None
-                    else 1
-                )
+                pen_width = width(significativity[behaviors.index(i[0]), behaviors.index(i[1])]) if significativity is not None else 1
 
                 edges_out += f_edge_label(
                     edge_label,
@@ -357,14 +345,10 @@ def draw_diagram(
                     decimals_number,
                     pen_width,
                 )
-       
 
     elif cutoff_behavior:
-
         for i in unique_transitions:
-
             if unique_transitions[i] / tot_trans_after_node[i[0]] * 100 >= cutoff_behavior:
-
                 if i[0] in starting_nodes and include_first:
                     node1 = f"{i[0]} ({starting_nodes[i[0]]})"
                 else:
@@ -379,11 +363,7 @@ def draw_diagram(
                 nodes_list.append(node1)
                 nodes_list.append(node2)
 
-                pen_width = (
-                    width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
-                    if significativity is not None
-                    else 1
-                )
+                pen_width = width(significativity[behaviors.index(i[0]), behaviors.index(i[1])]) if significativity is not None else 1
 
                 edges_out += f_edge_label(
                     edge_label,
@@ -397,9 +377,7 @@ def draw_diagram(
                 )
 
     else:
-
         for i in unique_transitions:
-
             if i[0] in starting_nodes:
                 node1 = f"{i[0]} ({starting_nodes[i[0]]})"
             else:
@@ -414,12 +392,7 @@ def draw_diagram(
             nodes_list.append(node1)
             nodes_list.append(node2)
 
-
-            pen_width = (
-                width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
-                if significativity is not None
-                else 1
-            )
+            pen_width = width(significativity[behaviors.index(i[0]), behaviors.index(i[1])]) if significativity is not None else 1
 
             edges_out += f_edge_label(
                 edge_label,
@@ -514,7 +487,6 @@ def permutations_test(
         perm_sequences = []
 
         for seq in sequences:
-
             if block_first:
                 newseq = [seq[0]]
                 element = seq[0]
@@ -523,7 +495,6 @@ def permutations_test(
                 element = ""
 
             for c in seq[int(block_first) : len(seq) - int(block_last)]:
-
                 if element in exclusion_list:
                     lspazio3 = list(space)
                     # remove element that are not permitted
@@ -546,7 +517,6 @@ def permutations_test(
 
                 # check penultimate element
                 if block_last and len(newseq) == len(seq) - 2:  # DO NOT REPEAT LAST BEHAVIOUR
-
                     while (new_element in exclusion_list) and (seq[-1] in exclusion_list[new_element]):
                         if lspazio2:
                             new_element = random.choice(lspazio2)
@@ -589,7 +559,6 @@ def permutations_test(
     results = np.zeros((len(behaviours), len(behaviours)))
 
     while True:
-
         permuted_sequences = strings_permutation(space, sequences, exclusion_list, block_first, block_last)
 
         count_tot += 1
