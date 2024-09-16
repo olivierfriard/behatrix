@@ -499,6 +499,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # self.pb_save_results.setText("Save transition matrix")
             self.pb_save_results.setVisible(True)
+        else:
+            self.pte_observed_transitions.clear()
 
     def graphviz_script(self):
         """
