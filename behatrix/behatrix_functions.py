@@ -183,14 +183,10 @@ def behavioral_sequence_analysis(
                         and len(sequence[i + ngram : i + ngram * 2]) == ngram
                     ]
                 )
-                print(group, list(count_ngram_transition))
                 for ngram_transition in count_ngram_transition:
                     if (group, ngram_transition) not in ngram_transitions:
                         ngram_transitions[(group, ngram_transition)] = 0
                     ngram_transitions[(group, ngram_transition)] += count_ngram_transition[ngram_transition]
-
-            print()
-            print(f"{ngram_transitions=}")
 
     return {
         "sequences": sequences,
@@ -206,6 +202,7 @@ def behavioral_sequence_analysis(
         "uniq_ngrams_number": len(count_ngram),
         "ngram_list": list(count_ngram),
         "ngram_transitions": ngram_transitions,
+        "ngram_count": dict(count_ngram),
     }
 
 

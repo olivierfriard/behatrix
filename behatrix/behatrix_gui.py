@@ -264,7 +264,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         about_dialog.setInformativeText(
             (
                 f"<b>Behatrix</b> {version.__version__} - {version.__version_date__}"
-                "<p>Copyright &copy; 2017-2022 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
+                "<p>Copyright &copy; 2017-2024 Olivier Friard - Marco Gamba - Sergio Castellano<br>"
                 "Department of Life Sciences and Systems Biology<br>"
                 "University of Torino - Italy<br>"
                 "<br>"
@@ -421,22 +421,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             output = ""
             output += f"Number of sequences: {len(results['sequences'])}\n\n"
 
-            output += "\nStatistics\n==========\n"
-            output += f"Number of different behaviours: {len(results['behaviours'])}\n"
-            output += f"Total number of behaviours: {results['tot_nodes']}\n"
-            output += f"Number of different transitions: {len(results['transitions'])}\n"
-            output += f"Total number of transitions: {results['tot_trans']}\n"
-            output += "\nBehaviours list\n===============\n{}\n".format("\n".join(results["behaviours"]))
-            output += "\nBehaviours frequencies\n"
-            output += "=" * 30
-            output += "\n"
+            if self.sb_ngram.value() == 1:
+                output += "\nStatistics\n==========\n"
+                output += f"Number of different behaviours: {len(results['behaviours'])}\n"
+                output += f"Total number of behaviours: {results['tot_nodes']}\n"
+                output += f"Number of different transitions: {len(results['transitions'])}\n"
+                output += f"Total number of transitions: {results['tot_trans']}\n"
+                output += "\nBehaviours list\n===============\n{}\n".format("\n".join(results["behaviours"]))
+                output += "\nBehaviours frequencies\n"
+                output += "=" * 30
+                output += "\n"
 
-            for behaviour in sorted(results["behaviours"]):
-                countBehaviour = 0
-                for seq in results["sequences"]:
-                    countBehaviour += seq.count(behaviour)
+                for behaviour in sorted(results["behaviours"]):
+                    countBehaviour = 0
+                    for seq in results["sequences"]:
+                        countBehaviour += seq.count(behaviour)
 
-                output += f"{behaviour}\t{countBehaviour / results['tot_nodes']:.3f}\t{countBehaviour} / {results['tot_nodes']}\n"
+                    output += f"{behaviour}\t{countBehaviour / results['tot_nodes']:.3f}\t{countBehaviour} / {results['tot_nodes']}\n"
 
             # n-grams
             if self.sb_ngram.value() > 1:
@@ -489,14 +490,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         matrix of observed transitions
         """
 
-        if self.pte_behav_seq.toPlainText():
-            results = behatrix_functions.behavioral_sequence_analysis(
-                self.pte_behav_seq.toPlainText(),
-                behaviors_separator=self.le_behaviors_separator.text(),
-                chunk=0,
-                flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
-            )
+        if not self.pte_behav_seq.toPlainText():
+            self.pte_observed_transitions.clear()
+            return
+        results = behatrix_functions.behavioral_sequence_analysis(
+            self.pte_behav_seq.toPlainText(),
+            behaviors_separator=self.le_behaviors_separator.text(),
+            chunk=0,
+            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+            ngram=self.sb_ngram.value(),
+        )
+        if self.sb_ngram.value() > 1:
+            observed_matrix = np.zeros((len(results["ngram_list"]), len(results["ngram_list"])))
+            for ngram1 in results["ngram_list"]:
+                for ngram2 in results["ngram_list"]:
+                    if (ngram1, ngram2) in results["ngram_transitions"]:
+                        observed_matrix[results["ngram_list"].index(ngram1), results["ngram_list"].index(ngram2)] = results[
+                            "ngram_transitions"
+                        ][(ngram1, ngram2)]
 
+            ngrams_str = "\t".join([self.le_behaviors_separator.text().join(x) for x in results["ngram_list"]])
+            out = f"\t{ngrams_str}\n"
+            for r in range(observed_matrix.shape[0]):
+                out += f"{self.le_behaviors_separator.text().join(results['ngram_list'][r])}\t"
+                out += "\t".join([str(int(x)) for x in observed_matrix[r, :]]) + "\n"
+
+        else:
             observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], results["behaviours"])
 
             # display results
@@ -508,12 +527,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 out += f"{results['behaviours'][r]}\t"
                 out += "\t".join([str(int(x)) for x in observed_matrix[r, :]]) + "\n"
 
-            self.pte_observed_transitions.setPlainText(out)
+        self.pte_observed_transitions.setPlainText(out)
 
-            # self.pb_save_results.setText("Save transition matrix")
-            self.pb_save_results.setVisible(True)
-        else:
-            self.pte_observed_transitions.clear()
+        # self.pb_save_results.setText("Save transition matrix")
+        self.pb_save_results.setVisible(True)
 
     def graphviz_script(self):
         """
@@ -532,6 +549,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             behaviors_separator=self.le_behaviors_separator.text(),
             chunk=0,
             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+            ngram=self.sb_ngram.value(),
         )
 
         # type of labels
@@ -550,22 +568,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "Behatrix", "Adding significativity to graph requires p values from permutations test")
             return
 
-        (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = behatrix_functions.draw_diagram(
-            cutoff_all=self.sb_cutoff_total_transition.value() if self.rb_percent_total_transitions.isChecked() else None,
-            cutoff_behavior=self.sb_cutoff_transition_after_behav.value() if self.rb_percent_after_behav.isChecked() else None,
-            unique_transitions=results["transitions"],
-            nodes=results["nodes"],
-            starting_nodes=[],
-            tot_nodes=results["tot_nodes"],
-            tot_trans=results["tot_trans"],
-            tot_trans_after_node=results["tot_trans_after_node"],
-            edge_label=edge_label,
-            decimals_number=self.sb_decimals.value(),
-            significativity=self.permutations_test_matrix
-            if (self.permutations_test_matrix is not None) and (self.cb_plot_significativity.isChecked())
-            else None,
-            behaviors=results["behaviours"],
-        )
+        if self.sb_ngram.value() > 1:
+            tot_trans_after_ngram = {}
+            for transition in results["ngram_transitions"]:
+                if self.le_behaviors_separator.text().join(transition[0]) not in tot_trans_after_ngram:
+                    tot_trans_after_ngram[self.le_behaviors_separator.text().join(transition[0])] = 0
+                tot_trans_after_ngram[self.le_behaviors_separator.text().join(transition[0])] += results["ngram_transitions"][transition]
+
+            (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = behatrix_functions.draw_diagram(
+                cutoff_all=self.sb_cutoff_total_transition.value() if self.rb_percent_total_transitions.isChecked() else None,
+                cutoff_behavior=self.sb_cutoff_transition_after_behav.value() if self.rb_percent_after_behav.isChecked() else None,
+                unique_transitions={
+                    tuple(self.le_behaviors_separator.text().join(x) for x in k): results["ngram_transitions"][k]
+                    for k in results["ngram_transitions"]
+                },
+                nodes={self.le_behaviors_separator.text().join(k): results["ngram_count"][k] for k in results["ngram_count"]},
+                starting_nodes=[],
+                tot_nodes=results["ngrams_total_number"],
+                tot_trans=sum([results["ngram_transitions"][x] for x in results["ngram_transitions"]]),
+                tot_trans_after_node=tot_trans_after_ngram,
+                edge_label=edge_label,
+                decimals_number=self.sb_decimals.value(),
+                significativity=self.permutations_test_matrix
+                if (self.permutations_test_matrix is not None) and (self.cb_plot_significativity.isChecked())
+                else None,
+                behaviors=results["behaviours"],
+            )
+
+        else:
+            (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = behatrix_functions.draw_diagram(
+                cutoff_all=self.sb_cutoff_total_transition.value() if self.rb_percent_total_transitions.isChecked() else None,
+                cutoff_behavior=self.sb_cutoff_transition_after_behav.value() if self.rb_percent_after_behav.isChecked() else None,
+                unique_transitions=results["transitions"],
+                nodes=results["nodes"],
+                starting_nodes=[],
+                tot_nodes=results["tot_nodes"],
+                tot_trans=results["tot_trans"],
+                tot_trans_after_node=results["tot_trans_after_node"],
+                edge_label=edge_label,
+                decimals_number=self.sb_decimals.value(),
+                significativity=self.permutations_test_matrix
+                if (self.permutations_test_matrix is not None) and (self.cb_plot_significativity.isChecked())
+                else None,
+                behaviors=results["behaviours"],
+            )
 
         if nodes_list != self.mem_behaviours:
             self.pte_gv_nodes.setPlainText(nodes_out)
