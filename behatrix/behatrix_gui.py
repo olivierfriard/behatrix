@@ -426,8 +426,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             output += f"Total number of behaviours: {results['tot_nodes']}\n"
             output += f"Number of different transitions: {len(results['transitions'])}\n"
             output += f"Total number of transitions: {results['tot_trans']}\n"
-            output += "\nBehaviours list:\n================\n{}\n".format("\n".join(results["behaviours"]))
-            output += "\nBehaviours frequencies:\n=======================\n"
+            output += "\nBehaviours list\n===============\n{}\n".format("\n".join(results["behaviours"]))
+            output += "\nBehaviours frequencies\n"
+            output += "=" * 30
+            output += "\n"
 
             for behaviour in sorted(results["behaviours"]):
                 countBehaviour = 0
@@ -438,7 +440,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # n-grams
             if self.sb_ngram.value() > 1:
-                output += f"\nFrequencies of {self.sb_ngram.value()}-grams:\n=======================\n"
+                output += f"\n\n{self.sb_ngram.value()}-grams\n"
+                output += "=" * 20
+                output += "\n"
+                output += f"Number of different {self.sb_ngram.value()}-grams: {results['uniq_ngrams_number']}\n"
+                output += f"Total number of {self.sb_ngram.value()}-grams: {results['ngrams_total_number']}\n"
+                output += f"Number of different transitions: {len(results['ngram_transitions'])}\n"
+                output += f"Total number of transitions: {sum([results['ngram_transitions'][k] for k in results['ngram_transitions']])}\n"
+
+                output += "\n"
+                output += "\nFrequencies\n"
+                output += "=" * 30
+                output += "\n"
                 output += results["out_ngrams"]
 
             self.pte_statistics.setPlainText(output)
