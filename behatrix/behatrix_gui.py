@@ -2,7 +2,7 @@
 Behatrix
 Behavioral sequences analysis with permutations test
 
-Copyright 2017-2022 Olivier Friard
+Copyright 2017-2024 Olivier Friard
 
 This file is part of Behatrix.
 

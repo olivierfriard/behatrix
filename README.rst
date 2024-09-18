@@ -58,7 +58,7 @@ Download the **behatrix-x.y.z.dmg** image file, mount it and launch the **behatr
 From sources (all platforms)
 ------------------------------------------------------------------------------------------------------------------------
 
-You will need a working installation of Python >=3.6.
+You will need a working installation of Python >=3.10.
 
 * Create a virtual environment (to isolate Behatrix from your system):
 
@@ -380,7 +380,7 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
 Legal
 ========================
 
-Copyright 2017-2022 Olivier Friard
+Copyright 2017-2024 Olivier Friard
 
 **Behatrix** is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
