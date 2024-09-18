@@ -1,6 +1,6 @@
 [project]
 name = "behatrix"
-version = "0.10"
+version = "0.10.1"
 description = "Behatrix - Behavioral Sequences Analysis with permutation test"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -9,8 +9,6 @@ classifiers=[
         "Operating System :: OS Independent",
         "Intended Audience :: Science/Research",
         "Intended Audience :: Education",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
