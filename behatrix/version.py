@@ -21,5 +21,5 @@ This file is part of Behatrix.
 
 """
 
-__version__ = "0.10.1"
+__version__ = "0.10.2"
 __version_date__ = "2024-09-18"
