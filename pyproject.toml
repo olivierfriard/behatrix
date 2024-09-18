@@ -1,6 +1,6 @@
 [project]
 name = "behatrix"
-version = "0.10.2"
+version = "0.10.3"
 description = "Behatrix - Behavioral Sequences Analysis with permutation test"
 authors = [{ name="Olivier Friard", email="olivier.friard@unito.it" }]
 readme = "README.md"
