@@ -3,7 +3,7 @@ name = "behatrix"
 version = "0.10"
 description = "Behatrix - Behavioral Sequences Analysis with permutation test"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 classifiers=[
         "Operating System :: OS Independent",
@@ -21,7 +21,7 @@ classifiers=[
     ]
 dependencies = [
     "numpy>=1.26.4",
-    "pyqt5>=5.15",
+    "pyqt5==5.15.2",
 ]
 
 [project.urls]
