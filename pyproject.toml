@@ -19,7 +19,8 @@ classifiers=[
     ]
 dependencies = [
     "numpy>=1.26.4",
-    "pyqt5==5.15.2",
+    "pyqt5-qt5==5.15.2",
+    "pyqt5==5.15.6",
 ]
 
 [project.urls]
