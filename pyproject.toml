@@ -33,3 +33,6 @@ Documentation = "https://github.com/olivierfriard/behatrix/blob/master/README.rs
 Change_log = "https://github.com/olivierfriard/behatrix/wiki/revision-history"
 Source_code = "https://github.com/olivierfriard/behatrix"
 Issues = "https://github.com/olivierfriard/behatrix/issues"
+
+[project.scripts]
+behatrix = "behatrix:main"
