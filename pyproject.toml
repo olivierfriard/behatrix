@@ -1,7 +1,32 @@
 [project]
 name = "behatrix"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.10"
+description = "Behatrix - Behavioral Sequences Analysis with permutation test"
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = []
+requires-python = ">=3.8"
+
+classifiers=[
+        "Operating System :: OS Independent",
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: Education",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: Visualization",
+        "Operating System :: OS Independent"
+    ]
+dependencies = [
+    "numpy>=1.26.4",
+    "pyqt5>=5.15",
+]
+
+[project.urls]
+Homepage = "http://www.boris.unito.it/behatrix"
+Documentation = "https://github.com/olivierfriard/behatrix/blob/master/README.rst"
+Change_log = "https://github.com/olivierfriard/behatrix/wiki/revision-history"
+Source_code = "https://github.com/olivierfriard/behatrix"
+Issues = "https://github.com/olivierfriard/behatrix/issues"
