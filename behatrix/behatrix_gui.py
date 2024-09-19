@@ -36,10 +36,10 @@ import logging
 import datetime as dt
 
 import numpy as np
-from PyQt5 import QtSvg
-from PyQt5.QtCore import QSettings, Qt, pyqtSignal
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QMenu
+from PySide6.QtSvgWidgets import QSvgWidget
+from PySide6.QtCore import QSettings, Qt, Signal
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QMenu, QPlainTextEdit
 
 from . import behatrix_functions
 from . import behatrix_qrc
@@ -55,7 +55,7 @@ logging.basicConfig(
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    permutations_finished_signal = pyqtSignal(list)
+    permutations_finished_signal = Signal(list)
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -67,7 +67,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.setWindowTitle("Behatrix - Behavioral Sequences Analysis")
 
-        self.svg_display = QtSvg.QSvgWidget()
+        self.svg_display = QSvgWidget()
         self.script_diagram_splitter.insertWidget(2, self.svg_display)
 
         self.lb_flow_chart.deleteLater()
@@ -76,9 +76,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.vertical_splitter.setStretchFactor(1, 10)
         self.script_diagram_splitter.setStretchFactor(1, 1)
 
-        self.pte_statistics.setLineWrapMode(False)
-        self.pte_gv_edges.setLineWrapMode(False)
-        self.pte_random.setLineWrapMode(False)
+        self.pte_statistics.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.pte_gv_edges.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.pte_random.setLineWrapMode(QPlainTextEdit.NoWrap)
 
         self.pb_clear_behavioral_strings.clicked.connect(self.clear_sequences)
 
@@ -134,7 +134,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_clear_excluded_transitions.clicked.connect(self.pte_excluded_transitions.clear)
         self.pb_run_permutations_test.clicked.connect(self.permutation_test)
         self.pb_save_random.clicked.connect(self.save_permutations_test_results)
-        self.pte_behav_seq.setLineWrapMode(0)
+        self.pte_behav_seq.setLineWrapMode(QPlainTextEdit.NoWrap)
         num_available_proc = os.cpu_count()
         self.sb_nb_cores.setMinimum(1)
         self.sb_nb_cores.setMaximum(num_available_proc)
@@ -147,7 +147,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_levenshtein.clicked.connect(self.levenshtein_distance)
         self.pb_needleman_wunsch.clicked.connect(self.needleman_wunsch_identity)
         self.pb_save_distances.clicked.connect(self.save_distances_results)
-        self.pte_distances_results.setLineWrapMode(0)
+        self.pte_distances_results.setLineWrapMode(QPlainTextEdit.NoWrap)
 
         self.permutations_test_matrix = None
 
@@ -1079,7 +1079,7 @@ def main():
     mainWindow = MainWindow()
     mainWindow.show()
     mainWindow.raise_()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 def cli():
