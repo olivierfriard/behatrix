@@ -470,7 +470,7 @@ def permutations_test(
         create permutations of sequences following exclusions list, block first/last behavior
 
         Args:
-            space (list): list of all behaviors ocuurences
+            space (list): list of all behaviors occurences
             sequences (list): list of behavioral sequences
             exclusion_list (dict): dict of excluded behaviors
             block_first (bool):
@@ -481,15 +481,15 @@ def permutations_test(
         """
 
         space = list(space)
-        perm_sequences = []
+        perm_sequences: list = []
 
         for seq in sequences:
             if block_first:
-                newseq = [seq[0]]
+                newseq: list = [seq[0]]
                 element = seq[0]
             else:
-                newseq = []
-                element = ""
+                newseq: list = []
+                element: str = ""
 
             for c in seq[int(block_first) : len(seq) - int(block_last)]:
                 if element in exclusion_list:
@@ -551,7 +551,8 @@ def permutations_test(
             if behavior not in exclusion_list[behavior]:
                 exclusion_list[behavior].append(behavior)
 
-    count, count_tot = 0, 0
+    count: int = 0
+    count_tot: int = 0
 
     results = np.zeros((len(behaviours), len(behaviours)))
 
