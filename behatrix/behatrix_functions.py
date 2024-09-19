@@ -493,18 +493,18 @@ def permutations_test(
 
             for c in seq[int(block_first) : len(seq) - int(block_last)]:
                 if element in exclusion_list:
-                    lspazio3 = list(space)
+                    space3 = list(space)
                     # remove element that are not permitted
                     for i in exclusion_list[element]:
                         # remove all excluded behaviors
-                        lspazio3 = list([x for x in lspazio3 if x != i])
+                        space3 = list([x for x in space3 if x != i])
 
-                    lspazio2 = list(lspazio3)
+                    space2 = list(space3)
                 else:
-                    lspazio2 = list(space)
+                    space2 = list(space)
 
-                if lspazio2:
-                    new_element = random.choice(lspazio2)
+                if space2:
+                    new_element = random.choice(space2)
 
                     # remove extracted behavior
                     space.remove(new_element)
@@ -515,19 +515,19 @@ def permutations_test(
                 # check penultimate element
                 if block_last and len(newseq) == len(seq) - 2:  # DO NOT REPEAT LAST BEHAVIOUR
                     while (new_element in exclusion_list) and (seq[-1] in exclusion_list[new_element]):
-                        if lspazio2:
-                            new_element = random.choice(lspazio2)
+                        if space2:
+                            new_element = random.choice(space2)
                         else:
                             return []
 
                         # remove last behaviour choosen and last behaviour from original string
-                        lspazio2 = list(space)
+                        space2 = list(space)
 
-                        if element in lspazio2:
-                            lspazio2 = list([x for x in lspazio2 if x != element])
+                        if element in space2:
+                            space2 = list([x for x in space2 if x != element])
 
-                        if seq[-1] in lspazio2:
-                            lspazio2 = list([x for x in lspazio2 if x != seq[-1]])
+                        if seq[-1] in space2:
+                            space2 = list([x for x in space2 if x != seq[-1]])
 
                 newseq.append(new_element)
                 element = new_element
@@ -539,7 +539,7 @@ def permutations_test(
 
         return perm_sequences
 
-    space = []
+    space: list = []
     for sequence in sequences:
         space += sequence[int(block_first) : len(sequence) - int(block_last)]
 
