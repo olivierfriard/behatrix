@@ -11,7 +11,7 @@ generate the code for a flow diagram representing the transitions between behavi
 
 
 
-= Features
+# Features
 
 
 - Behaviors statistics
@@ -22,15 +22,15 @@ generate the code for a flow diagram representing the transitions between behavi
 
 
 
-= Requirements
+# Requirements
 
 
-- PyQt5
+- PySide6
 - Numpy
 
 
 
-= Change Log
+# Change Log
 
 Please consult the [change log page](https://github.com/olivierfriard/behatrix/wiki/revision-history).
 
