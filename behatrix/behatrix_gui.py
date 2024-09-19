@@ -39,7 +39,7 @@ import numpy as np
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtCore import QSettings, Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
-from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QMenu, QPlainTextEdit
+from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QMenu, QPlainTextEdit, QTableWidgetItem, QTableWidget
 
 from . import behatrix_functions
 from . import behatrix_qrc
@@ -78,7 +78,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.pte_statistics.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.pte_gv_edges.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.pte_random.setLineWrapMode(QPlainTextEdit.NoWrap)
 
         self.pb_clear_behavioral_strings.clicked.connect(self.clear_sequences)
 
@@ -94,17 +93,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # behavioral sequences
 
         # add menu to save results button
-        save_results_menu_items = [
-            "Save the descriptive statistics|Descriptive statistics",
-            "Save the observed transitions|Observed transitions",
-        ]
+        self.menu = QMenu(self)
 
-        menu_data = QMenu()
-        menu_data.triggered.connect(lambda x: self.save_results(mode=x.statusTip()))
-        self.add_button_menu(save_results_menu_items, menu_data)
-        self.pb_save_results.setMenu(menu_data)
+        # Add actions to the menu
+        action_1 = self.menu.addAction("Save the descriptive statistics")
+        action_2 = self.menu.addAction("Save the observed transitions")
 
-        # self.pb_save_results.clicked.connect(self.save_results)
+        action_1.triggered.connect(lambda: self.save_results(mode="descriptive statistics"))
+        action_2.triggered.connect(lambda: self.save_results(mode="observed transitions"))
+
+        self.pb_save_results.setMenu(self.menu)
+
         self.pb_save_results.setVisible(False)
         self.pte_behav_seq.textChanged.connect(self.behavioral_sequences_changed)
         self.sb_ngram.valueChanged.connect(self.behavioral_sequences_changed)
@@ -178,6 +177,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.sb_cutoff_transition_after_behav.setEnabled(self.rb_percent_after_behav.isChecked())
         self.sb_cutoff_total_transition.setEnabled(self.rb_percent_total_transitions.isChecked())
+
+    def save_tablewidget_to_tsv(self, table_widget: QTableWidget, file_path: str):
+        """
+        Save the content of a QTableWidget to a TSV file.
+
+        :param table_widget: The QTableWidget instance containing the data.
+        :param file_path: The path where the TSV file will be saved.
+        """
+        # Open the file for writing
+        with open(file_path, "w") as file:
+            # Get the number of rows and columns
+            rows = table_widget.rowCount()
+            cols = table_widget.columnCount()
+
+            # Write the column headers, if present
+            headers = []
+            for col in range(cols):
+                header_item = table_widget.horizontalHeaderItem(col)
+                if header_item:
+                    headers.append(header_item.text())
+                else:
+                    headers.append("")  # Empty if no header
+            file.write("\t".join(headers) + "\n")
+
+            # Write the content of each cell
+            for row in range(rows):
+                row_data = []
+                for col in range(cols):
+                    item = table_widget.item(row, col)
+                    if item:
+                        row_data.append(item.text())
+                    else:
+                        row_data.append("")  # Empty cell
+                file.write("\t".join(row_data) + "\n")
 
     def excepthook(self, exception_type, exception_value, traceback_object):
         """
@@ -317,7 +350,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.pte_behav_seq.clear()
         self.pte_statistics.clear()
-        self.pte_observed_transitions.clear()
+        self.tw_observed_transitions.clear()
         self.pb_save_results.setVisible(False)
 
     def behavioral_sequences_changed(self):
@@ -329,7 +362,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.permutations_test_matrix = None
         self.cb_plot_significativity.setEnabled(False)
-        for w in [self.pte_statistics, self.pte_gv_edges, self.pte_random, self.pte_distances_results]:
+        for w in (self.pte_statistics, self.pte_gv_edges, self.tw_observed_transitions, self.tw_random, self.pte_distances_results):
             w.clear()
         # plot significativity
         self.cb_plot_significativity.setEnabled(False)
@@ -416,7 +449,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 ngram=self.sb_ngram.value(),
             )
 
-            print(f"{results=}")
+            # print(f"{results=}")
 
             output = ""
             output += f"Number of sequences: {len(results['sequences'])}\n\n"
@@ -460,30 +493,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # self.pb_save_results.setText("Save statistics")
             self.pb_save_results.setVisible(True)
 
-    def save_results(self, mode):
+    def save_results(self, mode: str) -> None:
         """
         save results on file (statistic and observed transitions matrix)
         """
-        print(mode)
-        if self.pte_statistics.toPlainText() == "" and self.pte_observed_transitions.toPlainText() == "":
+
+        if self.pte_statistics.toPlainText() == "" and (
+            self.tw_observed_transitions.rowCount() == 0 or self.tw_observed_transitions.columnCount() == 0
+        ):
             QMessageBox.warning(self, "Behatrix", "No results to save!")
             return
 
         file_name = QFileDialog(self).getSaveFileName(self, "Select the file to save the results", "", "All files (*)")[0]
-        if file_name:
-            if mode == "Save the descriptive statistics":
-                try:
-                    with open(file_name, "w") as f_out:
-                        f_out.write(self.pte_statistics.toPlainText())
-                except Exception:
-                    QMessageBox.critical(self, "Behatrix", "Descriptive statistics not saved!")
+        if not file_name:
+            return
 
-            if mode == "Save the observed transitions":
-                try:
-                    with open(file_name, "w") as f_out:
-                        f_out.write(self.pte_observed_transitions.toPlainText())
-                except Exception:
-                    QMessageBox.critical(self, "Behatrix", "Observed transitions not saved!")
+        if mode == "descriptive statistics":
+            try:
+                with open(file_name, "w") as f_out:
+                    f_out.write(self.pte_statistics.toPlainText())
+            except Exception:
+                QMessageBox.critical(self, "Behatrix", "Descriptive statistics not saved!")
+
+        if mode == "observed transitions":
+            self.save_tablewidget_to_tsv(self.tw_observed_transitions, file_name)
 
     def observed_matrix(self):
         """
@@ -491,7 +524,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         if not self.pte_behav_seq.toPlainText():
-            self.pte_observed_transitions.clear()
+            self.tw_observed_transitions.clear()
             return
         results = behatrix_functions.behavioral_sequence_analysis(
             self.pte_behav_seq.toPlainText(),
@@ -519,17 +552,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], results["behaviours"])
 
             # display results
-            # header
-            behaviours_str = "\t".join(list(results["behaviours"]))
-            out = f"\t{behaviours_str}\n"
+            rows = observed_matrix.shape[0]
+            self.tw_observed_transitions.setRowCount(rows)
+            self.tw_observed_transitions.setColumnCount(rows)
+            self.tw_observed_transitions.setHorizontalHeaderLabels(results["behaviours"])
+            self.tw_observed_transitions.setVerticalHeaderLabels(results["behaviours"])
+            for row in range(rows):
+                for col in range(rows):
+                    # Create a QTableWidgetItem with the string representation of the numpy element
+                    item = QTableWidgetItem(str(int(observed_matrix[row, col])))
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.tw_observed_transitions.setItem(row, col, item)
 
-            for r in range(observed_matrix.shape[0]):
-                out += f"{results['behaviours'][r]}\t"
-                out += "\t".join([str(int(x)) for x in observed_matrix[r, :]]) + "\n"
-
-        self.pte_observed_transitions.setPlainText(out)
-
-        # self.pb_save_results.setText("Save transition matrix")
         self.pb_save_results.setVisible(True)
 
     def graphviz_script(self):
@@ -717,7 +751,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     + "}"
                 )
 
-                print(pl.Path(dot_path).parent)
+                # print(pl.Path(dot_path).parent)
                 if self.comb_graphviz_engine.currentText() == "dot":
                     graphviz_engine = dot_path
                 else:
@@ -895,15 +929,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             nb_randomization_done += n_permut
             permutation_results += result
 
-        out = "\t{}\n".format("\t".join(list(self.behaviours)))
-
         self.permutations_test_matrix = permutation_results / nb_randomization_done
 
-        for r in range(self.permutations_test_matrix.shape[0]):
-            out += f"{self.behaviours[r]}\t"
-            out += "\t".join(["%8.6f" % x for x in self.permutations_test_matrix[r, :]]) + "\n"
-
-        self.pte_random.setPlainText(out)
+        rows = self.permutations_test_matrix.shape[0]
+        self.tw_random.setRowCount(rows)
+        self.tw_random.setColumnCount(rows)
+        self.tw_random.setHorizontalHeaderLabels(self.behaviours)
+        self.tw_random.setVerticalHeaderLabels(self.behaviours)
+        for row in range(rows):
+            for col in range(rows):
+                item = QTableWidgetItem(f"{self.permutations_test_matrix[row, col]:8.6f}")
+                item.setTextAlignment(Qt.AlignCenter)
+                self.tw_random.setItem(row, col, item)
 
         self.statusbar.showMessage("", 0)
 
@@ -923,7 +960,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         if self.pte_behav_seq.toPlainText():
-            self.pte_random.clear()
+            self.tw_random.clear()
 
             results = behatrix_functions.behavioral_sequence_analysis(
                 self.pte_behav_seq.toPlainText(),
@@ -997,17 +1034,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Save permutations test matrix
         """
-        if self.pte_random.toPlainText():
-            file_name, filter_ = QFileDialog().getSaveFileName(
-                self, "Select the file to save the results", "", "TSV files (*.tsv);;TXT files (*.txt);;All files (*)"
-            )
 
-            if file_name:
-                try:
-                    with open(file_name, "w") as f_out:
-                        f_out.write(self.pte_random.toPlainText())
-                except Exception:
-                    QMessageBox.critical(self, "Behatrix", "Results not saved!")
+        if self.tw_random.rowCount() == 0 or self.tw_random.columnCount() == 0:
+            QMessageBox.warning(self, "Behatrix", "No results to save!")
+            return
+
+        file_name, filter_ = QFileDialog().getSaveFileName(
+            self, "Select the file to save the results", "", "TSV files (*.tsv);;TXT files (*.txt);;All files (*)"
+        )
+
+        if not file_name:
+            return
+
+        self.save_tablewidget_to_tsv(self.tw_random, file_name)
 
     def levenshtein_distance(self):
         """

@@ -17,11 +17,12 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
-    QDoubleSpinBox, QHBoxLayout, QLabel, QLineEdit,
-    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
-    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
-    QSpinBox, QSplitter, QStatusBar, QTabWidget,
-    QVBoxLayout, QWidget)
+    QDoubleSpinBox, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QMainWindow, QMenu, QMenuBar,
+    QPlainTextEdit, QPushButton, QRadioButton, QSizePolicy,
+    QSpacerItem, QSpinBox, QSplitter, QStatusBar,
+    QTabWidget, QTableWidget, QTableWidgetItem, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -156,13 +157,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_7.addWidget(self.label_9)
 
-        self.pte_observed_transitions = QPlainTextEdit(self.layoutWidget1)
-        self.pte_observed_transitions.setObjectName(u"pte_observed_transitions")
-        self.pte_observed_transitions.setFont(font)
-        self.pte_observed_transitions.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.pte_observed_transitions.setReadOnly(True)
+        self.tw_observed_transitions = QTableWidget(self.layoutWidget1)
+        self.tw_observed_transitions.setObjectName(u"tw_observed_transitions")
 
-        self.verticalLayout_7.addWidget(self.pte_observed_transitions)
+        self.verticalLayout_7.addWidget(self.tw_observed_transitions)
 
         self.label_10 = QLabel(self.layoutWidget1)
         self.label_10.setObjectName(u"label_10")
@@ -537,12 +535,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_6.addWidget(self.label_15)
 
-        self.pte_random = QPlainTextEdit(self.tab_randomization)
-        self.pte_random.setObjectName(u"pte_random")
-        self.pte_random.setFont(font)
-        self.pte_random.setReadOnly(True)
+        self.tw_random = QTableWidget(self.tab_randomization)
+        self.tw_random.setObjectName(u"tw_random")
 
-        self.verticalLayout_6.addWidget(self.pte_random)
+        self.verticalLayout_6.addWidget(self.tw_random)
 
         self.horizontalLayout_11 = QHBoxLayout()
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
@@ -646,7 +642,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

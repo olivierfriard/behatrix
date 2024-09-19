@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
@@ -172,19 +172,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPlainTextEdit" name="pte_observed_transitions">
-                  <property name="font">
-                   <font>
-                    <family>Monospace</family>
-                   </font>
-                  </property>
-                  <property name="lineWrapMode">
-                   <enum>QPlainTextEdit::NoWrap</enum>
-                  </property>
-                  <property name="readOnly">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
+                 <widget class="QTableWidget" name="tw_observed_transitions"/>
                 </item>
                 <item>
                  <widget class="QLabel" name="label_10">
@@ -696,16 +684,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPlainTextEdit" name="pte_random">
-          <property name="font">
-           <font>
-            <family>Monospace</family>
-           </font>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
+         <widget class="QTableWidget" name="tw_random"/>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_11">
