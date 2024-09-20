@@ -142,35 +142,69 @@ Use the **Save results** button for both the statistics and the transition matri
 Example of statistics for 1-gram:
 
 ``` {.text}
-Number of sequences: 3
+Number of sequences: 3886
 
 
 Statistics
 ==========
-Number of different behaviours: 7
-Total number of behaviours: 23
-Number of different transitions: 12
-Total number of transitions: 20
+Number of different behaviours: 58
+Total number of behaviours: 48825
+Number of different transitions: 396
+Total number of transitions: 44939
 
-Behaviours list:
-================
+Behaviours list
+===============
 Alert
-Locomotion
-Manipulate
-Play in the water
-Play on the ground
-Roll objects
+Alert+Vocalize
+Alert+Yawn
+Allogroom
+Allogroom+Yawn
+Breed
+Carry objects
+Chase
+Defecate
+Defecate+Stomp
+Defecate+Stomp+Urinate
+Defecate+Stomp+Urinate+Yawn
+Defecate+Urinate
+[...]
 Swim
+Tear
+Urinate
+Urinate+Defecate+Yawn
+Urinate+Stomp+Defecate+Yawn
+Urinate+Stomp+Yawn
+Urinate+Yawn
+Vocalize
+Vomit
+Yawn
 
-Behaviours frequencies:
-=======================
-Alert                0.304	7 / 23
-Locomotion           0.087	2 / 23
-Manipulate           0.174	4 / 23
-Play in the water    0.043	1 / 23
-Play on the ground   0.043	1 / 23
-Roll objects         0.261	6 / 23
-Swim                 0.087	2 / 23
+Behaviours frequencies
+==============================
+Alert	0.205	10012 / 48825
+Alert+Vocalize	0.008	379 / 48825
+Alert+Yawn	0.001	43 / 48825
+Allogroom	0.005	266 / 48825
+Allogroom+Yawn	0.000	1 / 48825
+Breed	0.001	54 / 48825
+Carry objects	0.009	440 / 48825
+Chase	0.000	13 / 48825
+Defecate	0.004	215 / 48825
+Defecate+Stomp	0.002	95 / 48825
+Defecate+Stomp+Urinate	0.003	163 / 48825
+Defecate+Stomp+Urinate+Yawn	0.001	48 / 48825
+[...]
+Swim	0.016	763 / 48825
+Tear	0.002	116 / 48825
+Urinate	0.011	525 / 48825
+Urinate+Defecate+Yawn	0.000	9 / 48825
+Urinate+Stomp+Defecate+Yawn	0.000	1 / 48825
+Urinate+Stomp+Yawn	0.000	2 / 48825
+Urinate+Yawn	0.000	4 / 48825
+Vocalize	0.000	5 / 48825
+Vomit	0.000	2 / 48825
+Yawn	0.000	1 / 48825
+
 ```
 
 
@@ -178,22 +212,32 @@ Example of statistics for 2-gram:
 
 ``` {.text}
 
-    (...)
+Number of sequences: 3886
 
-    Frequencies of 2-grams:
-    =======================
-    Alert|Locomotion               0.050	1 / 20
-    Alert|Manipulate               0.050	1 / 20
-    Alert|Roll objects             0.250	5 / 20
-    Manipulate|Alert               0.100	2 / 20
-    Manipulate|Locomotion          0.050	1 / 20
-    Manipulate|Roll objects        0.050	1 / 20
-    Play in the water|Swim         0.050	1 / 20
-    Play on the ground|Manipulate  0.050	1 / 20
-    Roll objects|Alert             0.200	4 / 20
-    Roll objects|Manipulate        0.050	1 / 20
-    Swim|Alert                     0.050	1 / 20
-    Swim|Play in the water         0.050	1 / 20
+
+2-grams
+====================
+Number of different 2-grams: 396
+Total number of 2-grams: 44939
+Number of different transitions: 2572
+Total number of transitions: 7284
+
+
+Frequencies
+==============================
+Tear|Locomotion	0.001	34 / 44939
+Tear|Carry objects	0.001	25 / 44939
+Manipulate|Locomotion	0.019	835 / 44939
+Alert|Rest	0.012	529 / 44939
+Locomotion|Locomotion	0.020	903 / 44939
+Locomotion|Alert	0.037	1648 / 44939
+Alert|Locomotion	0.075	3381 / 44939
+Locomotion|Allogroom	0.000	9 / 44939
+Allogroom|Locomotion	0.001	26 / 44939
+Locomotion|Drink	0.000	17 / 44939
+Drink|Swim	0.000	5 / 44939
+Locomotion|Rest	0.003	121 / 44939
+Rest|Locomotion	0.003	145 / 44939
 ```
 
 
@@ -261,48 +305,48 @@ to be finished...
 
 
 
-Usage of command line utility
-------------------------------------------------------------------------------------------------------------------------
-
-.. code-block:: text
-
-
-    usage:
-    python3 -m behatrix [options]
-
-    Behatrix command line utility
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      -v, --version         Behatrix version
-      -s SEQUENCES, --sequences SEQUENCES
-                            Path of file containing behavioral sequences
-      --separator SEPARATOR
-                            Separator of behaviors
-      -o OUTPUT, --output OUTPUT
-                            Path of output files
-      --exclusions EXCLUSIONS
-                            Path of file containing exclusions
-      --n-random NRANDOM    Number of permutations
-      --n-cpu N_CPU         Number of CPU to use for permutations test
-      --block-first         block first behavior during permutations test
-      --block-last          block last behavior during permutations test
-      --no-repetition       exclude repetitions during permutations test
-      --n-gram NGRAM        n-gram value
-      -q, --quiet           Do not print results on terminal
-
-    See http://www.boris.unito.it/behatrix for details :-)
+# Usage of command line utility
 
 
 
+``` {.text}
+   usage:
+   python3 -m behatrix [options]
 
-Example of use
-....................
+   Behatrix command line utility
 
-.. code-block:: text
+   optional arguments:
+   -h, --help            show this help message and exit
+   -v, --version         Behatrix version
+   -s SEQUENCES, --sequences SEQUENCES
+                           Path of file containing behavioral sequences
+   --separator SEPARATOR
+                           Separator of behaviors
+   -o OUTPUT, --output OUTPUT
+                           Path of output files
+   --exclusions EXCLUSIONS
+                           Path of file containing exclusions
+   --n-random NRANDOM    Number of permutations
+   --n-cpu N_CPU         Number of CPU to use for permutations test
+   --block-first         block first behavior during permutations test
+   --block-last          block last behavior during permutations test
+   --no-repetition       exclude repetitions during permutations test
+   --n-gram NGRAM        n-gram value
+   -q, --quiet           Do not print results on terminal
 
+   See http://www.boris.unito.it/behatrix for details :-)
+```
+
+
+
+
+
+## Example of use
+
+
+``` {.bash}
     python3 -m behatrix --sequences behav_sequences.txt --output behav_sequences_results --n_cpu 6 --n_random 10000
-
+ ```
 
 
 Example of behavioral sequences file
@@ -310,7 +354,7 @@ Example of behavioral sequences file
 
 Behaviors are separated by the pipe character (|) otherwise each character will be interpreted as a behavior
 
-.. code-block:: text
+``` {.bash}
 
   Swim|Play in the water|Play in the water
   Swim|Play in the water|Swim|Swim|Play in the water|Swim|Play in the water|Play in the water|Alert|Locomotion|Swim
@@ -343,11 +387,10 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
   Locomotion|Alert|Locomotion|Alert|Locomotion
   Swim|Swim|Locomotion|Locomotion+Sniff|Locomotion|Locomotion+Sniff|Sniff|Sniff|Swim|Locomotion|Locomotion|Locomotion|Swim|Alert|Swim|Swim|Alert|Eat|Alert|Swim|Alert|Sniff|Eat|Dig|Eat|Locomotion|Dig|Eat|Swim|Alert|Sniff|Alert|Sniff|Dig|Eat|Dig|Eat|Dig|Sniff|Dig|Alert|Dig|Alert|Locomotion
   Sniff|Eat|Sniff|Dig|Eat|Dig|Swim
+```
 
 
-
-Legal
-========================
+# Legal
 
 Copyright 2017-2024 Olivier Friard
 
@@ -358,6 +401,6 @@ the Free Software Foundation; either version 2, or any later version.
 **Behatrix** is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-`GNU General Public License <http://www.gnu.org/copyleft/gpl.html>`_ for more details.
+[GNU General Public License](http://www.gnu.org/copyleft/gpl.html) for more details.
 
 
