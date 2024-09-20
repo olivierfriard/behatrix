@@ -1,15 +1,16 @@
-.. image:: behatrix/icons/behatrix_128px.png
-   :alt: Behatrix logo
 
-
-
-
-============================================================================================================================================
 Behatrix
-============================================================================================================================================
+==================
 
-:Author: Olivier Friard
-:Author: Marco Gamba
+![Behatrix logo](behatrix/icons/behatrix_128px.png)
+
+
+
+| Authors       |               |
+| ------------- | ------------- |
+| Olivier Friard and Marco Gamba |
+| Department of Life Science and Systems Biology |
+| University of Torino, Italy |
 
 
 **Behavioral sequences analysis with random permutations test**
@@ -18,17 +19,12 @@ Behatrix
 **Behatrix is free and open-source software available for GNU/Linux, Windows and MacOS.**
 
 
-**Behatrix** was formerly named BSA (Behavioral Strings Analysis)
+The details of modifications are available on the [change log](https://github.com/olivierfriard/behatrix/wiki/revision-history) page.
 
 
-The details of modifications are available in the `revision history <https://github.com/olivierfriard/behatrix/wiki/revision-history>`_ .
+# Install Behatrix
 
-
-
-Install Behatrix
-============================================================================================================================================
-
-**Behatrix** can be downloaded from the `GiHub repository <https://github.com/olivierfriard/behatrix/releases>`_
+**Behatrix** can be downloaded from the [GiHub repository](https://github.com/olivierfriard/behatrix/releases).
 
 All versions are *portable*, they do not need to be installed on your system.
 
@@ -36,98 +32,86 @@ All previous versions of **Behatrix** are available in the GitHub repository.
 
 
 
-GNU/Linux
---------------------------------------------------------------------------------------------------------------------------------------------
+## GNU/Linux
+
+See the **From sources** section or Download the **behatrix-x.y.z-x86_64.tar.gz** file, unzip it, go to the **bin** directory and launch the **start_behatrix**.
 
 
-Download the **behatrix-x.y.z-x86_64.tar.gz** file, unzip it, go to the **bin** directory and launch the **start_behatrix**.
+## Microsoft-Windows
+
+Download the **behatrix-x.y.z-win64-setup.exe** file, unzip it and launch **start_behatrix.bat**.
+
+ 
+ ## Mac OS
+
+See the next paragraph (From sources (all platforms))
 
 
-Microsoft-Windows
-------------------------------------------------------------------------------------------------------------------------
+## From sources (all platforms)
 
-Download the **behatrix-x.y.z-win64-portable.zip** file, unzip it and launch **start_behatrix.bat**.
-
-
-Mac OS
-------------------------------------------------------------------------------------------------------------------------
-
-Download the **behatrix-x.y.z.dmg** image file, mount it and launch the **behatrix** program.
-
-
-From sources (all platforms)
-------------------------------------------------------------------------------------------------------------------------
-
-You will need a working installation of Python >=3.10.
+You will need a working installation of Python >=3.18 and <=3.12.
 
 * Create a virtual environment (to isolate Behatrix from your system):
 
 
-.. code-block:: bash
 
-   python3 -m venv behatrix_venv
-
+``` {.bash}
+python3 -m venv behatrix_venv
+```
 
 * Activate the virtual environment
 
-.. code-block:: bash
-
-   source behatrix_venv/bin/activate
-
+``` {.bash}
+source behatrix_venv/bin/activate
+```
 
 The prompt should now be prefixed by **behatrix_venv**
 
 
 * Install Behatrix
 
-
-.. code-block:: bash
-
-   pip install behatrix
+``` {.bash}
+pip install behatrix
+```
 
 
 * Launch Behatrix
 
+``` {.bash}
+python3 -m behatrix
+```
+ 
 
-.. code-block:: bash
-
-   python3 -m behatrix
 
 
-
-Flow diagram
-========================================================================================================================
+# Flow diagram
 
 
 For flow diagrams generation you must install the **Graphviz** package.
 
 
-Installation of the Graphviz package
-------------------------------------------------------------------
+## Installation of the Graphviz package
 
-Go to the `Graphviz web site <https://graphviz.org/download/>`_ and download the version corresponding to your system.
+
+Go to the [Graphviz web site](https://graphviz.org/download), download and install the version corresponding to your system.
 
 If the **dot** program is not on the path you will have to indicate the complete path to the dot program.
 
 
-Usage of Behatrix
-========================================================================================================================
+# Usage of Behatrix
 
 
-Behavioral sequences
-------------------------------------------------------------------------------------------------------------------------
+## Behavioral sequences
 
-.. image:: docs/screenshots/main_window.png
-   :alt: Behavioral sequences
+![Behavioral sequences](docs/screenshots/main_window.png)
 
-The behavioral sequences can be directly written, paste or loaded from file in the **Behavioral strings** edit box.
+The behavioral sequences can be directly written, paste or loaded from file in the **Behavioral sequences** edit box.
 
-See the `BORIS <http://www.boris.unito.it/>`_ user guide for 
-`exporting behavioral strings <https://boris.readthedocs.io/en/latest/#export-events-as-behavioral-strings>`_.
+See the [BORIS user guide](http://www.boris.unito.it/user_guide)
+for [exporting behavioral sequences](https://www.boris.unito.it/user_guide/export_events/#export-events-as-behavioral-sequences).
 
 
-.. image:: docs/screenshots/behavioral_strings.png
-   :alt: behavioral_strings
+![behavioral sequences](docs/screenshots/behavioral_strings.png)
 
 
 In a behavioral sequence, the successive behaviors can be separated by any character or group of characters.
@@ -144,9 +128,9 @@ the transition matrix related to the behavioral sequences.
 
 
 
-Descriptive statistics
-........................................................................................................................
-Some statistics can be obtained for various **n-gram** by clocking on the **Generate statistics** button.
+## Descriptive statistics
+
+Some statistics can be obtained for various **n-gram**.
 
 In the results box **Behatrix** will list all the behaviors present in the sequences in alphabetical order,
 the total number of behaviors, the total number of transitions, the number of different transitions and
@@ -157,70 +141,68 @@ Use the **Save results** button for both the statistics and the transition matri
 
 Example of statistics for 1-gram:
 
+``` {.text}
+Number of sequences: 3
 
-.. code-block:: text
 
-    Number of sequences: 3
-    
-    
-    Statistics
-    ==========
-    Number of different behaviours: 7
-    Total number of behaviours: 23
-    Number of different transitions: 12
-    Total number of transitions: 20
-    
-    Behaviours list:
-    ================
-    Alert
-    Locomotion
-    Manipulate
-    Play in the water
-    Play on the ground
-    Roll objects
-    Swim
-    
-    Behaviours frequencies:
-    =======================
-    Alert	0.304	7 / 23
-    Locomotion	0.087	2 / 23
-    Manipulate	0.174	4 / 23
-    Play in the water	0.043	1 / 23
-    Play on the ground	0.043	1 / 23
-    Roll objects	0.261	6 / 23
-    Swim	0.087	2 / 23
+Statistics
+==========
+Number of different behaviours: 7
+Total number of behaviours: 23
+Number of different transitions: 12
+Total number of transitions: 20
 
+Behaviours list:
+================
+Alert
+Locomotion
+Manipulate
+Play in the water
+Play on the ground
+Roll objects
+Swim
+
+Behaviours frequencies:
+=======================
+Alert                0.304	7 / 23
+Locomotion           0.087	2 / 23
+Manipulate           0.174	4 / 23
+Play in the water    0.043	1 / 23
+Play on the ground   0.043	1 / 23
+Roll objects         0.261	6 / 23
+Swim                 0.087	2 / 23
+```
 
 
 Example of statistics for 2-gram:
 
-.. code-block:: text
+``` {.text}
 
     (...)
 
     Frequencies of 2-grams:
     =======================
-    Alert|Locomotion	0.050	1 / 20
-    Alert|Manipulate	0.050	1 / 20
-    Alert|Roll objects	0.250	5 / 20
-    Manipulate|Alert	0.100	2 / 20
-    Manipulate|Locomotion	0.050	1 / 20
-    Manipulate|Roll objects	0.050	1 / 20
-    Play in the water|Swim	0.050	1 / 20
-    Play on the ground|Manipulate	0.050	1 / 20
-    Roll objects|Alert	0.200	4 / 20
-    Roll objects|Manipulate	0.050	1 / 20
-    Swim|Alert	0.050	1 / 20
-    Swim|Play in the water	0.050	1 / 20
+    Alert|Locomotion               0.050	1 / 20
+    Alert|Manipulate               0.050	1 / 20
+    Alert|Roll objects             0.250	5 / 20
+    Manipulate|Alert               0.100	2 / 20
+    Manipulate|Locomotion          0.050	1 / 20
+    Manipulate|Roll objects        0.050	1 / 20
+    Play in the water|Swim         0.050	1 / 20
+    Play on the ground|Manipulate  0.050	1 / 20
+    Roll objects|Alert             0.200	4 / 20
+    Roll objects|Manipulate        0.050	1 / 20
+    Swim|Alert                     0.050	1 / 20
+    Swim|Play in the water         0.050	1 / 20
+```
 
 
+## Observed transition matrix
 
-Observed transition matrix
-........................................................................................................................
 
 Example of observed transition matrix:
 
-.. code-block:: text
+``` {.text}
 
                          Alert   Locomotion   Manipulate  Play in the water Play on the ground  Roll objects   Swim
    Alert                     0            1            1                  0                  0             5      0
@@ -230,60 +212,47 @@ Example of observed transition matrix:
    Play on the ground        0            0            1                  0                  0             0      0
    Roll objects              4            0            1                  0                  0             0      0
    Swim                      1            0            0                  1                  0             0      0 
+```
 
 
-
-Flow diagram
-------------------------------------------------------------------------------------------------------------------------
+## Flow diagram
 
 
 Click the **Generate GraphViz script** button to obtain the script then click the **Generate flow diagram** button to visualize the flow diagram.
 
-.. image:: docs/screenshots/flow_diagram.png
-   :alt: flow diagram
+![flow diagram](docs/screenshots/flow_diagram.png)
 
 
 
 
+## Permutations test
 
-Permutations test
-------------------------------------------------------------------------------------------------------------------------
 
-.. image:: docs/screenshots/permutations_test.png
-   :alt: Permutations test
-
-From version 0.9.1 the binary version for Microsoft-Windows can use the multiprocessing module, the permutations test is
-able to use many cores.
+![Permutations test](docs/screenshots/permutations_test.png)
 
 
 
-Permutations test with exclusions
-........................................................................................................................
+## Permutations test with exclusions
+
 Some transitions can be excluded from the permutations test:
 
-.. image:: docs/screenshots/permutations_test_with_exclusions.png
-   :alt: Permutations test
+![Permutations test](docs/screenshots/permutations_test_with_exclusions.png)
 
 
 
 
 
+## Behavioral sequences distances
 
 
-
-Behavioral sequences distances
-------------------------------------------------------------------------------------------------------------------------
-
-
-Levenshtein distances
-........................................................................................................................
+### Levenshtein distances
 
 
 to be finished...
 
 
-Needleman-Wunsch identities
-........................................................................................................................
+### Needleman-Wunsch identities
+
 
 to be finished...
 
