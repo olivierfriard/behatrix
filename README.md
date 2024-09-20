@@ -37,7 +37,7 @@ The flow diagram generation requires the the [Graphviz](https://graphviz.org/) o
 
 # User guide
 
-[Usage of Behatrix](https://github.com/olivierfriard/behatrix/blob/master/README.rst)
+[Usage of Behatrix](https://github.com/olivierfriard/behatrix/blob/master/user_guide.md)
 
 
 # Download Behatrix

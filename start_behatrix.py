@@ -6,7 +6,7 @@ Behavioral Sequences Analysis
 
 Behavioral sequences analysis with permutations test
 
-Copyright 2017-2021 Olivier Friard
+Copyright 2017-2024 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -26,4 +26,3 @@ This file is part of Behatrix.
 """
 
 import behatrix.__main__
-
