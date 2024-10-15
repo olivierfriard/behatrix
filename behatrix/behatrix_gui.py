@@ -37,8 +37,8 @@ import datetime as dt
 
 import numpy as np
 from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtCore import QSettings, Qt, Signal
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtCore import QSettings, Qt, Signal, qVersion
+from PySide6.QtGui import QIcon, QPixmap, QClipboard
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QMenu, QPlainTextEdit, QTableWidgetItem, QTableWidget
 
 from . import behatrix_functions
@@ -216,13 +216,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         global error management
         """
+        import PySide6
 
         error_text: str = (
             f"Behatrix version: {version.__version__}\n"
             f"OS: {platform.uname().system} {platform.uname().release} {platform.uname().version}\n"
             f"CPU: {platform.uname().machine} {platform.uname().processor}\n"
             f"Python {platform.python_version()} ({'64-bit' if sys.maxsize > 2**32 else '32-bit'})\n"
-            # f"Qt {QT_VERSION_STR} - PyQt {PYQT_VERSION_STR}\n"
+            f"Qt {qVersion()} - PySide {PySide6.__version__}\n"
             f"{dt.datetime.now():%Y-%m-%d %H:%M}\n\n"
         )
         error_text += "".join(traceback.format_exception(exception_type, exception_value, traceback_object))
@@ -236,8 +237,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # copy to clipboard
         cb = QApplication.clipboard()
-        cb.clear(mode=cb.Clipboard)
-        cb.setText(error_text, mode=cb.Clipboard)
+        cb.clear()
+        cb.setText(error_text)
 
         error_text: str = error_text.replace("\r\n", "\n").replace("\n", "<br>")
 
@@ -286,6 +287,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Display the about dialog
         """
+        import PySide6
 
         about_dialog = QMessageBox()
         about_dialog.setIconPixmap(QPixmap(":/behatrix_unito_logo"))
@@ -306,6 +308,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 "<hr>"
             )
         )
+
+        details: list = []
+        current_system = platform.uname()
+        details.extend(
+            [
+                f"Operating system: {current_system.system} {current_system.release} {current_system.version}",
+                f"CPU: {current_system.machine} {current_system.processor}",
+                (
+                    f"Python {platform.python_version()} ({'64-bit' if sys.maxsize > 2**32 else '32-bit'})"
+                    f" - Qt {qVersion()} - PySide {PySide6.__version__}"
+                ),
+            ]
+        )
+
+        # graphviz
+        gv_result = subprocess.getoutput("dot -V")
+
+        details.extend(["\nGraphViz", gv_result if "graphviz" in gv_result else "not installed", "https://www.graphviz.org/"])
+
+        about_dialog.setDetailedText("\n".join(details))
+
         _ = about_dialog.exec_()
 
     def check_dot_path(self) -> bool:
@@ -357,7 +380,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         behavioral sequences changed by user
 
-        update statistic, onserved matrix, graphviz script and flow diagram
+        update statistic, observed matrix, graphviz script and flow diagram
         """
 
         self.permutations_test_matrix = None
@@ -425,15 +448,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         filename = QFileDialog().getOpenFileName(self, "Select the file containing the behavioral sequences", "", "All files (*)")[0]
 
-        if filename:
-            try:
-                with open(filename) as f_in:
-                    behav_str = f_in.read()
-            except Exception:
-                QMessageBox.critical(self, "Behatrix", "The selected file is not available.<br>")
-                return
+        if not filename:
+            return
+        try:
+            with open(filename) as f_in:
+                behav_str = f_in.read()
+        except Exception:
+            QMessageBox.critical(self, "Behatrix", "The selected file is not available.<br>")
+            return
 
-            self.pte_behav_seq.setPlainText(behav_str)
+        self.pte_behav_seq.setPlainText(behav_str)
 
     def behav_seq_statistics(self):
         """
@@ -533,6 +557,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
             ngram=self.sb_ngram.value(),
         )
+
+        print(results)
+
         if self.sb_ngram.value() > 1:
             observed_matrix = np.zeros((len(results["ngram_list"]), len(results["ngram_list"])))
             for ngram1 in results["ngram_list"]:
@@ -542,13 +569,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             "ngram_transitions"
                         ][(ngram1, ngram2)]
 
+            # display results
+            rows = observed_matrix.shape[0]
+            self.tw_observed_transitions.setRowCount(rows)
+            self.tw_observed_transitions.setColumnCount(rows)
+            self.tw_observed_transitions.setHorizontalHeaderLabels(["".join(x) for x in results["ngram_list"]])
+            self.tw_observed_transitions.setVerticalHeaderLabels(["".join(x) for x in results["ngram_list"]])
+            for row in range(rows):
+                for col in range(rows):
+                    # Create a QTableWidgetItem with the string representation of the numpy element
+                    item = QTableWidgetItem(str(int(observed_matrix[row, col])))
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.tw_observed_transitions.setItem(row, col, item)
+
+            """
             ngrams_str = "\t".join([self.le_behaviors_separator.text().join(x) for x in results["ngram_list"]])
             out = f"\t{ngrams_str}\n"
             for r in range(observed_matrix.shape[0]):
                 out += f"{self.le_behaviors_separator.text().join(results['ngram_list'][r])}\t"
                 out += "\t".join([str(int(x)) for x in observed_matrix[r, :]]) + "\n"
+            """
 
-        else:
+        else:  # n-gram = 1
             observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], results["behaviours"])
 
             # display results
