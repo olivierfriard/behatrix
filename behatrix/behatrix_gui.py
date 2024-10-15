@@ -38,7 +38,7 @@ import shutil
 
 import numpy as np
 from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtCore import QSettings, Qt, Signal, qVersion
+from PySide6.QtCore import QSettings, Qt, Signal, qVersion, QProcess
 from PySide6.QtGui import QIcon, QPixmap, QClipboard
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QMenu, QPlainTextEdit, QTableWidgetItem, QTableWidget
 
@@ -721,6 +721,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 except Exception:
                     QMessageBox.critical(self, "Behatrix", "Results not saved!")
 
+    def handle_finished(self):
+        # output = self.process.readAllStandardOutput().data().decode()
+        # print(output)
+
+        output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
+        out = output_temp_file.read_bytes()
+        self.svg_display.load(out)
+
+    def handle_stdout(self):
+        data = self.process.readAllStandardOutput().data().decode()
+        print(data)
+
+    def handle_stderr(self):
+        data = self.process.readAllStandardError().data().decode()
+        print("error", data)
+
     def flow_diagram(self, action: str = "show") -> str:
         """
         generate flow diagram from pte_gv_nodes, pte_gv_edges and pte_gv_graph contents in SVG format
@@ -823,9 +839,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
 
             cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
+            """
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out = output_temp_file.read_bytes()
+            """
+            out = output_temp_file.read_bytes()
+
+            self.process = QProcess(self)
+            self.process.readyReadStandardOutput.connect(self.handle_stdout)
+            self.process.readyReadStandardError.connect(self.handle_stderr)
+
+            self.process.finished.connect(self.handle_finished)
+            self.process.start(graphviz_engine, ["-Tsvg", f"{gv_script_temp_file}", "-o", f"{output_temp_file}"])
+
             """
             _, error = p.communicate()
             if error:
