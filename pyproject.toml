@@ -5,7 +5,7 @@ description = "Behatrix - Behavioral Sequences Analysis with permutation test"
 authors = [{ name="Olivier Friard", email="olivier.friard@unito.it" }]
 readme = "README.md"
 license = { file = "LICENSE.TXT" }
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 
 classifiers=[
         "Operating System :: OS Independent",

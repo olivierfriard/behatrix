@@ -34,6 +34,7 @@ from shutil import copyfile
 import traceback
 import logging
 import datetime as dt
+import shutil
 
 import numpy as np
 from PySide6.QtSvgWidgets import QSvgWidget
@@ -558,8 +559,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ngram=self.sb_ngram.value(),
         )
 
-        print(results)
-
         if self.sb_ngram.value() > 1:
             observed_matrix = np.zeros((len(results["ngram_list"]), len(results["ngram_list"])))
             for ngram1 in results["ngram_list"]:
@@ -744,7 +743,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.check_dot_path()
         if not self.le_dot_path.text():
             if not self.check_dot_path():
-                self.statusbar.showMessage(f"dot program not found", 0)
+                self.statusbar.showMessage("dot program from GraphViz package not found", 0)
                 return ""
 
         elif not self.test_dot_program(self.le_dot_path.text()):
@@ -756,88 +755,84 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         p = subprocess.Popen(f'"{dot_path}" -V', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, error = p.communicate()
 
-        if b"graphviz version" in error:
-            if sys.platform.startswith("win"):
-                gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("gv_script.gv")
-                output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
-                try:
-                    with gv_script_temp_file.open("w", encoding="utf-8") as f:
-                        f.write(
-                            (
-                                "digraph G {"
-                                f"{self.pte_gv_nodes.toPlainText()}"
-                                f"{self.pte_gv_edges.toPlainText()}"
-                                f"{self.pte_gv_graph.toPlainText()}"
-                                "}"
-                            )
-                        )
-                except Exception:
-                    QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
-                    return
-
-                graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
-
-                cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                _, error = p.communicate()
-                if error:
-                    QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
-                    return
-                out = output_temp_file.read_bytes()
-            else:
-                gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("gv_script.gv")
-                output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
-                try:
-                    with gv_script_temp_file.open("w", encoding="utf-8") as f:
-                        f.write(
-                            (
-                                "digraph G {"
-                                f"{self.pte_gv_nodes.toPlainText()}"
-                                f"{self.pte_gv_edges.toPlainText()}"
-                                f"{self.pte_gv_graph.toPlainText()}"
-                                "}"
-                            )
-                        )
-                except Exception:
-                    QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
-                    return
-
-                """
-                gv_script = (
-                    "digraph G {"
-                    + self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                    + self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                    + self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                    + "}"
-                )
-                """
-
-                # print(pl.Path(dot_path).parent)
-                if self.comb_graphviz_engine.currentText() == "dot":
-                    graphviz_engine = dot_path
-                else:
-                    graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
-
-                cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                _, error = p.communicate()
-                if error:
-                    QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
-                    return
-                out = output_temp_file.read_bytes()
-
-                '''cmd = f"""echo '{gv_script}' | "{graphviz_engine}" -Tsvg """'''
-
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                _, error = p.communicate()
-
-                if error:
-                    QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
-                    return
-
-        else:
+        if b"graphviz version" not in error:
             QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
             return
+
+        if sys.platform.startswith("win"):
+            gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("gv_script.gv")
+            output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
+            try:
+                with gv_script_temp_file.open("w", encoding="utf-8") as f:
+                    f.write(
+                        (
+                            "digraph G {"
+                            f"{self.pte_gv_nodes.toPlainText()}"
+                            f"{self.pte_gv_edges.toPlainText()}"
+                            f"{self.pte_gv_graph.toPlainText()}"
+                            "}"
+                        )
+                    )
+            except Exception:
+                QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
+                return
+
+            graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
+
+            cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            _, error = p.communicate()
+            if error:
+                QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                return
+            out = output_temp_file.read_bytes()
+        else:  # linux, macos
+            gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("gv_script.gv")
+            output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
+
+            # copy wait please image
+            shutil.copy("behatrix/please_wait.svg", output_temp_file)
+            try:
+                with gv_script_temp_file.open("w", encoding="utf-8") as f:
+                    f.write(
+                        (
+                            "digraph G {"
+                            f"{self.pte_gv_nodes.toPlainText()}"
+                            f"{self.pte_gv_edges.toPlainText()}"
+                            f"{self.pte_gv_graph.toPlainText()}"
+                            "}"
+                        )
+                    )
+            except Exception:
+                QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
+                return
+
+            """
+            gv_script = (
+                "digraph G {"
+                + self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                + self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                + self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''")
+                + "}"
+            )
+            """
+
+            if self.comb_graphviz_engine.currentText() == "dot":
+                graphviz_engine = dot_path
+            else:
+                graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
+
+            cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+            out = output_temp_file.read_bytes()
+            """
+            _, error = p.communicate()
+            if error:
+                QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                return
+            out = output_temp_file.read_bytes()
+            """
 
         if action == "show":
             self.svg_display.load(out)
