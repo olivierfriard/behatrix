@@ -743,6 +743,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
                 out = output_temp_file.read_bytes()
             else:
+                gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("gv_script.gv")
+                output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
+                try:
+                    with gv_script_temp_file.open("w", encoding="utf-8") as f:
+                        f.write(
+                            (
+                                "digraph G {"
+                                f"{self.pte_gv_nodes.toPlainText()}"
+                                f"{self.pte_gv_edges.toPlainText()}"
+                                f"{self.pte_gv_graph.toPlainText()}"
+                                "}"
+                            )
+                        )
+                except Exception:
+                    QMessageBox.critical(self, "Behatrix", "Error during flow diagram generation!")
+                    return
+
+                """
                 gv_script = (
                     "digraph G {"
                     + self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''")
@@ -750,6 +768,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     + self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''")
                     + "}"
                 )
+                """
 
                 # print(pl.Path(dot_path).parent)
                 if self.comb_graphviz_engine.currentText() == "dot":
@@ -757,10 +776,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     graphviz_engine = str(pl.Path(dot_path).parent / pl.Path(self.comb_graphviz_engine.currentText()))
 
-                cmd = f"""echo '{gv_script}' | "{graphviz_engine}" -Tsvg """
+                cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                _, error = p.communicate()
+                if error:
+                    QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
+                    return
+                out = output_temp_file.read_bytes()
+
+                '''cmd = f"""echo '{gv_script}' | "{graphviz_engine}" -Tsvg """'''
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                out, error = p.communicate()
+                _, error = p.communicate()
 
                 if error:
                     QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
