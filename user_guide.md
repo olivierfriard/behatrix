@@ -74,7 +74,7 @@ uvx behatrix
 
 
 
-### Classic method with pip, the package management system for Python
+### Classic method with **pip**, the package management system for Python
 
 You will need a working installation of Python >=3.8 and <=3.12.
 All the commands cited below must be executed in a [terminal](#How-to-open-a-terminal).
