@@ -60,6 +60,18 @@ See the [From sources section](#From-sources)
 
 This method should work with Linux, Windows and MacOS.
 
+### New method with [uv](https://docs.astral.sh/uv/), "an extremely fast Python package and project manager"
+
+* [Install the **uv** package manager](https://docs.astral.sh/uv/#getting-started)
+
+
+* Install and run Behatrix:
+
+
+``` {.bash}
+uvx behatrix
+```
+
 
 
 ### Classic method with pip, the package management system for Python
@@ -105,17 +117,6 @@ python3 -m behatrix
 ```
 
 
-### New method with [uv](https://docs.astral.sh/uv/), "an extremely fast Python package and project manager"
-
-* [Install the **uv** package manager](https://docs.astral.sh/uv/#getting-started)
-
-
-* Install and run Behatrix:
-
-
-``` {.bash}
-uvx behatrix
-```
 
 # Flow diagram
 
