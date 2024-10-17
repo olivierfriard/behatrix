@@ -6,8 +6,7 @@ Behatrix
 
 
 
-| Authors       |               |
-| ------------- | ------------- |
+| Authors       |
 | Olivier Friard and Marco Gamba |
 | Department of Life Science and Systems Biology |
 | University of Torino, Italy |
@@ -60,6 +59,7 @@ You will need a working installation of Python >=3.8 and <=3.12.
 ``` {.bash}
 python3 -m venv behatrix_venv
 ```
+<small>The above command must be run in a terminal</small>
 
 * Activate the virtual environment
 
@@ -93,7 +93,15 @@ python3 -m behatrix
 
 ### New method with [uv](https://docs.astral.sh/uv/), "an extremely fast Python package and project manager"
 
+* [Install the **uv** package manager](https://docs.astral.sh/uv/#getting-started)
 
+
+* Install and run Behatrix:
+
+
+``` {.bash}
+uvx behatrix
+```
 
 # Flow diagram
 
