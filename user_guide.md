@@ -73,6 +73,13 @@ uvx behatrix
 ```
 
 
+If you obtain the following error:
+
+``` {.bash}
+Could not load the Qt platform plugin "xcb" in "" even though it was found.
+```
+see the [install libxcb-cursor0 section](#Install-libxcb-cursor0).
+
 
 ### Classic method with **pip**, the package management system for Python
 
@@ -449,6 +456,29 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
 
 See [How to Open the Terminal on a Mac](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
+
+# Install libxcb-cursor0
+
+This library is required starting from Qt 6.5.0. You can install it using your package manager.
+
+For example, on Debian-based systems (like Ubuntu), run:
+
+``` {.bash}
+sudo apt-get install libxcb-cursor0
+```
+
+
+On Arch Linux or derivatives:
+
+``` {.bash}
+sudo pacman -S libxcb
+```
+
+For Red Hat-based systems:
+
+``` {.bash}
+sudo yum install xcb-util-cursor
+```
 
 # Legal
 
