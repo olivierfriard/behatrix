@@ -62,7 +62,7 @@ This method should work with Linux, Windows and MacOS.
 
 ### New method with [uv](https://docs.astral.sh/uv/), "an extremely fast Python package and project manager"
 
-* [Install the **uv** package manager](https://docs.astral.sh/uv/#getting-started)
+* [Install the **uv** package manager](https://docs.astral.sh/uv/#getting-started) on system.
 
 
 * Install and run Behatrix:
