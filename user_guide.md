@@ -53,7 +53,7 @@ See the next paragraph (From sources (all platforms))
 ### Classic method with pip, the package management system for Python
 
 You will need a working installation of Python >=3.8 and <=3.12.
-All command must be run in a terminal.
+All the commands cited below must be executed in a [terminal](#How-to-open-a-terminal).
 
 * Create a virtual environment (to isolate Behatrix from your system):
 
@@ -410,6 +410,32 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
   Sniff|Eat|Sniff|Dig|Eat|Dig|Swim
 ```
 
+# How to open a terminal
+
+## Linux
+
+
+* Press `CTRL` + `ALT` + `T` simultaneously to open the terminal.
+
+* Or open Show Application in the Dash Bar & find out Terminal Application.
+
+* Or execute the command gnome-terminal in the command dialogue opened using `ALT` + `F2`
+
+
+## Windows
+
+* Click the Search or Cortana button
+
+* Type cmd, Command Prompt or PowerShell
+
+* Click the Command prompt
+
+
+
+## MacOS
+
+See [How to Open the Terminal on a Mac](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
+
 
 # Legal
 
@@ -423,5 +449,7 @@ the Free Software Foundation; either version 2, or any later version.
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 [GNU General Public License](http://www.gnu.org/copyleft/gpl.html) for more details.
+
+
 
 
