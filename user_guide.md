@@ -26,9 +26,9 @@ The details of modifications are available on the [change log](https://github.co
 
 **Behatrix** can be downloaded from the [GiHub repository](https://github.com/olivierfriard/behatrix/releases).
 
-All versions are *portable*, they do not need to be installed on your system.
+<!-- All versions are *portable*, they do not need to be installed on your system. -->
 
-All previous versions of **Behatrix** are available in the GitHub repository.
+All previous versions of **Behatrix** are available in the [release GitHub repository](https://github.com/olivierfriard/behatrix/releases).
 
 
 
@@ -49,10 +49,12 @@ See the next paragraph (From sources (all platforms))
 
 ## From sources (all platforms)
 
-You will need a working installation of Python >=3.18 and <=3.12.
+
+### Classic method with pip, the package management system for Python
+
+You will need a working installation of Python >=3.8 and <=3.12.
 
 * Create a virtual environment (to isolate Behatrix from your system):
-
 
 
 ``` {.bash}
@@ -80,7 +82,16 @@ pip install behatrix
 ``` {.bash}
 python3 -m behatrix
 ```
- 
+
+For future uses:
+
+``` {.bash}
+source behatrix_venv/bin/activate
+python3 -m behatrix
+```
+
+
+### New method with [uv](https://docs.astral.sh/uv/), "an extremely fast Python package and project manager"
 
 
 
