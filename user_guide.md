@@ -34,20 +34,32 @@ All previous versions of **Behatrix** are available in the [release GitHub repos
 
 ## GNU/Linux
 
-See the **From sources** section or Download the **behatrix-x.y.z-x86_64.tar.gz** file, unzip it, go to the **bin** directory and launch the **start_behatrix**.
+* Download the **behatrix-x.y.z-x86_64.tar.gz** file, unzip it, go to the **bin** directory and launch the **start_behatrix**.
+
+or
+
+* See the [From sources section](#From-sources)
 
 
 ## Microsoft-Windows
 
-Download the **behatrix-x.y.z-win64-setup.exe** file, unzip it and launch **start_behatrix.bat**.
+* Download the **behatrix-x.y.z-win64-setup.exe** file, unzip it and launch **start_behatrix.bat**.
+
+or
+
+* See the [From sources section](#From-sources)
 
  
  ## Mac OS
 
-See the next paragraph (From sources (all platforms))
+See the [From sources section](#From-sources)
 
 
-## From sources (all platforms)
+
+## From sources
+
+This method should work with Linux, Windows and MacOS.
+
 
 
 ### Classic method with pip, the package management system for Python
@@ -417,7 +429,7 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
 
 * Press `CTRL` + `ALT` + `T` simultaneously to open the terminal.
 
-* Or open Show Application in the Dash Bar & find out Terminal Application.
+* Or open Show Application in the Dash Bar & find out **Terminal** Application.
 
 * Or execute the command gnome-terminal in the command dialogue opened using `ALT` + `F2`
 
@@ -426,7 +438,7 @@ Behaviors are separated by the pipe character (|) otherwise each character will 
 
 * Click the Search or Cortana button
 
-* Type cmd, Command Prompt or PowerShell
+* Type **cmd**, **Command Prompt** or **PowerShell**
 
 * Click the Command prompt
 
