@@ -7,6 +7,7 @@ Behatrix
 
 
 | Authors       |
+| ------------- |
 | Olivier Friard and Marco Gamba |
 | Department of Life Science and Systems Biology |
 | University of Torino, Italy |
