@@ -53,6 +53,7 @@ See the next paragraph (From sources (all platforms))
 ### Classic method with pip, the package management system for Python
 
 You will need a working installation of Python >=3.8 and <=3.12.
+All command must be run in a terminal.
 
 * Create a virtual environment (to isolate Behatrix from your system):
 
@@ -60,7 +61,7 @@ You will need a working installation of Python >=3.8 and <=3.12.
 ``` {.bash}
 python3 -m venv behatrix_venv
 ```
-<small>The above command must be run in a terminal</small>
+
 
 * Activate the virtual environment
 
