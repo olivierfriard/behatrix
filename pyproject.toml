@@ -22,8 +22,11 @@ classifiers=[
         "Operating System :: OS Independent"
     ]
 dependencies = [
-    "numpy",  #>1.24.4",
-    "pyside6"   #>=6.6.3.1",
+    "numpy",
+    #>1.24.4",
+    #>=6.6.3.1",
+    "pyside6",
+    "shiboken6>=6.8.0.1",
 ]
 
 [project.urls]

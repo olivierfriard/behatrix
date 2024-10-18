@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1969, 1017)
+        MainWindow.resize(2005, 1017)
         self.actionDocumentation = QAction(MainWindow)
         self.actionDocumentation.setObjectName(u"actionDocumentation")
         self.actionAbout = QAction(MainWindow)
@@ -208,6 +208,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.cb_generate_diagram_on_the_fly = QCheckBox(self.layoutWidget2)
+        self.cb_generate_diagram_on_the_fly.setObjectName(u"cb_generate_diagram_on_the_fly")
+        self.cb_generate_diagram_on_the_fly.setChecked(True)
+
+        self.horizontalLayout_10.addWidget(self.cb_generate_diagram_on_the_fly)
+
         self.rb_percent_after_behav = QRadioButton(self.layoutWidget2)
         self.buttonGroup_2 = QButtonGroup(MainWindow)
         self.buttonGroup_2.setObjectName(u"buttonGroup_2")
@@ -300,12 +306,38 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
 
+        self.horizontalLayout_14 = QHBoxLayout()
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.label_16 = QLabel(self.layoutWidget2)
+        self.label_16.setObjectName(u"label_16")
+
+        self.horizontalLayout_14.addWidget(self.label_16)
+
+        self.le_dot_path = QLineEdit(self.layoutWidget2)
+        self.le_dot_path.setObjectName(u"le_dot_path")
+        self.le_dot_path.setReadOnly(False)
+
+        self.horizontalLayout_14.addWidget(self.le_dot_path)
+
+        self.pb_browse_dot_path = QPushButton(self.layoutWidget2)
+        self.pb_browse_dot_path.setObjectName(u"pb_browse_dot_path")
+
+        self.horizontalLayout_14.addWidget(self.pb_browse_dot_path)
+
+
+        self.verticalLayout_5.addLayout(self.horizontalLayout_14)
+
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.pb_graphviz_script = QPushButton(self.layoutWidget2)
         self.pb_graphviz_script.setObjectName(u"pb_graphviz_script")
 
         self.horizontalLayout_6.addWidget(self.pb_graphviz_script)
+
+        self.pb_flow_diagram = QPushButton(self.layoutWidget2)
+        self.pb_flow_diagram.setObjectName(u"pb_flow_diagram")
+
+        self.horizontalLayout_6.addWidget(self.pb_flow_diagram)
 
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
@@ -390,37 +422,6 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_8.addLayout(self.horizontalLayout_13)
-
-        self.horizontalLayout_25 = QHBoxLayout()
-        self.horizontalLayout_25.setObjectName(u"horizontalLayout_25")
-        self.pb_flow_diagram = QPushButton(self.layoutWidget3)
-        self.pb_flow_diagram.setObjectName(u"pb_flow_diagram")
-
-        self.horizontalLayout_25.addWidget(self.pb_flow_diagram)
-
-        self.horizontalLayout_14 = QHBoxLayout()
-        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
-        self.label_16 = QLabel(self.layoutWidget3)
-        self.label_16.setObjectName(u"label_16")
-
-        self.horizontalLayout_14.addWidget(self.label_16)
-
-        self.le_dot_path = QLineEdit(self.layoutWidget3)
-        self.le_dot_path.setObjectName(u"le_dot_path")
-        self.le_dot_path.setReadOnly(False)
-
-        self.horizontalLayout_14.addWidget(self.le_dot_path)
-
-        self.pb_browse_dot_path = QPushButton(self.layoutWidget3)
-        self.pb_browse_dot_path.setObjectName(u"pb_browse_dot_path")
-
-        self.horizontalLayout_14.addWidget(self.pb_browse_dot_path)
-
-
-        self.horizontalLayout_25.addLayout(self.horizontalLayout_14)
-
-
-        self.verticalLayout_8.addLayout(self.horizontalLayout_25)
 
         self.vertical_splitter.addWidget(self.layoutWidget3)
 
@@ -624,7 +625,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1969, 29))
+        self.menubar.setGeometry(QRect(0, 0, 2005, 29))
         self.menuHelp = QMenu(self.menubar)
         self.menuHelp.setObjectName(u"menuHelp")
         self.menuHelp_2 = QMenu(self.menubar)
@@ -642,7 +643,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -664,6 +665,7 @@ class Ui_MainWindow(object):
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"The behavior on the first column precedes the behavior on the first row", None))
         self.pb_save_results.setText(QCoreApplication.translate("MainWindow", u"Save results", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_strings), QCoreApplication.translate("MainWindow", u"Behavioral sequences", None))
+        self.cb_generate_diagram_on_the_fly.setText(QCoreApplication.translate("MainWindow", u"Generate flow diagram on the fly", None))
         self.rb_percent_after_behav.setText(QCoreApplication.translate("MainWindow", u"% of transitions after behavior", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"%", None))
         self.rb_percent_total_transitions.setText(QCoreApplication.translate("MainWindow", u"% of total transitions", None))
@@ -675,7 +677,10 @@ class Ui_MainWindow(object):
         self.comb_graphviz_engine.setItemText(1, QCoreApplication.translate("MainWindow", u"circo", None))
         self.comb_graphviz_engine.setItemText(2, QCoreApplication.translate("MainWindow", u"fdp", None))
 
+        self.label_16.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>Path to the <span style=\" font-weight:600;\">dot</span> program (leave empty if dot is on the path)</p></body></html>", None))
+        self.pb_browse_dot_path.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.pb_graphviz_script.setText(QCoreApplication.translate("MainWindow", u"Generate GraphViz script", None))
+        self.pb_flow_diagram.setText(QCoreApplication.translate("MainWindow", u"Generate flow diagram", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"GraphViz script", None))
         self.lb_flow_chart.setText("")
         self.pb_save_gv.setText(QCoreApplication.translate("MainWindow", u"Save script", None))
@@ -683,9 +688,6 @@ class Ui_MainWindow(object):
         self.pb_clear_diagram.setText(QCoreApplication.translate("MainWindow", u"Clear diagram", None))
         self.pb_save_png.setText(QCoreApplication.translate("MainWindow", u"Save diagram as PNG", None))
         self.pb_save_svg.setText(QCoreApplication.translate("MainWindow", u"Save diagram as SVG", None))
-        self.pb_flow_diagram.setText(QCoreApplication.translate("MainWindow", u"Generate flow diagram", None))
-        self.label_16.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>Path to the <span style=\" font-weight:600;\">dot</span> program (leave empty if dot is on the path)</p></body></html>", None))
-        self.pb_browse_dot_path.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_flow_diagram), QCoreApplication.translate("MainWindow", u"Flow diagram", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Excluded transitions", None))
         self.pb_exclude_repetition.setText(QCoreApplication.translate("MainWindow", u"Exclude repeated behaviors", None))

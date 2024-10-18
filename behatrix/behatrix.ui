@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1969</width>
+    <width>2005</width>
     <height>1017</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_strings">
        <attribute name="title">
@@ -232,6 +232,16 @@
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_10">
                 <item>
+                 <widget class="QCheckBox" name="cb_generate_diagram_on_the_fly">
+                  <property name="text">
+                   <string>Generate flow diagram on the fly</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QRadioButton" name="rb_percent_after_behav">
                   <property name="text">
                    <string>% of transitions after behavior</string>
@@ -362,11 +372,43 @@
              </layout>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_14">
+              <item>
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path to the &lt;span style=&quot; font-weight:600;&quot;&gt;dot&lt;/span&gt; program (leave empty if dot is on the path)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="le_dot_path">
+                <property name="readOnly">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pb_browse_dot_path">
+                <property name="text">
+                 <string>Browse</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
                <widget class="QPushButton" name="pb_graphviz_script">
                 <property name="text">
                  <string>Generate GraphViz script</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pb_flow_diagram">
+                <property name="text">
+                 <string>Generate flow diagram</string>
                 </property>
                </widget>
               </item>
@@ -482,42 +524,6 @@
                  </size>
                 </property>
                </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_25">
-              <item>
-               <widget class="QPushButton" name="pb_flow_diagram">
-                <property name="text">
-                 <string>Generate flow diagram</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_14">
-                <item>
-                 <widget class="QLabel" name="label_16">
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path to the &lt;span style=&quot; font-weight:600;&quot;&gt;dot&lt;/span&gt; program (leave empty if dot is on the path)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="le_dot_path">
-                  <property name="readOnly">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pb_browse_dot_path">
-                  <property name="text">
-                   <string>Browse</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
               </item>
              </layout>
             </item>
@@ -818,7 +824,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1969</width>
+     <width>2005</width>
      <height>29</height>
     </rect>
    </property>

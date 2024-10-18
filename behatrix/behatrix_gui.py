@@ -39,7 +39,7 @@ import shutil
 import numpy as np
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtCore import QSettings, Qt, Signal, qVersion, QProcess
-from PySide6.QtGui import QIcon, QPixmap, QClipboard
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QMenu, QPlainTextEdit, QTableWidgetItem, QTableWidget
 
 from . import behatrix_functions
@@ -112,6 +112,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cb_remove_repeated_behaviors.stateChanged.connect(self.behavioral_sequences_changed)
 
         # tab flow diagram
+        self.cb_generate_diagram_on_the_fly.stateChanged.connect(self.cb_generate_diagram_on_the_fly_changed)
         self.rb_percent_after_behav.toggled.connect(self.flow_diagram_parameters_changed)
         self.sb_cutoff_transition_after_behav.valueChanged.connect(self.flow_diagram_parameters_changed)
         self.rb_percent_total_transitions.toggled.connect(self.flow_diagram_parameters_changed)
@@ -179,6 +180,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sb_cutoff_transition_after_behav.setEnabled(self.rb_percent_after_behav.isChecked())
         self.sb_cutoff_total_transition.setEnabled(self.rb_percent_total_transitions.isChecked())
 
+    def cb_generate_diagram_on_the_fly_changed(self):
+        """
+        cb changed
+        """
+        if self.cb_generate_diagram_on_the_fly.isChecked():
+            self.flow_diagram()
+
     def save_tablewidget_to_tsv(self, table_widget: QTableWidget, file_path: str):
         """
         Save the content of a QTableWidget to a TSV file.
@@ -213,20 +221,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         row_data.append("")  # Empty cell
                 file.write("\t".join(row_data) + "\n")
 
+    def get_prog_info(self) -> str:
+        """
+        get info on prog and OS
+        """
+        import PySide6
+
+        details: list = []
+        current_system = platform.uname()
+        details.extend(
+            [
+                f"Behatrix version: {version.__version__} - {version.__version_date__}\n\n"
+                f"Operating system: {current_system.system} {current_system.release}\n{current_system.version}\n",
+                f"CPU: {current_system.machine} {current_system.processor}\n",
+                f"Python {platform.python_version()} ({'64-bit' if sys.maxsize > 2**32 else '32-bit'})\n",
+                f"Qt {qVersion()} - PySide {PySide6.__version__}\n",
+                f"\nNumpy v.{np.__version__}\n",
+            ]
+        )
+
+        # graphviz
+        gv_result = subprocess.getoutput("dot -V")
+        details.extend(["\nGraphViz\n", gv_result if "graphviz" in gv_result else "not installed", "\nhttps://www.graphviz.org/\n"])
+
+        return "".join(details)
+
     def excepthook(self, exception_type, exception_value, traceback_object):
         """
         global error management
         """
-        import PySide6
 
-        error_text: str = (
-            f"Behatrix version: {version.__version__}\n"
-            f"OS: {platform.uname().system} {platform.uname().release} {platform.uname().version}\n"
-            f"CPU: {platform.uname().machine} {platform.uname().processor}\n"
-            f"Python {platform.python_version()} ({'64-bit' if sys.maxsize > 2**32 else '32-bit'})\n"
-            f"Qt {qVersion()} - PySide {PySide6.__version__}\n"
-            f"{dt.datetime.now():%Y-%m-%d %H:%M}\n\n"
-        )
+        error_text: str = self.get_prog_info()
+
+        error_text += f"{dt.datetime.now():%Y-%m-%d %H:%M}\n\n"
         error_text += "".join(traceback.format_exception(exception_type, exception_value, traceback_object))
 
         logging.critical(error_text)
@@ -288,8 +315,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Display the about dialog
         """
-        import PySide6
-
         about_dialog = QMessageBox()
         about_dialog.setIconPixmap(QPixmap(":/behatrix_unito_logo"))
         about_dialog.setWindowTitle("About Behatrix")
@@ -310,25 +335,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
         )
 
-        details: list = []
-        current_system = platform.uname()
-        details.extend(
-            [
-                f"Operating system: {current_system.system} {current_system.release} {current_system.version}",
-                f"CPU: {current_system.machine} {current_system.processor}",
-                (
-                    f"Python {platform.python_version()} ({'64-bit' if sys.maxsize > 2**32 else '32-bit'})"
-                    f" - Qt {qVersion()} - PySide {PySide6.__version__}"
-                ),
-            ]
-        )
-
-        # graphviz
-        gv_result = subprocess.getoutput("dot -V")
-
-        details.extend(["\nGraphViz", gv_result if "graphviz" in gv_result else "not installed", "https://www.graphviz.org/"])
-
-        about_dialog.setDetailedText("\n".join(details))
+        about_dialog.setDetailedText(self.get_prog_info())
 
         _ = about_dialog.exec_()
 
@@ -368,14 +375,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         settings = QSettings(str(pl.Path(os.path.expanduser("~")) / ".behatrix"), QSettings.IniFormat)
         settings.setValue("dot_prog_path", self.le_dot_path.text())
 
+    def clear_results(self):
+        self.pte_statistics.clear()
+        self.tw_observed_transitions.clear()
+        self.pte_gv_nodes.clear()
+        self.pte_gv_edges.clear()
+        self.pte_gv_graph.clear()
+        self.pb_save_results.setVisible(False)
+        self.svg_display.load(b"")
+
     def clear_sequences(self):
         """
         delete all behavioral sequences
         """
         self.pte_behav_seq.clear()
-        self.pte_statistics.clear()
-        self.tw_observed_transitions.clear()
-        self.pb_save_results.setVisible(False)
+        self.clear_results()
 
     def behavioral_sequences_changed(self):
         """
@@ -404,7 +418,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.graphviz_script()
 
-        self.flow_diagram()
+        if self.cb_generate_diagram_on_the_fly.isChecked():
+            self.flow_diagram()
 
     def flow_diagram_parameters_changed(self):
         """
@@ -416,7 +431,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.graphviz_script()
 
-        self.flow_diagram()
+        if self.cb_generate_diagram_on_the_fly.isChecked():
+            self.flow_diagram()
 
     def test_dot_program(self, dot_path: str) -> bool:
         """
@@ -432,15 +448,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         browse for dot program path
         """
         filename = QFileDialog(self).getOpenFileName(self, "Select the dot program from GraphViz package", "", "All files (*)")[0]
-        if filename:
-            if self.test_dot_program(filename):
-                self.le_dot_path.setText(filename)
-                self.le_dot_path.setStyleSheet("")
-                self.statusbar.showMessage(f"", 0)
+        if not filename:
+            QMessageBox.warning(self, "Behatrix", f"The selected <b>dot</b> program is not working.<br>Check <b>{filename}</b>")
+            return
+
+        if self.test_dot_program(filename):
+            self.le_dot_path.setText(filename)
+            self.le_dot_path.setStyleSheet("")
+            self.statusbar.showMessage("dot program path selected", 0)
+            if self.cb_generate_diagram_on_the_fly.isChecked():
                 self.flow_diagram()
 
-            else:
-                QMessageBox.critical(self, "Behatrix", f"The selected <b>dot</b> program is not working.<br>Check <b>{filename}</b>")
+        else:
+            QMessageBox.critical(self, "Behatrix", f"The selected <b>dot</b> program is not working.<br>Check <b>{filename}</b>")
 
     def load_file_content(self):
         """
@@ -465,58 +485,60 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         statistics about behavioral sequences
         """
 
-        if self.pte_behav_seq.toPlainText():
-            results = behatrix_functions.behavioral_sequence_analysis(
-                self.pte_behav_seq.toPlainText(),
-                behaviors_separator=self.le_behaviors_separator.text(),
-                chunk=0,
-                flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
-                ngram=self.sb_ngram.value(),
-            )
+        if not self.pte_behav_seq.toPlainText():
+            self.clear_results()
 
-            # print(f"{results=}")
+        results = behatrix_functions.behavioral_sequence_analysis(
+            self.pte_behav_seq.toPlainText(),
+            behaviors_separator=self.le_behaviors_separator.text(),
+            chunk=0,
+            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+            ngram=self.sb_ngram.value(),
+        )
 
-            output = ""
-            output += f"Number of sequences: {len(results['sequences'])}\n\n"
+        # print(f"{results=}")
 
-            if self.sb_ngram.value() == 1:
-                output += "\nStatistics\n==========\n"
-                output += f"Number of different behaviours: {len(results['behaviours'])}\n"
-                output += f"Total number of behaviours: {results['tot_nodes']}\n"
-                output += f"Number of different transitions: {len(results['transitions'])}\n"
-                output += f"Total number of transitions: {results['tot_trans']}\n"
-                output += "\nBehaviours list\n===============\n{}\n".format("\n".join(results["behaviours"]))
-                output += "\nBehaviours frequencies\n"
-                output += "=" * 30
-                output += "\n"
+        output = ""
+        output += f"Number of sequences: {len(results['sequences'])}\n\n"
 
-                for behaviour in sorted(results["behaviours"]):
-                    countBehaviour = 0
-                    for seq in results["sequences"]:
-                        countBehaviour += seq.count(behaviour)
+        if self.sb_ngram.value() == 1:
+            output += "\nStatistics\n==========\n"
+            output += f"Number of different behaviours: {len(results['behaviours'])}\n"
+            output += f"Total number of behaviours: {results['tot_nodes']}\n"
+            output += f"Number of different transitions: {len(results['transitions'])}\n"
+            output += f"Total number of transitions: {results['tot_trans']}\n"
+            output += "\nBehaviours list\n===============\n{}\n".format("\n".join(results["behaviours"]))
+            output += "\nBehaviours frequencies\n"
+            output += "=" * 30
+            output += "\n"
 
-                    output += f"{behaviour}\t{countBehaviour / results['tot_nodes']:.3f}\t{countBehaviour} / {results['tot_nodes']}\n"
+            for behaviour in sorted(results["behaviours"]):
+                countBehaviour = 0
+                for seq in results["sequences"]:
+                    countBehaviour += seq.count(behaviour)
 
-            # n-grams
-            if self.sb_ngram.value() > 1:
-                output += f"\n\n{self.sb_ngram.value()}-grams\n"
-                output += "=" * 20
-                output += "\n"
-                output += f"Number of different {self.sb_ngram.value()}-grams: {results['uniq_ngrams_number']}\n"
-                output += f"Total number of {self.sb_ngram.value()}-grams: {results['ngrams_total_number']}\n"
-                output += f"Number of different transitions: {len(results['ngram_transitions'])}\n"
-                output += f"Total number of transitions: {sum([results['ngram_transitions'][k] for k in results['ngram_transitions']])}\n"
+                output += f"{behaviour}\t{countBehaviour / results['tot_nodes']:.3f}\t{countBehaviour} / {results['tot_nodes']}\n"
 
-                output += "\n"
-                output += "\nFrequencies\n"
-                output += "=" * 30
-                output += "\n"
-                output += results["out_ngrams"]
+        # n-grams
+        if self.sb_ngram.value() > 1:
+            output += f"\n\n{self.sb_ngram.value()}-grams\n"
+            output += "=" * 20
+            output += "\n"
+            output += f"Number of different {self.sb_ngram.value()}-grams: {results['uniq_ngrams_number']}\n"
+            output += f"Total number of {self.sb_ngram.value()}-grams: {results['ngrams_total_number']}\n"
+            output += f"Number of different transitions: {len(results['ngram_transitions'])}\n"
+            output += f"Total number of transitions: {sum([results['ngram_transitions'][k] for k in results['ngram_transitions']])}\n"
 
-            self.pte_statistics.setPlainText(output)
+            output += "\n"
+            output += "\nFrequencies\n"
+            output += "=" * 30
+            output += "\n"
+            output += results["out_ngrams"]
 
-            # self.pb_save_results.setText("Save statistics")
-            self.pb_save_results.setVisible(True)
+        self.pte_statistics.setPlainText(output)
+
+        # self.pb_save_results.setText("Save statistics")
+        self.pb_save_results.setVisible(True)
 
     def save_results(self, mode: str) -> None:
         """
@@ -1156,7 +1178,7 @@ def cli():
     args = parser.parse_args()
 
     if args.version:
-        print("Copyright (C) 2017-2022 Olivier Friard")
+        print("Copyright (C) 2017-2024 Olivier Friard")
         print(f"version {version.__version__} - {version.__version_date__}")
         sys.exit()
 
