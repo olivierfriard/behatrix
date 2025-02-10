@@ -909,7 +909,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.cb_plot_significativity.setEnabled(True)
 
-        QMessageBox.information(self, "Behatrix", ("Permutations test finished<br>" f"{nb_randomization_done} permutations done<br><br>"))
+        QMessageBox.information(self, "Behatrix", (f"Permutations test finished<br>{nb_randomization_done} permutations done<br><br>"))
 
     def permutations_test_finished(self, results):
         """
@@ -1076,6 +1076,7 @@ def main():
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
     app.setApplicationName("Behatrix")
+    app.setStyle("Fusion")
     mainWindow = MainWindow()
     mainWindow.show()
     mainWindow.raise_()
@@ -1162,7 +1163,7 @@ def cli():
         sep = "\n"
         print(f"\nNumber of sequences: {len(results['sequences'])}")
 
-        print(("\nBehaviours list\n" "===============\n" f"{sep.join(results['behaviours'])}\n"))
+        print((f"\nBehaviours list\n===============\n{sep.join(results['behaviours'])}\n"))
 
         print("Statistics\n==========")
         print(f"Number of different behaviours: {len(results['behaviours'])}")
