@@ -35,3 +35,5 @@ Issues = "https://github.com/olivierfriard/behatrix/issues"
 
 [project.scripts]
 behatrix = "behatrix:main"
+
+
