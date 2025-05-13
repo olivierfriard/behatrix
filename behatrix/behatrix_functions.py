@@ -167,9 +167,7 @@ def behavioral_sequence_analysis(
         count_ngram = collections.Counter(tot_ngrams)
         for group in count_ngram:
             out_ngrams += (
-                f"{behaviors_separator.join(group)}\t"
-                f"{count_ngram[group] / len(tot_ngrams):.3f}\t"
-                f"{count_ngram[group]} / {len(tot_ngrams)}\n"
+                f"{behaviors_separator.join(group)}\t{count_ngram[group] / len(tot_ngrams):.3f}\t{count_ngram[group]} / {len(tot_ngrams)}\n"
             )
 
         # n-grams transitions
@@ -458,6 +456,8 @@ def permutations_test(
         risu (numpy array)
     """
 
+    # region strings_permutation function
+
     def strings_permutation(
         space: list,
         sequences: list,
@@ -539,6 +539,8 @@ def permutations_test(
 
         return perm_sequences
 
+    # endregion
+
     space: list = []
     for sequence in sequences:
         space += sequence[int(block_first) : len(sequence) - int(block_last)]
@@ -572,6 +574,19 @@ def permutations_test(
                     permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
 
             results = results + (permuted_transitions_matrix >= observed_matrix)
+
+            """
+            print("observed_matrix\n", observed_matrix)
+            print()
+
+            print("permuted_transitions_matrix\n", permuted_transitions_matrix)
+            print()
+            print("permuted_transitions_matrix >= observed_matrix\n", permuted_transitions_matrix >= observed_matrix)
+
+            print()
+            print("results\n", results)
+            print("=====")
+            """
 
         if count == nrandom:
             break

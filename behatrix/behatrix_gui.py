@@ -985,76 +985,76 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         execute permutations test
         """
 
-        if self.pte_behav_seq.toPlainText():
-            self.tw_random.clear()
+        if not self.pte_behav_seq.toPlainText():
+            QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
+            return
 
-            results = behatrix_functions.behavioral_sequence_analysis(
-                self.pte_behav_seq.toPlainText(),
-                behaviors_separator=self.le_behaviors_separator.text(),
-                chunk=0,
-                flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+        self.tw_random.clear()
+
+        results = behatrix_functions.behavioral_sequence_analysis(
+            self.pte_behav_seq.toPlainText(),
+            behaviors_separator=self.le_behaviors_separator.text(),
+            chunk=0,
+            flag_remove_repetitions=self.cb_remove_repeated_behaviors.isChecked(),
+        )
+
+        self.behaviours = results["behaviours"]
+
+        # check exclusion list
+        if self.pte_excluded_transitions.toPlainText():
+            result = behatrix_functions.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), results["sequences"])
+
+            if not result["error_code"]:
+                exclusion_list = result["exclusion_list"]
+            else:
+                QMessageBox.warning(self, "Behatrix", result["message"])
+                return
+        else:
+            exclusion_list = {}
+
+        if self.leNumberRandomizations.text():
+            try:
+                self.nrandom = int(self.leNumberRandomizations.text())
+            except Exception:
+                self.nrandom = 0
+                QMessageBox.warning(self, "Behatrix", "The number of permutations is not valid")
+                return
+
+        if self.nrandom:
+            self.statusbar.showMessage("Permutations test running... Be patient", 0)
+
+            num_proc = self.sb_nb_cores.value()
+
+            if num_proc > self.nrandom:
+                num_proc = self.nrandom
+
+            observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], self.behaviours)
+
+            self.pb_run_permutations_test.setEnabled(False)
+            self.nb_randomization_done = 0
+            pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+
+            n_random_by_proc = round(self.nrandom / num_proc + 1)
+
+            pool.starmap_async(
+                behatrix_functions.permutations_test,
+                [
+                    (
+                        n_random_by_proc,
+                        results["sequences"],
+                        self.behaviours,
+                        exclusion_list,
+                        self.cb_block_first_behavior.isChecked(),
+                        self.cb_block_last_behavior.isChecked(),
+                        observed_matrix,
+                    )
+                ]
+                * num_proc,
+                callback=self.permutations_test_finished,
             )
 
-            self.behaviours = results["behaviours"]
-
-            # check exclusion list
-            if self.pte_excluded_transitions.toPlainText():
-                result = behatrix_functions.check_exclusion_list(self.pte_excluded_transitions.toPlainText(), results["sequences"])
-
-                if not result["error_code"]:
-                    exclusion_list = result["exclusion_list"]
-                else:
-                    QMessageBox.warning(self, "Behatrix", result["message"])
-                    return
-            else:
-                exclusion_list = {}
-
-            if self.leNumberRandomizations.text():
-                try:
-                    self.nrandom = int(self.leNumberRandomizations.text())
-                except Exception:
-                    self.nrandom = 0
-                    QMessageBox.warning(self, "Behatrix", "The number of permutations is not valid")
-                    return
-
-            if self.nrandom:
-                self.statusbar.showMessage("Permutations test running... Be patient", 0)
-
-                num_proc = self.sb_nb_cores.value()
-
-                if num_proc > self.nrandom:
-                    num_proc = self.nrandom
-
-                observed_matrix = behatrix_functions.create_observed_transition_matrix(results["sequences"], self.behaviours)
-
-                self.pb_run_permutations_test.setEnabled(False)
-                self.nb_randomization_done = 0
-                pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-
-                n_random_by_proc = round(self.nrandom / num_proc + 1)
-
-                pool.starmap_async(
-                    behatrix_functions.permutations_test,
-                    [
-                        (
-                            n_random_by_proc,
-                            results["sequences"],
-                            self.behaviours,
-                            exclusion_list,
-                            self.cb_block_first_behavior.isChecked(),
-                            self.cb_block_last_behavior.isChecked(),
-                            observed_matrix,
-                        )
-                    ]
-                    * num_proc,
-                    callback=self.permutations_test_finished,
-                )
-
-            else:
-                QMessageBox.warning(self, "Behatrix", "Select the number of permutations to execute")
-
         else:
-            QMessageBox.warning(self, "Behatrix", "No behavioral sequences found!")
+            QMessageBox.warning(self, "Behatrix", "Select the number of permutations to execute")
 
     def save_permutations_test_results(self):
         """
