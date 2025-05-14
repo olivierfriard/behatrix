@@ -829,7 +829,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
 
             # copy wait please image
-            shutil.copy("behatrix/please_wait.svg", output_temp_file)
+            # shutil.copy("behatrix/please_wait.svg", output_temp_file)
+
+            shutil.copy(pl.Path(__file__).parent / "please_wait.svg", output_temp_file)
+
             try:
                 with gv_script_temp_file.open("w", encoding="utf-8") as f:
                     f.write(
