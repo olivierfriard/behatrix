@@ -24,7 +24,7 @@ The details of modifications are available on the [change log](https://github.co
 
 # Start Behatrix
 
-**Behatrix** can be launched with the **uv** "an extremely fast Python package and project manager".
+**Behatrix** can be launched with **uv** "an extremely fast Python package and project manager".
 
 * If not already done, install **uv** (See https://docs.astral.sh/uv/getting-started/installation/) on your system.
 
@@ -35,6 +35,14 @@ The details of modifications are available on the [change log](https://github.co
 ``` {.bash}
 uvx behatrix
 ```
+
+
+* If you want to run a specific version:
+
+``` {.bash}
+uvx behatrix==0.12
+```
+
 
 
 If you obtain the following error on Linux:
