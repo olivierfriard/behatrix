@@ -1,2 +1,3 @@
 include README.TXT
 include LICENSE.TXT
+include behatrix/please_wait.svg
