@@ -2,7 +2,7 @@
 Behatrix
 ==================
 
-![Behatrix logo](behatrix/icons/behatrix_128px.png)
+![Behatrix logo](https://www.boris.unito.it/images/logo_behatrix.png)
 
 
 
@@ -22,47 +22,11 @@ Behatrix
 The details of modifications are available on the [change log](https://github.com/olivierfriard/behatrix/wiki/revision-history) page.
 
 
-# Install Behatrix
+# Start Behatrix
 
-**Behatrix** can be downloaded from the [GiHub repository](https://github.com/olivierfriard/behatrix/releases).
+**Behatrix** can be launched with the **uv** "an extremely fast Python package and project manager".
 
-<!-- All versions are *portable*, they do not need to be installed on your system. -->
-
-All previous versions of **Behatrix** are available in the [release GitHub repository](https://github.com/olivierfriard/behatrix/releases).
-
-
-
-## GNU/Linux
-
-* Download the **behatrix-x.y.z-x86_64.tar.gz** file, unzip it, go to the **bin** directory and launch the **start_behatrix**.
-
-or
-
-* See the [From sources section](#From-sources)
-
-
-## Microsoft-Windows
-
-* Download the **behatrix-x.y.z-win64-setup.exe** file, unzip it and launch **start_behatrix.bat**.
-
-or
-
-* See the [From sources section](#From-sources)
-
- 
- ## Mac OS
-
-See the [From sources section](#From-sources)
-
-
-
-## From sources
-
-This method should work with Linux, Windows and MacOS.
-
-### New method with [uv](https://docs.astral.sh/uv/), "an extremely fast Python package and project manager"
-
-* [Install the **uv** package manager](https://docs.astral.sh/uv/#getting-started) on your system.
+* If not already done, install **uv** (See https://docs.astral.sh/uv/getting-started/installation/) on your system.
 
 
 * Install and run Behatrix:
@@ -73,55 +37,13 @@ uvx behatrix
 ```
 
 
-If you obtain the following error:
+If you obtain the following error on Linux:
 
 ``` {.bash}
 Could not load the Qt platform plugin "xcb" in "" even though it was found.
 ```
 see the [install libxcb-cursor0 section](#Install-libxcb-cursor0).
 
-
-### Classic method with **pip**, the package management system for Python
-
-You will need a working installation of Python >=3.8 and <=3.12.
-All the commands cited below must be executed in a [terminal](#How-to-open-a-terminal).
-
-* Create a virtual environment (to isolate Behatrix from your system):
-
-
-``` {.bash}
-python3 -m venv behatrix_venv
-```
-
-
-* Activate the virtual environment
-
-``` {.bash}
-source behatrix_venv/bin/activate
-```
-
-The prompt should now be prefixed by **behatrix_venv**
-
-
-* Install Behatrix
-
-``` {.bash}
-pip install behatrix
-```
-
-
-* Launch Behatrix
-
-``` {.bash}
-python3 -m behatrix
-```
-
-For future uses:
-
-``` {.bash}
-source behatrix_venv/bin/activate
-python3 -m behatrix
-```
 
 
 

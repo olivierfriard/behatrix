@@ -4,7 +4,7 @@ Behatrix
 
 # Behavioral sequences analysis with permutations test
 
-![Behatrix logo](images/logo_behatrix.png)
+![Behatrix logo](https://www.boris.unito.it/images/logo_behatrix.png)
 
 
 Researchers who observe and study behavior often collect data in the
@@ -40,12 +40,9 @@ The flow diagram generation requires the the [Graphviz](https://graphviz.org/) o
 [Usage of Behatrix](https://github.com/olivierfriard/behatrix/blob/master/user_guide.md)
 
 
-# Download Behatrix
+[Behatrix GitHub repository](https://github.com/olivierfriard/behatrix)
 
-
-[Latest release on GitHub repository](https://github.com/olivierfriard/behatrix/releases/latest)
-
-[Issues and feature request](https://github.com/olivierfriard/behatrix/issues) on GitHub
+Please report [issues and feature request](https://github.com/olivierfriard/behatrix/issues) on GitHub.
 
 
 # Change Log

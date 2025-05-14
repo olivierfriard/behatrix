@@ -1,7 +1,7 @@
 Behatrix
 Behavioral Sequences Analysis
 
-Copyright 2017-2020 Olivier Friard
+Copyright 2017-2025 Olivier Friard
 
 Behatrix is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
