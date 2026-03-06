@@ -1459,13 +1459,21 @@ def cli():
         default=False,
         help="Produce a dot script for observed transitions",
     )
+    """
+    TODO: add possibility to pass arguments for cutoff etc
+
+    --config '{"lr": 0.01, "epochs": 10}'
+    parser.add_argument("--config", type=json.loads)
+    print(args.config["lr"])
+
+    """
 
     parser.add_argument(
         "--significativity-graph",
         action="store_true",
         dest="significativity_graph",
         default=False,
-        help="Produce a dot script for observaed transitions with significativity",
+        help="Produce a dot script for observed transitions with significativity",
     )
 
     args = parser.parse_args()
@@ -1692,9 +1700,6 @@ def cli():
                 tot_nodes=results["tot_nodes"],
                 tot_trans=results["tot_trans"],
                 tot_trans_after_node=results["tot_trans_after_node"],
-                edge_label="percent_node",
-                decimals_number=1,
-                significativity=None,  # self.permutations_test_matrix if (self.permutations_test_matrix is not None)        and (self.cb_plot_significativity.isChecked())            else None,
                 behaviors=results["behaviours"],
             )
         )
@@ -1710,33 +1715,34 @@ def cli():
         with open(file_name, mode="w", encoding="utf-8") as f_out:
             f_out.write(dot_script)
 
-    if nrandom and args.significativity_graph:
-        (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = (
-            behatrix_functions.draw_diagram(
-                cutoff_all=0,  # None
-                cutoff_behavior=None,
-                unique_transitions=results["transitions"],
-                nodes=results["nodes"],
-                starting_nodes=[],
-                tot_nodes=results["tot_nodes"],
-                tot_trans=results["tot_trans"],
-                tot_trans_after_node=results["tot_trans_after_node"],
-                edge_label="percent_node",
-                decimals_number=1,
-                significativity=permutations_test_matrix,
-                behaviors=results["behaviours"],
+    if args.significativity_graph:
+        if not nrandom:
+            print(
+                "A graph of the observed transitions with statistical significance was requested, but permutation testing is required.\nRetry adding a value for the n-random argument"
             )
-        )
-        dot_script = (
-            f"{header_out}\n{nodes_out}\n{edges_out}\n{graph_out}\n{footer_out}"
-        )
-        # print(f"{dot_script}")  # remove before release
-        with open(
-            f"{args.output if args.output else args.sequences}.observed_transitions_with_significativity.dot",
-            mode="w",
-            encoding="utf-8",
-        ) as f_out:
-            f_out.write(dot_script)
+        else:
+            (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = (
+                behatrix_functions.draw_diagram(
+                    cutoff_all=0,  # None
+                    cutoff_behavior=None,
+                    unique_transitions=results["transitions"],
+                    nodes=results["nodes"],
+                    starting_nodes=[],
+                    tot_nodes=results["tot_nodes"],
+                    tot_trans=results["tot_trans"],
+                    tot_trans_after_node=results["tot_trans_after_node"],
+                    significativity=permutations_test_matrix,
+                    behaviors=results["behaviours"],
+                )
+            )
+            with open(
+                f"{args.output if args.output else args.sequences}.observed_transitions_with_significativity.dot",
+                mode="w",
+                encoding="utf-8",
+            ) as f_out:
+                f_out.write(
+                    f"{header_out}\n{nodes_out}\n{edges_out}\n{graph_out}\n{footer_out}"
+                )
 
 
 if __name__ == "__main__":
