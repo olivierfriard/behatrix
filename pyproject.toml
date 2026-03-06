@@ -4,8 +4,8 @@ version = "0.14"
 description = "Behatrix - Behavioral Sequences Analysis with permutation test"
 authors = [{ name="Olivier Friard", email="olivier.friard@unito.it" }]
 readme = "README.md"
-license = { file = "LICENSE.TXT" }
 requires-python = ">=3.10"
+license = "GPL-3.0-only"
 
 classifiers=[
         "Operating System :: OS Independent",
@@ -14,7 +14,7 @@ classifiers=[
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Visualization",
         "Operating System :: OS Independent"
@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "http://www.boris.unito.it/behatrix"
+Homepage = "https://www.boris.unito.it/behatrix"
 Documentation = "https://github.com/olivierfriard/behatrix/blob/master/README.rst"
 Change_log = "https://github.com/olivierfriard/behatrix/wiki/revision-history"
 Source_code = "https://github.com/olivierfriard/behatrix"
