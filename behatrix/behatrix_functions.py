@@ -2,7 +2,7 @@
 Behatrix
 Behavioral sequences analysis with permutations test
 
-Copyright 2017-2024 Olivier Friard
+Copyright 2017-2026 Olivier Friard
 
 This file is part of Behatrix.
 
@@ -21,11 +21,12 @@ This file is part of Behatrix.
 
 """
 
+import collections
 import itertools
 import random
-import numpy as np
 from typing import Tuple
-import collections
+
+import numpy as np
 
 
 def remove_comments(s: str) -> str:
@@ -48,7 +49,11 @@ def remove_comments(s: str) -> str:
 
 
 def behavioral_sequence_analysis(
-    string: str, behaviors_separator: str = "", chunk: int = 0, flag_remove_repetitions: bool = False, ngram: int = 1
+    string: str,
+    behaviors_separator: str = "",
+    chunk: int = 0,
+    flag_remove_repetitions: bool = False,
+    ngram: int = 1,
 ) -> dict:
     """
     Extract some information from behavioral sequences
@@ -162,13 +167,17 @@ def behavioral_sequence_analysis(
     if ngram > 1:
         tot_ngrams = []
         for sequence in sequences:
-            tot_ngrams.extend([tuple(sequence[i : i + ngram]) for i, _ in enumerate(sequence) if len(sequence[i : i + ngram]) == ngram])
+            tot_ngrams.extend(
+                [
+                    tuple(sequence[i : i + ngram])
+                    for i, _ in enumerate(sequence)
+                    if len(sequence[i : i + ngram]) == ngram
+                ]
+            )
 
         count_ngram = collections.Counter(tot_ngrams)
         for group in count_ngram:
-            out_ngrams += (
-                f"{behaviors_separator.join(group)}\t{count_ngram[group] / len(tot_ngrams):.3f}\t{count_ngram[group]} / {len(tot_ngrams)}\n"
-            )
+            out_ngrams += f"{behaviors_separator.join(group)}\t{count_ngram[group] / len(tot_ngrams):.3f}\t{count_ngram[group]} / {len(tot_ngrams)}\n"
 
         # n-grams transitions
         for sequence in sequences:
@@ -177,14 +186,18 @@ def behavioral_sequence_analysis(
                     [
                         tuple(sequence[i + ngram : i + ngram * 2])
                         for i in range(len(sequence))
-                        if behaviors_separator.join(sequence).startswith(behaviors_separator.join(group), i)
+                        if behaviors_separator.join(sequence).startswith(
+                            behaviors_separator.join(group), i
+                        )
                         and len(sequence[i + ngram : i + ngram * 2]) == ngram
                     ]
                 )
                 for ngram_transition in count_ngram_transition:
                     if (group, ngram_transition) not in ngram_transitions:
                         ngram_transitions[(group, ngram_transition)] = 0
-                    ngram_transitions[(group, ngram_transition)] += count_ngram_transition[ngram_transition]
+                    ngram_transitions[(group, ngram_transition)] += (
+                        count_ngram_transition[ngram_transition]
+                    )
 
     return {
         "sequences": sequences,
@@ -204,7 +217,9 @@ def behavioral_sequence_analysis(
     }
 
 
-def check_exclusion_list(exclusion_str: str, sequences: list, behaviors_separator: str = "") -> dict:
+def check_exclusion_list(
+    exclusion_str: str, sequences: list, behaviors_separator: str = ""
+) -> dict:
     """
     check the transition exclusion strings
     format must be like:
@@ -272,7 +287,16 @@ def draw_diagram(
     return string containing graphviz code
     """
 
-    def f_edge_label(edge_label, node1, node2, n_transition, tot_trans_after_node_i0, tot_trans, decimals_number, pen_width=1):
+    def f_edge_label(
+        edge_label,
+        node1,
+        node2,
+        n_transition,
+        tot_trans_after_node_i0,
+        tot_trans,
+        decimals_number,
+        pen_width=1,
+    ):
         if edge_label == "fraction_node":
             return f'"{node1}" -> "{node2}" [label = "  {n_transition}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
 
@@ -328,7 +352,11 @@ def draw_diagram(
                 nodes_list.append(node1)
                 nodes_list.append(node2)
 
-                pen_width = width(significativity[behaviors.index(i[0]), behaviors.index(i[1])]) if significativity is not None else 1
+                pen_width = (
+                    width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
+                    if significativity is not None
+                    else 1
+                )
 
                 edges_out += f_edge_label(
                     edge_label,
@@ -343,7 +371,10 @@ def draw_diagram(
 
     elif cutoff_behavior:
         for i in unique_transitions:
-            if unique_transitions[i] / tot_trans_after_node[i[0]] * 100 >= cutoff_behavior:
+            if (
+                unique_transitions[i] / tot_trans_after_node[i[0]] * 100
+                >= cutoff_behavior
+            ):
                 if i[0] in starting_nodes and include_first:
                     node1 = f"{i[0]} ({starting_nodes[i[0]]})"
                 else:
@@ -358,7 +389,11 @@ def draw_diagram(
                 nodes_list.append(node1)
                 nodes_list.append(node2)
 
-                pen_width = width(significativity[behaviors.index(i[0]), behaviors.index(i[1])]) if significativity is not None else 1
+                pen_width = (
+                    width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
+                    if significativity is not None
+                    else 1
+                )
 
                 edges_out += f_edge_label(
                     edge_label,
@@ -387,7 +422,11 @@ def draw_diagram(
             nodes_list.append(node1)
             nodes_list.append(node2)
 
-            pen_width = width(significativity[behaviors.index(i[0]), behaviors.index(i[1])]) if significativity is not None else 1
+            pen_width = (
+                width(significativity[behaviors.index(i[0]), behaviors.index(i[1])])
+                if significativity is not None
+                else 1
+            )
 
             edges_out += f_edge_label(
                 edge_label,
@@ -413,7 +452,14 @@ def draw_diagram(
 
     footer_out = "}\n"
 
-    return (header_out, nodes_out, edges_out, graph_out, footer_out, sorted(set(nodes_list)))
+    return (
+        header_out,
+        nodes_out,
+        edges_out,
+        graph_out,
+        footer_out,
+        sorted(set(nodes_list)),
+    )
 
 
 def create_observed_transition_matrix(sequences: list, behaviours: list) -> np.ndarray:
@@ -425,7 +471,9 @@ def create_observed_transition_matrix(sequences: list, behaviours: list) -> np.n
     for seq in sequences:
         for i in range(len(seq) - 1):
             if seq[i] in behaviours and seq[i + 1] in behaviours:
-                observed_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
+                observed_matrix[
+                    behaviours.index(seq[i]), behaviours.index(seq[i + 1])
+                ] += 1
 
     return observed_matrix
 
@@ -513,8 +561,12 @@ def permutations_test(
                     return []
 
                 # check penultimate element
-                if block_last and len(newseq) == len(seq) - 2:  # DO NOT REPEAT LAST BEHAVIOUR
-                    while (new_element in exclusion_list) and (seq[-1] in exclusion_list[new_element]):
+                if (
+                    block_last and len(newseq) == len(seq) - 2
+                ):  # DO NOT REPEAT LAST BEHAVIOUR
+                    while (new_element in exclusion_list) and (
+                        seq[-1] in exclusion_list[new_element]
+                    ):
                         if space2:
                             new_element = random.choice(space2)
                         else:
@@ -559,7 +611,9 @@ def permutations_test(
     results = np.zeros((len(behaviours), len(behaviours)))
 
     while True:
-        permuted_sequences = strings_permutation(space, sequences, exclusion_list, block_first, block_last)
+        permuted_sequences = strings_permutation(
+            space, sequences, exclusion_list, block_first, block_last
+        )
 
         count_tot += 1
 
@@ -571,7 +625,9 @@ def permutations_test(
 
             for seq in permuted_sequences:
                 for i in range(len(seq) - 1):
-                    permuted_transitions_matrix[behaviours.index(seq[i]), behaviours.index(seq[i + 1])] += 1
+                    permuted_transitions_matrix[
+                        behaviours.index(seq[i]), behaviours.index(seq[i + 1])
+                    ] += 1
 
             results = results + (permuted_transitions_matrix >= observed_matrix)
 
@@ -609,9 +665,13 @@ def levenshtein_distance(seq1: list, seq2: list) -> int:
     for x in range(1, size_x):
         for y in range(1, size_y):
             if seq1[x - 1] == seq2[y - 1]:
-                matrix[x, y] = min(matrix[x - 1, y] + 1, matrix[x - 1, y - 1], matrix[x, y - 1] + 1)
+                matrix[x, y] = min(
+                    matrix[x - 1, y] + 1, matrix[x - 1, y - 1], matrix[x, y - 1] + 1
+                )
             else:
-                matrix[x, y] = min(matrix[x - 1, y] + 1, matrix[x - 1, y - 1] + 1, matrix[x, y - 1] + 1)
+                matrix[x, y] = min(
+                    matrix[x - 1, y] + 1, matrix[x - 1, y - 1] + 1, matrix[x, y - 1] + 1
+                )
     return matrix[matrix.shape[0] - 1, matrix.shape[1] - 1]
 
 
@@ -678,7 +738,13 @@ def needleman_wunsch_identity(seq1: list, seq2: list) -> dict:
 
         identity = float(identity) / len(align1) * 100
 
-        return {"identity": identity, "score": score, "align1": align1, "align2": align2, "symbol": symbol}
+        return {
+            "identity": identity,
+            "score": score,
+            "align1": align1,
+            "align2": align2,
+            "symbol": symbol,
+        }
 
     m, n = len(seq1), len(seq2)  # length of two sequences
 
@@ -745,6 +811,8 @@ def needleman_wunsch_identity_seq_list(seq_list: list) -> np.ndarray:
 
     results = np.zeros((len(seq_list), len(seq_list)))
     for p in itertools.combinations(enumerate(seq_list), 2):
-        results[p[0][0], p[1][0]] = needleman_wunsch_identity(p[0][1], p[1][1])["identity"]
+        results[p[0][0], p[1][0]] = needleman_wunsch_identity(p[0][1], p[1][1])[
+            "identity"
+        ]
         results[p[1][0], p[0][0]] = results[p[0][0], p[1][0]]
     return results
