@@ -1382,6 +1382,7 @@ def cli():
         "--sequences",
         action="store",
         dest="sequences",
+        required=True,
         help="Path of file containing behavioral sequences",
     )
     parser.add_argument(
@@ -1459,6 +1460,44 @@ def cli():
         default=False,
         help="Produce a dot script for observed transitions",
     )
+
+    parser.add_argument(
+        "--cutoff-all",
+        action="store",
+        default=0,
+        dest="cutoff_all",
+        help="Percentage cut-off of all transitions below which transitions are not shown on the plot",
+        type=float,
+    )
+
+    parser.add_argument(
+        "--cutoff-behavior",
+        action="store",
+        default=0,
+        dest="cutoff_behavior",
+        help="percentage cut-off below which transitions after each behavior are not shown on the plot",
+        type=float,
+    )
+
+    parser.add_argument(
+        "--edge-label",
+        action="store",
+        default="percent_node",
+        choices=("percent_node", "percent_total", "fraction_node"),
+        dest="edge_label",
+        help="Edge label",
+        type=str,
+    )
+
+    parser.add_argument(
+        "--decimal-number",
+        action="store",
+        default=3,
+        dest="decimal_number",
+        help="Number of decimal in plot",
+        type=int,
+    )
+
     """
     TODO: add possibility to pass arguments for cutoff etc
 
@@ -1635,8 +1674,7 @@ def cli():
                 n_required_randomizations += n_random_by_proc
 
             if not args.quiet:
-                print("\nPermutations test")
-                print("=================")
+                print("\nPermutations test\n=================")
 
                 print(f"\nNumber of required permutations: {n_required_randomizations}")
 
@@ -1688,32 +1726,33 @@ def cli():
         except Exception:
             print(f"Error during creation of file: {file_name}")
 
-    # draw graph
+    # create dot script
     if args.observed_graph:
         (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = (
             behatrix_functions.draw_diagram(
-                cutoff_all=0,  # None
-                cutoff_behavior=None,
+                cutoff_all=args.cutoff_all,
+                cutoff_behavior=args.cutoff_behavior,
                 unique_transitions=results["transitions"],
                 nodes=results["nodes"],
                 starting_nodes=[],
+                edge_label=args.edge_label,
+                decimals_number=args.decimal_number,
                 tot_nodes=results["tot_nodes"],
                 tot_trans=results["tot_trans"],
                 tot_trans_after_node=results["tot_trans_after_node"],
                 behaviors=results["behaviours"],
             )
         )
-        dot_script = (
-            f"{header_out}\n{nodes_out}\n{edges_out}\n{graph_out}\n{footer_out}"
-        )
-        # print(f"{dot_script}")  # remove before release
+
         if args.output:
             file_name = f"{args.output}.observed_transitions.dot"
         else:
             file_name = f"{args.sequences}.observed_transitions.dot"
 
         with open(file_name, mode="w", encoding="utf-8") as f_out:
-            f_out.write(dot_script)
+            f_out.write(
+                f"{header_out}\n{nodes_out}\n{edges_out}\n{graph_out}\n{footer_out}"
+            )
 
     if args.significativity_graph:
         if not nrandom:
@@ -1728,6 +1767,8 @@ def cli():
                     unique_transitions=results["transitions"],
                     nodes=results["nodes"],
                     starting_nodes=[],
+                    edge_label=args.edge_label,
+                    decimals_number=args.decimal_number,
                     tot_nodes=results["tot_nodes"],
                     tot_trans=results["tot_trans"],
                     tot_trans_after_node=results["tot_trans_after_node"],
