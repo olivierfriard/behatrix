@@ -84,8 +84,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.vertical_splitter.setStretchFactor(1, 10)
         self.script_diagram_splitter.setStretchFactor(1, 1)
 
-        self.pte_statistics.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.pte_gv_edges.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.pte_statistics.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        self.pte_gv_edges.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
 
         self.pb_clear_behavioral_strings.clicked.connect(self.clear_sequences)
 
@@ -164,7 +164,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         self.pb_run_permutations_test.clicked.connect(self.permutation_test)
         self.pb_save_random.clicked.connect(self.save_permutations_test_results)
-        self.pte_behav_seq.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.pte_behav_seq.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         num_available_proc = os.cpu_count()
         self.sb_nb_cores.setMinimum(1)
         self.sb_nb_cores.setMaximum(num_available_proc)
@@ -177,7 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pb_levenshtein.clicked.connect(self.levenshtein_distance)
         self.pb_needleman_wunsch.clicked.connect(self.needleman_wunsch_identity)
         self.pb_save_distances.clicked.connect(self.save_distances_results)
-        self.pte_distances_results.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.pte_distances_results.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
 
         self.permutations_test_matrix = None
 
@@ -187,7 +187,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         config_file_path = str(pl.Path(os.path.expanduser("~")) / ".behatrix")
         if pl.Path(config_file_path).is_file():
-            settings = QSettings(config_file_path, QSettings.IniFormat)
+            settings = QSettings(config_file_path, QSettings.Format.IniFormat)
             if settings.value("dot_prog_path"):
                 # test dot program from settings
                 if self.test_dot_program(settings.value("dot_prog_path")):
@@ -326,14 +326,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         errorbox = QMessageBox()
         errorbox.setWindowTitle("Behatrix error occured")
         errorbox.setText(text)
-        errorbox.setTextFormat(Qt.RichText)
-        errorbox.setStandardButtons(QMessageBox.Abort)
+        errorbox.setTextFormat(Qt.TextFormat.RichText)
+        errorbox.setStandardButtons(QMessageBox.StandardButton.Abort)
 
-        _ = errorbox.addButton("Ignore and try to continue", QMessageBox.RejectRole)
+        _ = errorbox.addButton(
+            "Ignore and try to continue", QMessageBox.ButtonRole.RejectRole
+        )
 
         ret = errorbox.exec_()
 
-        if ret == QMessageBox.Abort:
+        if ret == QMessageBox.StandardButton.Abort:
             sys.exit(1)
 
     def add_button_menu(self, data, menu_obj):
@@ -361,9 +363,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         about_dialog = QMessageBox()
         about_dialog.setIconPixmap(QPixmap(":/behatrix_unito_logo"))
         about_dialog.setWindowTitle("About Behatrix")
-        about_dialog.setStandardButtons(QMessageBox.Ok)
-        about_dialog.setDefaultButton(QMessageBox.Ok)
-        about_dialog.setEscapeButton(QMessageBox.Ok)
+        about_dialog.setStandardButtons(QMessageBox.StandardButton.Ok)
+        about_dialog.setDefaultButton(QMessageBox.StandardButton.Ok)
+        about_dialog.setEscapeButton(QMessageBox.StandardButton.Ok)
 
         about_dialog.setInformativeText(
             (
@@ -420,7 +422,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         settings = QSettings(
-            str(pl.Path(os.path.expanduser("~")) / ".behatrix"), QSettings.IniFormat
+            str(pl.Path(os.path.expanduser("~")) / ".behatrix"),
+            QSettings.Format.IniFormat,
         )
         settings.setValue("dot_prog_path", self.le_dot_path.text())
 
