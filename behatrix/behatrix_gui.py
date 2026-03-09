@@ -1486,7 +1486,7 @@ def cli():
         choices=(
             "percentage_after_behavior",
             "percentage_of_total",
-            "fraction__after_behavior",
+            "fraction_after_behavior",
         ),
         dest="edge_label",
         help="Edge label",
@@ -1500,6 +1500,14 @@ def cli():
         dest="decimal_number",
         help="Number of decimal in plot",
         type=int,
+    )
+
+    parser.add_argument(
+        "--legend",
+        action="store_true",
+        dest="legend",
+        default=False,
+        help="Add a legend to plot",
     )
 
     """
@@ -1745,6 +1753,7 @@ def cli():
                 tot_trans=results["tot_trans"],
                 tot_trans_after_node=results["tot_trans_after_node"],
                 behaviors=results["behaviours"],
+                legend=args.legend,
             )
         )
 
@@ -1778,6 +1787,7 @@ def cli():
                     tot_trans_after_node=results["tot_trans_after_node"],
                     significativity=permutations_test_matrix,
                     behaviors=results["behaviours"],
+                    legend=args.legend,
                 )
             )
             with open(

@@ -281,6 +281,7 @@ def draw_diagram(
     decimals_number=3,
     significativity=None,
     behaviors=[],
+    legend: bool = False,
 ) -> tuple:
     """
     create code for GraphViz
@@ -297,7 +298,7 @@ def draw_diagram(
         decimals_number,
         pen_width=1,
     ):
-        if edge_label in ("fraction_node", "fraction__after_behavior"):
+        if edge_label in ("fraction_node", "fraction_after_behavior"):
             return f'"{node1}" -> "{node2}" [label = "  {n_transition}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
 
         elif edge_label in ("percent_node", "percentage_after_behavior"):
@@ -334,6 +335,35 @@ def draw_diagram(
     nodes_list = []
 
     edges_out = "\n/* edges */\n"
+
+    if legend:
+        text: str = ""
+        if edge_label in ("percent_total", "percentage_of_total"):
+            text = "Percentage of total transitions"
+        if edge_label in ("percent_node", "percentage_after_behavior"):
+            text = "Percentage of transitions after behavior"
+        if edge_label in ("fraction_node", "fraction_after_behavior"):
+            text = "Fraction of transitions after behavior"
+        cutoff_text: str = ""
+        if cutoff_all:
+            cutoff_text = f"Cut-off applied to all transitions: {cutoff_all}%"
+        elif cutoff_behavior:
+            cutoff_text = (
+                f"Cut-off applied to transitions after behavior: {cutoff_behavior}%"
+            )
+        edges_out += f"""\n{{ rank=sink; legend }}\n
+legend [shape=none, margin=0, label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0">
+<TR>
+<TD>{text}</TD>
+</TR>
+<TR>
+<TD>{cutoff_text}</TD>
+</TR>
+</TABLE>
+>]
+
+        """
 
     if cutoff_all:
         for i in unique_transitions:
