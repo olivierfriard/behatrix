@@ -297,14 +297,14 @@ def draw_diagram(
         decimals_number,
         pen_width=1,
     ):
-        if edge_label == "fraction_node":
+        if edge_label in ("fraction_node", "fraction__after_behavior"):
             return f'"{node1}" -> "{node2}" [label = "  {n_transition}/{tot_trans_after_node_i0}" penwidth={pen_width}];\n'
 
-        elif edge_label == "percent_node":
+        elif edge_label in ("percent_node", "percentage_after_behavior"):
             percent = n_transition / tot_trans_after_node_i0 * 100
             return f'"{node1}" -> "{node2}" [label = "  {percent:.{decimals_number}f} %" penwidth={pen_width}];\n'
 
-        elif edge_label == "percent_total":
+        elif edge_label in ("percent_total", "percentage_of_total"):
             percent = n_transition / tot_trans * 100.0
             return f'"{node1}" -> "{node2}" [label = "  {percent:.{decimals_number}f} %" penwidth={pen_width}];\n'
 

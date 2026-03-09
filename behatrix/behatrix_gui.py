@@ -1483,7 +1483,11 @@ def cli():
         "--edge-label",
         action="store",
         default="percent_node",
-        choices=("percent_node", "percent_total", "fraction_node"),
+        choices=(
+            "percentage_after_behavior",
+            "percentage_of_total",
+            "fraction__after_behavior",
+        ),
         dest="edge_label",
         help="Edge label",
         type=str,
