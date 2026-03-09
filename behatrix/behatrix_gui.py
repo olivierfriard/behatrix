@@ -1462,6 +1462,14 @@ def cli():
     )
 
     parser.add_argument(
+        "--significativity-graph",
+        action="store_true",
+        dest="significativity_graph",
+        default=False,
+        help="Produce a dot script for observed transitions with significativity",
+    )
+
+    parser.add_argument(
         "--cutoff-all",
         action="store",
         default=0,
@@ -1489,7 +1497,7 @@ def cli():
             "fraction_after_behavior",
         ),
         dest="edge_label",
-        help="Edge label",
+        help="Edge label in the plot",
         type=str,
     )
 
@@ -1518,14 +1526,6 @@ def cli():
     print(args.config["lr"])
 
     """
-
-    parser.add_argument(
-        "--significativity-graph",
-        action="store_true",
-        dest="significativity_graph",
-        default=False,
-        help="Produce a dot script for observed transitions with significativity",
-    )
 
     args = parser.parse_args()
 
