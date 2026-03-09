@@ -362,8 +362,7 @@ legend [shape=none, margin=0, label=<
 </TR>
 </TABLE>
 >]
-
-        """
+"""
 
     if cutoff_all:
         for i in unique_transitions:
