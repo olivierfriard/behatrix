@@ -27,13 +27,13 @@ import logging
 import math
 import multiprocessing
 import os
-import pathlib as pl
 import platform
 import shutil
 import subprocess
 import sys
 import tempfile
 import traceback
+from pathlib import Path
 from shutil import copyfile
 
 import numpy as np
@@ -185,8 +185,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.le_dot_path.setReadOnly(True)
 
-        config_file_path = str(pl.Path(os.path.expanduser("~")) / ".behatrix")
-        if pl.Path(config_file_path).is_file():
+        config_file_path = str(Path(os.path.expanduser("~")) / ".behatrix")
+        if Path(config_file_path).is_file():
             settings = QSettings(config_file_path, QSettings.Format.IniFormat)
             if settings.value("dot_prog_path"):
                 # test dot program from settings
@@ -302,7 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         logging.critical(error_text)
 
         # append to behatrix.log file
-        with open(pl.Path("~").expanduser() / "behatrix.log", "a") as f_out:
+        with open(Path("~").expanduser() / "behatrix.log", "a") as f_out:
             f_out.write(error_text + "\n")
             f_out.write("-" * 80 + "\n")
 
@@ -422,7 +422,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         settings = QSettings(
-            str(pl.Path(os.path.expanduser("~")) / ".behatrix"),
+            str(Path(os.path.expanduser("~")) / ".behatrix"),
             QSettings.Format.IniFormat,
         )
         settings.setValue("dot_prog_path", self.le_dot_path.text())
@@ -893,7 +893,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # output = self.process.readAllStandardOutput().data().decode()
         # print(output)
 
-        output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path("flow_diagram.svg")
+        output_temp_file = Path(tempfile.gettempdir()) / Path("flow_diagram.svg")
         out = output_temp_file.read_bytes()
         self.svg_display.load(out)
 
@@ -951,12 +951,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         if sys.platform.startswith("win"):
-            gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path(
-                "gv_script.gv"
-            )
-            output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path(
-                "flow_diagram.svg"
-            )
+            gv_script_temp_file = Path(tempfile.gettempdir()) / Path("gv_script.gv")
+            output_temp_file = Path(tempfile.gettempdir()) / Path("flow_diagram.svg")
             try:
                 with gv_script_temp_file.open("w", encoding="utf-8") as f:
                     f.write(
@@ -975,8 +971,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
 
             graphviz_engine = str(
-                pl.Path(dot_path).parent
-                / pl.Path(self.comb_graphviz_engine.currentText())
+                Path(dot_path).parent / Path(self.comb_graphviz_engine.currentText())
             )
 
             cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
@@ -989,17 +984,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             out = output_temp_file.read_bytes()
         else:  # linux, macos
-            gv_script_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path(
-                "gv_script.gv"
-            )
-            output_temp_file = pl.Path(tempfile.gettempdir()) / pl.Path(
-                "flow_diagram.svg"
-            )
+            gv_script_temp_file = Path(tempfile.gettempdir()) / Path("gv_script.gv")
+            output_temp_file = Path(tempfile.gettempdir()) / Path("flow_diagram.svg")
 
             # copy wait please image
             # shutil.copy("behatrix/please_wait.svg", output_temp_file)
 
-            shutil.copy(pl.Path(__file__).parent / "please_wait.svg", output_temp_file)
+            shutil.copy(Path(__file__).parent / "please_wait.svg", output_temp_file)
 
             try:
                 with gv_script_temp_file.open("w", encoding="utf-8") as f:
@@ -1018,30 +1009,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 )
                 return
 
-            """
-            gv_script = (
-                "digraph G {"
-                + self.pte_gv_nodes.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                + self.pte_gv_edges.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                + self.pte_gv_graph.toPlainText().replace("\n", " ").replace("'", "'\\''")
-                + "}"
-            )
-            """
-
             if self.comb_graphviz_engine.currentText() == "dot":
                 graphviz_engine = dot_path
             else:
                 graphviz_engine = str(
-                    pl.Path(dot_path).parent
-                    / pl.Path(self.comb_graphviz_engine.currentText())
+                    Path(dot_path).parent
+                    / Path(self.comb_graphviz_engine.currentText())
                 )
 
             cmd = f'"{graphviz_engine}" -Tsvg "{gv_script_temp_file}" -o "{output_temp_file}"'
 
-            """
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            out = output_temp_file.read_bytes()
-            """
             out = output_temp_file.read_bytes()
 
             self.process = QProcess(self)
@@ -1053,14 +1030,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 graphviz_engine,
                 ["-Tsvg", f"{gv_script_temp_file}", "-o", f"{output_temp_file}"],
             )
-
-            """
-            _, error = p.communicate()
-            if error:
-                QMessageBox.critical(self, "Behatrix", error.decode("utf-8"))
-                return
-            out = output_temp_file.read_bytes()
-            """
 
         if action == "show":
             self.svg_display.load(out)
@@ -1521,6 +1490,14 @@ def cli():
         help="Add a legend to plot",
     )
 
+    parser.add_argument(
+        "--create-plot",
+        action="store_true",
+        dest="create_plot",
+        default=False,
+        help="Create plot(s) from dot script(s)",
+    )
+
     """
     TODO: add possibility to pass arguments for cutoff etc
 
@@ -1766,14 +1743,33 @@ def cli():
             )
         )
 
+        observed_transitions_dot_file_name = (
+            f"{args.output if args.output else args.sequences}.observed_transitions.dot"
+        )
         with open(
-            f"{args.output if args.output else args.sequences}.observed_transitions.dot",
+            observed_transitions_dot_file_name,
             mode="w",
             encoding="utf-8",
         ) as f_out:
             f_out.write(
                 f"{header_out}\n{nodes_out}\n{edges_out}\n{graph_out}\n{footer_out}"
             )
+
+        # create plot
+        if args.create_plot:
+            with open(
+                Path(observed_transitions_dot_file_name).with_suffix(".svg"),
+                "w",
+            ) as f:
+                subprocess.run(
+                    [
+                        "dot",
+                        "-T",
+                        "svg",
+                        observed_transitions_dot_file_name,
+                    ],
+                    stdout=f,
+                )
 
     if args.significativity_graph:
         if not nrandom:
@@ -1798,14 +1794,33 @@ def cli():
                     legend=args.legend,
                 )
             )
+            observed_transitions_with_significativity_dot_file_name = f"{args.output if args.output else args.sequences}.observed_transitions_with_significativity.dot"
             with open(
-                f"{args.output if args.output else args.sequences}.observed_transitions_with_significativity.dot",
+                observed_transitions_with_significativity_dot_file_name,
                 mode="w",
                 encoding="utf-8",
             ) as f_out:
                 f_out.write(
                     f"{header_out}\n{nodes_out}\n{edges_out}\n{graph_out}\n{footer_out}"
                 )
+
+            # create plot
+            if args.create_plot:
+                with open(
+                    Path(
+                        observed_transitions_with_significativity_dot_file_name
+                    ).with_suffix(".svg"),
+                    "w",
+                ) as f:
+                    subprocess.run(
+                        [
+                            "dot",
+                            "-T",
+                            "svg",
+                            observed_transitions_with_significativity_dot_file_name,
+                        ],
+                        stdout=f,
+                    )
 
 
 if __name__ == "__main__":
