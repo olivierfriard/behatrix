@@ -1537,6 +1537,7 @@ def cli():
         nrandom = 0
 
     if nrandom:
+        exclusion_str: str = ""
         if args.exclusions:
             if not os.path.isfile(args.exclusions):
                 print(f"{args.exclusions} is not a file\n")
@@ -1544,8 +1545,6 @@ def cli():
             else:
                 with open(args.exclusions) as f_in:
                     exclusion_str = f_in.read()
-        else:
-            exclusion_str = ""
 
         result = behatrix_functions.check_exclusion_list(
             exclusion_str, results["sequences"]
