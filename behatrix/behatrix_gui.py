@@ -1719,8 +1719,6 @@ def cli():
 
             print(out)
 
-        print(f">>>>>>>>>>>>>>>>>>>>    {file_name=}")  # remove before release
-
         file_name = (
             f"{args.output if args.output else args.sequences}.p-values.{nrandom}.tsv"
         )
