@@ -1642,6 +1642,7 @@ def cli():
     with open(file_name, mode="r", encoding="utf-8") as f_in:
         rows = f_in.readlines()
 
+    # add colum and row headers
     with open(file_name, mode="w", encoding="utf-8") as f_out:
         f_out.write("\t" + "\t".join(results["behaviours"]) + "\n")
         c = 0
@@ -1695,9 +1696,9 @@ def cli():
 
             nb_randomization_done = 0
 
-            for l in lst:
-                nb_randomization_done += l.result()[0]
-                permutations_results += l.result()[1]
+            for x in lst:
+                nb_randomization_done += x.result()[0]
+                permutations_results += x.result()[1]
 
         if not args.quiet:
             print(f"Number of permutations done: {nb_randomization_done}")
@@ -1718,6 +1719,8 @@ def cli():
 
             print(out)
 
+        print(f">>>>>>>>>>>>>>>>>>>>    {file_name=}")  # remove before release
+
         file_name = (
             f"{args.output if args.output else args.sequences}.p-values.{nrandom}.tsv"
         )
@@ -1729,8 +1732,13 @@ def cli():
             delimiter="\t",
         )
 
+        # add colum and row headers
         try:
-            with open(file_name, mode="r", encoding="utf-8") as f:
+            with open(
+                file_name,
+                mode="r",
+                encoding="utf-8",
+            ) as f:
                 rows = f.readlines()
             with open(file_name, mode="w", encoding="utf-8") as f:
                 f.write("\t" + "\t".join(list(results["behaviours"])) + "\n")
@@ -1760,12 +1768,11 @@ def cli():
             )
         )
 
-        if args.output:
-            file_name = f"{args.output}.observed_transitions.dot"
-        else:
-            file_name = f"{args.sequences}.observed_transitions.dot"
-
-        with open(file_name, mode="w", encoding="utf-8") as f_out:
+        with open(
+            f"{args.output if args.output else args.sequences}.observed_transitions.dot",
+            mode="w",
+            encoding="utf-8",
+        ) as f_out:
             f_out.write(
                 f"{header_out}\n{nodes_out}\n{edges_out}\n{graph_out}\n{footer_out}"
             )
