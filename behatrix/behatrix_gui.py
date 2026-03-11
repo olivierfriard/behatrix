@@ -1490,12 +1490,25 @@ def cli():
         help="Add a legend to plot",
     )
 
+    # parser.add_argument(
+    #    "--create-plot",
+    #    action="store_true",
+    #    dest="create_plot",
+    #    default=False,
+    #    help="Create plot(s) from dot script(s)",
+    # )
+
     parser.add_argument(
         "--create-plot",
-        action="store_true",
+        action="store",
+        default="",
+        choices=(
+            "png",
+            "svg",
+        ),
         dest="create_plot",
-        default=False,
         help="Create plot(s) from dot script(s)",
+        type=str,
     )
 
     """
@@ -1757,14 +1770,16 @@ def cli():
         # create plot
         if args.create_plot:
             with open(
-                Path(observed_transitions_dot_file_name).with_suffix(".svg"),
+                Path(observed_transitions_dot_file_name).with_suffix(
+                    f".{args.create_plot}"
+                ),
                 "w",
             ) as f:
                 subprocess.run(
                     [
                         "dot",
                         "-T",
-                        "svg",
+                        args.create_plot,
                         observed_transitions_dot_file_name,
                     ],
                     stdout=f,
@@ -1808,14 +1823,14 @@ def cli():
                 with open(
                     Path(
                         observed_transitions_with_significativity_dot_file_name
-                    ).with_suffix(".svg"),
+                    ).with_suffix(f".{args.create_plot}"),
                     "w",
                 ) as f:
                     subprocess.run(
                         [
                             "dot",
                             "-T",
-                            "svg",
+                            args.create_plot,
                             observed_transitions_with_significativity_dot_file_name,
                         ],
                         stdout=f,
