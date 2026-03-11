@@ -1778,8 +1778,8 @@ def cli():
         else:
             (header_out, nodes_out, edges_out, graph_out, footer_out, nodes_list) = (
                 behatrix_functions.draw_diagram(
-                    cutoff_all=0,  # None
-                    cutoff_behavior=None,
+                    cutoff_all=args.cutoff_all,
+                    cutoff_behavior=args.cutoff_behavior,
                     unique_transitions=results["transitions"],
                     nodes=results["nodes"],
                     starting_nodes=[],
